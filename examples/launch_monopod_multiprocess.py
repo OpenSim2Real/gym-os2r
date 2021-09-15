@@ -23,12 +23,16 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 
 # Wrap the environment with the randomizer.
 # This is a simple example no randomization are applied.
-env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
+# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
 
-# Wrap the environment with the randomizer.
-# This is a complex example that randomizes both the physics and the model.
+# # Wrap the environment with the randomizer.
+# # This is a complex example that randomizes both the physics and the model.
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, seed=42, num_physics_rollouts=5)
+# env = randomizers.monopod.MonopodEnvRandomizer(
+#     env=make_env, num_physics_rollouts=5)
+env = randomizers.monopod.MonopodEnvRandomizer(
+    env=make_env)
 
 # Enable the rendering
 # env.render('human')
