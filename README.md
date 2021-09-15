@@ -1,1 +1,2 @@
-# Bayesian-Balancing-Environment
+# igBIBLE
+Ignition Gym BayesIan BaLancing Environments
