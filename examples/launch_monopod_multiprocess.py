@@ -3,6 +3,7 @@ import time
 import functools
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
+from BB_gym_Envs.common.mp_env import make_mp_envs
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -10,64 +11,50 @@ logger.set_level(gym.logger.ERROR)
 
 # Available tasks
 env_id = "Monopod-Gazebo-v1"
+num_env = 4
+seed = 42
 
-
-def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
-    import gym
-    import BB_gym_Envs
-    return gym.make(env_id, **kwargs)
-
-
-# Create a partial function passing the environment id
-make_env = functools.partial(make_env_from_id, env_id=env_id)
-
-# Wrap the environment with the randomizer.
-# This is a simple example no randomization are applied.
-# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
-
-# # Wrap the environment with the randomizer.
-# # This is a complex example that randomizes both the physics and the model.
+# def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
+#     import gym
+#     import BB_gym_Envs
+#     return gym.make(env_id, **kwargs)
+#
+# make_env = functools.partial(make_env_from_id, env_id=env_id)
 # env = randomizers.monopod.MonopodEnvRandomizer(
-#     env=make_env, seed=42, num_physics_rollouts=5)
-# env = randomizers.monopod.MonopodEnvRandomizer(
-#     env=make_env, num_physics_rollouts=5)
-env = randomizers.monopod.MonopodEnvRandomizer(
-    env=make_env)
+#     env=make_env)
+# env.seed(42)
+
+env = make_mp_envs(env_id, num_env, seed, randomizers.monopod.MonopodEnvRandomizer)
 
 # Enable the rendering
 # env.render('human')
-# Initialize the seed
-env.seed(42)
 
-for epoch in range(1000000):
+for epoch in range(100):
 
     # Reset the environment
     observation = env.reset()
 
     # Initialize returned values
     done = False
-    totalReward = 0
+    totalReward = []
 
     while not done:
-
         # Execute a random action
-        action = env.action_space.sample()
-        observation, reward, done, _ = env.step(action)
+        action = []
+        for _ in range(num_env):
+            action.append(env.action_space.sample())
 
-        # Render the environment.
-        # It is not required to call this in the loop if physics is not randomized.
-        # env.render('human')
+        observation_arr, reward_arr, done_arr, _ = env.step(action)
 
-        # Accumulate the reward
-        totalReward += reward
+        if totalReward == []:
+            totalReward = reward_arr
+        else:
+            totalReward = [sum(x) for x in zip(totalReward, reward_arr)]
 
-        # Print the observation
-        msg = ""
-        for value in observation:
-            msg += "\t%.6f" % value
-        logger.debug(msg)
+        done = all(done_arr)
 
     print(f"Reward episode #{epoch}: {totalReward}")
+
 
 env.close()
 time.sleep(5)

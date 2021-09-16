@@ -38,7 +38,7 @@ env = randomizers.monopod.MonopodEnvRandomizer(
 env.render('human')
 # Initialize the seed
 env.seed(42)
-
+print(env)
 for epoch in range(1000000):
 
     # Reset the environment

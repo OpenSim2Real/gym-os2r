@@ -18,5 +18,10 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+          'stable-baselines',
+          'pip3 install git+https://github.com/Baesian-Balancer/SIMP.git',
+          'gym-ignition',
+    ],
     python_requires='>=3.8',
 )
