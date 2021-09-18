@@ -31,15 +31,18 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 #     env=make_env, seed=42, num_physics_rollouts=5)
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, num_physics_rollouts=5)
-env = randomizers.monopod.MonopodEnvRandomizer(
-    env=make_env)
+
+env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 
 # Enable the rendering
-env.render('human')
+# env.render('human')
+
 # Initialize the seed
 env.seed(42)
+print(env)
 
-for epoch in range(1000000):
+beg_time = time.time()
+for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
@@ -67,7 +70,7 @@ for epoch in range(1000000):
             msg += "\t%.6f" % value
         logger.debug(msg)
 
-    print(f"Reward episode #{epoch}: {totalReward}")
-
+    # print(f"Reward episode #{epoch}: {totalReward}")
+print('time for 1000 episodes: ' + str(time.time()-beg_time))
 env.close()
 time.sleep(5)

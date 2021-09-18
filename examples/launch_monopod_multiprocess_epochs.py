@@ -31,18 +31,21 @@ envs.reset()
 # Enable the rendering
 # env.render('human')
 current_cumulative_rewards = np.zeros(NUM_ENVS)
-
-for step in range(NUMBER_TIME_STEPS):
+epoch = 0
+beg_time = time.time()
+while epoch < 1000:
 
     # Execute random actions for each env
     actions = np.stack([envs.action_space_single.sample() for _ in range(NUM_ENVS)])
     observation_arr, reward_arr, done_arr, _ = envs.step(actions)
 
     if any(done_arr):
-        print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
+        # print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
         current_cumulative_rewards[done_arr] = 0
+        epoch += sum(done_arr)
     current_cumulative_rewards += reward_arr
+print('time for 10000 episodes: ' + str(time.time()-beg_time))
 
 
-env.close()
+envs.close()
 time.sleep(5)
