@@ -1,6 +1,7 @@
 import gym
 import time
 import functools
+import numpy as np
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 from BB_gym_Envs.common.mp_env import make_mp_envs
@@ -11,7 +12,8 @@ logger.set_level(gym.logger.ERROR)
 
 # Available tasks
 env_id = "Monopod-Gazebo-v1"
-num_env = 4
+NUM_ENVS = 4
+NUMBER_TIME_STEPS = 10000
 seed = 42
 
 # def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
@@ -24,36 +26,22 @@ seed = 42
 #     env=make_env)
 # env.seed(42)
 
-env = make_mp_envs(env_id, num_env, seed, randomizers.monopod.MonopodEnvRandomizer)
-
+envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
+envs.reset()
 # Enable the rendering
 # env.render('human')
+current_cumulative_rewards = np.zeros(NUM_ENVS)
 
-for epoch in range(100):
+for step in range(NUMBER_TIME_STEPS):
 
-    # Reset the environment
-    observation = env.reset()
+    # Execute random actions for each env
+    actions = np.stack([envs.action_space_single.sample() for _ in range(NUM_ENVS)])
+    observation_arr, reward_arr, done_arr, _ = envs.step(actions)
 
-    # Initialize returned values
-    done = False
-    totalReward = []
-
-    while not done:
-        # Execute a random action
-        action = []
-        for _ in range(num_env):
-            action.append(env.action_space.sample())
-
-        observation_arr, reward_arr, done_arr, _ = env.step(action)
-
-        if totalReward == []:
-            totalReward = reward_arr
-        else:
-            totalReward = [sum(x) for x in zip(totalReward, reward_arr)]
-
-        done = all(done_arr)
-
-    print(f"Reward episode #{epoch}: {totalReward}")
+    if any(done_arr):
+        print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
+        current_cumulative_rewards[done_arr] = 0
+    current_cumulative_rewards += reward_arr
 
 
 env.close()

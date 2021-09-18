@@ -12,8 +12,8 @@ def worker(remote, parent_remote, env_fn):
 		cmd, data = remote.recv()
 		if cmd == 'step':
 			ob, reward, done, info = env.step(data)
-			# if done:
-			#     ob = env.reset()
+			if done:
+			    ob = env.reset()
 			remote.send((ob, reward, done, info))
 		elif cmd == 'reset':
 			remote.send(env.reset())
@@ -33,7 +33,7 @@ class SubprocVecEnv(VecEnv):
 		self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(no_of_envs)])
 		self.ps = []
 		if no_of_envs:
-			self.action_space = env_fns[0]().action_space
+			self.action_space_single = env_fns[0]().action_space
 
 		for wrk, rem, fn in zip(self.work_remotes, self.remotes, env_fns):
 			proc = Process(target = worker, args = (wrk, rem, CloudpickleWrapper(fn)))

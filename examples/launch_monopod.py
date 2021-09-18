@@ -23,7 +23,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 
 # Wrap the environment with the randomizer.
 # This is a simple example no randomization are applied.
-# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
+env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
 
 # # Wrap the environment with the randomizer.
 # # This is a complex example that randomizes both the physics and the model.
@@ -31,15 +31,18 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 #     env=make_env, seed=42, num_physics_rollouts=5)
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, num_physics_rollouts=5)
-env = randomizers.monopod.MonopodEnvRandomizer(
-    env=make_env)
+
+# env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 
 # Enable the rendering
 env.render('human')
+# if not gazebo.run(paused=True):
+#     raise RuntimeError("Failed to execute a paused Gazebo run")
+
 # Initialize the seed
 env.seed(42)
 print(env)
-for epoch in range(1000000):
+for epoch in range(10000):
 
     # Reset the environment
     observation = env.reset()
