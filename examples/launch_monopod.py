@@ -23,7 +23,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 
 # Wrap the environment with the randomizer.
 # This is a simple example no randomization are applied.
-env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
+# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
 
 # # Wrap the environment with the randomizer.
 # # This is a complex example that randomizes both the physics and the model.
@@ -32,17 +32,17 @@ env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, num_physics_rollouts=5)
 
-# env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 
 # Enable the rendering
-env.render('human')
-# if not gazebo.run(paused=True):
-#     raise RuntimeError("Failed to execute a paused Gazebo run")
+# env.render('human')
 
 # Initialize the seed
 env.seed(42)
 print(env)
-for epoch in range(10000):
+
+beg_time = time.time()
+for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
@@ -70,7 +70,7 @@ for epoch in range(10000):
             msg += "\t%.6f" % value
         logger.debug(msg)
 
-    print(f"Reward episode #{epoch}: {totalReward}")
-
+    # print(f"Reward episode #{epoch}: {totalReward}")
+print('time for 1000 episodes: ' + str(time.time()-beg_time))
 env.close()
 time.sleep(5)
