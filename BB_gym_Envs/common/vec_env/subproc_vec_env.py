@@ -7,18 +7,21 @@ from .vec_env import VecEnv, CloudpickleWrapper
 
 def worker(remote, parent_remote, env_fn):
 	parent_remote.close()
-	env = env_fn()
+	env, training_monitor, id = env_fn()
 	while True:
 		cmd, data = remote.recv()
 		if cmd == 'step':
 			ob, reward, done, info = env.step(data)
 			if done:
 			    ob = env.reset()
+			training_monitor.insert_data(id, (ob, reward, done, info))
 			remote.send((ob, reward, done, info))
 		elif cmd == 'reset':
 			remote.send(env.reset())
 		elif cmd == 'render':
 			remote.send(env.render())
+		elif cmd == 'action_space':
+			remote.send(env.action_space)
 		elif cmd == 'close':
 			remote.close()
 			break
@@ -32,18 +35,19 @@ class SubprocVecEnv(VecEnv):
 		no_of_envs = len(env_fns)
 		self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(no_of_envs)])
 		self.ps = []
-		if no_of_envs:
-			self.action_space_single = env_fns[0]().action_space
 
 		for wrk, rem, fn in zip(self.work_remotes, self.remotes, env_fns):
 			proc = Process(target = worker, args = (wrk, rem, CloudpickleWrapper(fn)))
 			self.ps.append(proc)
-
 		for p in self.ps:
 			p.daemon = True
 			p.start()
 		for remote in self.work_remotes:
 			remote.close()
+
+		if no_of_envs:
+			self.remotes[0].send(('action_space', None))
+			self.action_space_single = self.remotes[0].recv()
 
 	def step_async(self, actions):
 		if self.waiting:

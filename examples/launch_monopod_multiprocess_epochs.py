@@ -5,6 +5,7 @@ import numpy as np
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 from BB_gym_Envs.common.mp_env import make_mp_envs
+from BB_gym_Envs.monitor.monitor import TrainingMonitor
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -15,6 +16,7 @@ env_id = "Monopod-Gazebo-v1"
 NUM_ENVS = 10
 NUMBER_TIME_STEPS = 10000
 seed = 42
+training_monitor = TrainingMonitor(NUM_ENVS, NUMBER_TIME_STEPS)
 
 # def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
 #     import gym
@@ -26,7 +28,7 @@ seed = 42
 #     env=make_env)
 # env.seed(42)
 
-envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
+envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer, training_monitor)
 envs.reset()
 # Enable the rendering
 # env.render('human')

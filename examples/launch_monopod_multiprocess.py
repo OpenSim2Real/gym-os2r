@@ -5,6 +5,8 @@ import numpy as np
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 from BB_gym_Envs.common.mp_env import make_mp_envs
+from BB_gym_Envs.monitor.monitor import TrainingMonitor
+import multiprocessing
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -12,10 +14,11 @@ logger.set_level(gym.logger.ERROR)
 
 # Available tasks
 env_id = "Monopod-Gazebo-v1"
-NUM_ENVS = 10
+
+NUM_ENVS = multiprocessing.cpu_count()
 NUMBER_TIME_STEPS = 10000
 seed = 42
-
+training_monitor = TrainingMonitor(NUM_ENVS, NUMBER_TIME_STEPS)
 # def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
 #     import gym
 #     import BB_gym_Envs
@@ -26,7 +29,7 @@ seed = 42
 #     env=make_env)
 # env.seed(42)
 
-envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
+envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer, training_monitor)
 envs.reset()
 # Enable the rendering
 # env.render('human')
@@ -39,10 +42,8 @@ for step in range(NUMBER_TIME_STEPS):
     observation_arr, reward_arr, done_arr, _ = envs.step(actions)
 
     if any(done_arr):
-        print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
-        current_cumulative_rewards[done_arr] = 0
-    current_cumulative_rewards += reward_arr
+        print(f"Step: {step}, {done_arr} ... their reward: {training_monitor.get_last_episode_reward()[done_arr]}")
 
 
-env.close()
+envs.close()
 time.sleep(5)
