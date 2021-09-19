@@ -28,7 +28,6 @@ class VecMonitorPlot(VecEnvWrapper):
 
 		# assert plot_path is not None
 		self.saving = False if plot_path is None else True
-		print(self.saving)
 		if not plot_path.endswith(VecMonitor.EXT):
 			if osp.isdir(plot_path):
 				self.plot_path = osp.join(plot_path, VecMonitorPlot.EXT)
