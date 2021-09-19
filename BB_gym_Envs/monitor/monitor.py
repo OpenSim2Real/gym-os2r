@@ -17,14 +17,24 @@ class VecMonitorPlot(VecEnvWrapper):
 	EXT = "monitor.png"
 	f = None
 
-	def __init__(self, venv, filename=None, keep_buf=0, episodes_for_refresh=1):
+	def __init__(self, venv, plot_path=None, keep_buf=0, episodes_for_refresh=1, save_every_num_epidoes=10):
 		VecEnvWrapper.__init__(self, venv)
 		self.eprets = None
 		self.eplens = None
 		self.epcount = 0
 		self.tstart = time.time()
 		self.episodes_for_refresh = episodes_for_refresh
+		self.save_every_num_epidoes	= save_every_num_epidoes
 
+		# assert plot_path is not None
+		self.saving = False if plot_path is None else True
+		print(self.saving)
+		if not plot_path.endswith(VecMonitor.EXT):
+			if osp.isdir(plot_path):
+				self.plot_path = osp.join(plot_path, VecMonitorPlot.EXT)
+			else:
+				self.plot_path = plot_path + "." + VecMonitorPlot.EXT
+		print('Plotting to the absolute path: ' + str(self.plot_path))
 		self.keep_buf = keep_buf
 		if self.keep_buf:
 			self.epret_buf = deque([], maxlen=keep_buf)
@@ -40,8 +50,6 @@ class VecMonitorPlot(VecEnvWrapper):
 		return obs
 
 	def step_wait(self):
-		# if epcount % 5:
-
 		obs, rews, dones, infos = self.venv.step_wait()
 		self.eprets += rews
 		self.eplens += 1
@@ -64,9 +72,12 @@ class VecMonitorPlot(VecEnvWrapper):
 				self.rewards[i].append(ret)
 			# self.dplt.plot(self.episodes[i],self.rewards[i])
 			self.dplt.plot(i, self.rewards[i])
-
-		if any(dones) and self.epcount % self.episodes_for_refresh == 0:
+		new_ep = any(dones)
+		if new_ep and self.epcount % self.episodes_for_refresh == 0:
 			self.dplt.show()
+		if new_ep and self.epcount % self.save_every_num_epidoes == 0 and self.saving == True:
+			self.dplt.save_fig(self.plot_path)
+			print('saving: ',self.epcount)
 		return obs, rews, dones, newinfos
 
 class VecMonitor(VecEnvWrapper):
@@ -190,10 +201,6 @@ def load_results(dir):
 
 class dynplot():
 
-
-	# TODO: Add and test more plotting functions
-	supported_fcns = ['plot']
-
 	def __init__(self, num_envs, refresh_rate=0.1):
 		# Configure object
 		self.refresh_rate = refresh_rate
@@ -226,133 +233,14 @@ class dynplot():
 		self.fig.canvas.flush_events()
 		plt.show(*args, **kwargs)
 
-
-# dyn = dynplot(4)
-# dyn.plot(0, [11,12,13])
-# dyn.plot(1, [1,2,3])
-# dyn.plot(2, [11])
-# dyn.plot(3, [11,12,13, 5, 6, 7])
-# dyn.show()
-# time.sleep(10000)
-# class dynplot():
-#
-#
-# 	# TODO: Add and test more plotting functions
-# 	supported_fcns = ['plot']
-#
-# 	def __init__(self, refresh_rate=0.1):
-# 		# Configure object
-# 		self.refresh_rate = refresh_rate
-#
-# 		# Create figure and axis
-# 		self.fig, self.ax = plt.subplots()
-#
-# 		# Set axis to auto-scale
-# 		self.ax.set_autoscaley_on(True)
-#
-# 		self._initialized = False
-# 		self._crnt_line = 0
-#
-# 	def _update(self, fcn, *args, **kwargs):
-# 		 # Create initial lines upon first calls
-# 		if not self._initialized:
-# 			lines = getattr(self.ax, fcn)(*args, **kwargs)
-# 			# Verify if not consecutive call, adding multiple lines in
-# 			# multiple steps (i.e. multiple calls of plot() before call to
-# 			# show())
-# 			if not hasattr(self, 'lines') or not self.lines:
-# 				# create list if only one line existing
-# 				if not isinstance(lines, list):
-# 					lines = [lines]
-#
-# 				self.lines = lines
-# 			else:
-# 				for line in lines:
-# 					self.lines.append(line)
-#
-# 		# Reuse existing lines upon following calls
-# 		else:
-# 			# Remove possible line styling indications from *args
-# 			args = list(filter(lambda x: not isinstance(x, str), args))
-#
-# 			# Create set of lines to be updated
-# 			if len(args) == 1:
-# 				nbr_lines = 1
-# 				single_line = True
-# 			else:
-# 				nbr_lines = len(args) // 2
-# 				single_line = False
-#
-# 			# Only update parts of the lines
-# 			if len(self.lines) > 1 and nbr_lines < len(self.lines):
-# 				line_ids = list(range(self._crnt_line,
-# 									  self._crnt_line + nbr_lines))
-# 				line_ids = [i % len(self.lines) for i in line_ids]
-#
-# 				self._crnt_line = (line_ids[-1] + 1) % len(self.lines)
-#
-# 			# Update all lines
-# 			else:
-# 				line_ids = list(range(0, len(self.lines)))
-# 				self._crnt_line = 0
-# 			# Apply changes to set of lines to be updated
-# 			for i, line_id in enumerate(line_ids):
-# 				# Set line values
-# 				if single_line:
-# 					self.lines[line_id].set_ydata(args[i])
-# 				else:
-# 					self.lines[line_id].set_xdata(args[2*i])
-# 					self.lines[line_id].set_ydata(args[2*i+1])
-#
-# 				# Set line attributes if existing
-# 				for key, value in kwargs.items():
-# 					getattr(self.lines[line_id], 'set_' + key)(value)
-#
-# 	def __getattr__(self, name):
-# 		if name in self.supported_fcns:
-#
-# 			def wrapper(*args, **kwargs):
-# 				return self._update(name, *args, **kwargs)
-#
-# 			return wrapper
-#
-# 	def show(self, permanent=False, *args, **kwargs):
-# 		"""Displays figure
-# 			Calls ``matplotlib.pyplot.pause()`` for continuous plotting or,
-# 			if ``permanent`` is ``True`` forwards the call to
-# 			 ``matplotlib.pyplot.show()``
-# 			 :param permanent: Don't update or refresh plot
-# 			 :type permanent: bool
-# 		"""
-# 		self._initialized = True
-#
-# 		# Rescale
-# 		self.ax.relim()
-# 		self.ax.autoscale_view()
-#
-# 		# Draw and flush
-# 		self.fig.canvas.draw()
-# 		self.fig.canvas.flush_events()
-#
-# 		if permanent:
-# 			plt.show(*args, **kwargs)
-# 		else:
-# 			plt.pause(self.refresh_rate)
+	def save_fig(self, path):
 
 
-# import matplotlib.pyplot as plt
-# plt.ion()
-# from math import sin, pi
-# import time
-# dplt = dynplot()
-#
-#
-# xdata = [[] for _ in range(10)]
-# ydata = [[] for _ in range(10)]
-# for x in np.arange(0,10,0.5):
-# 	for i in range(10):
-# 		xdata[i].append(x)
-# 		ydata[i].append(i+np.exp(-x**2)+10*np.exp(-(x-7)**2))
-# 		dplt.plot(xdata[i], ydata[i])
-# 	dplt.show()
-# 	time.sleep(1)
+		# Rescale
+		self.ax.relim()
+		self.ax.autoscale_view()
+
+		# Draw and flush
+		self.fig.canvas.draw()
+		self.fig.canvas.flush_events()
+		self.fig.savefig(path)

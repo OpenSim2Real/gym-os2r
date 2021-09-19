@@ -29,7 +29,7 @@ seed = 42
 
 envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
 # envs = VecMonitor(envs)
-envs = VecMonitorPlot(envs)
+envs = VecMonitorPlot(envs, plot_path='/home/capstone/Desktop/plot')
 envs.reset()
 # Enable the rendering
 # env.render('human')
