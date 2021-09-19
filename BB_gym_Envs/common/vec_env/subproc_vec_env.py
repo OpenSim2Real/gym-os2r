@@ -131,6 +131,10 @@ class SubprocVecEnv(VecEnv):
 		if not self.closed:
 			self.close()
 
+	def __exit__(self):
+		if not self.closed:
+			self.close()
+
 def _flatten_obs(obs):
 	assert isinstance(obs, (list, tuple))
 	assert len(obs) > 0

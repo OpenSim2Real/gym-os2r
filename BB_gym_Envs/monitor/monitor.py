@@ -76,8 +76,20 @@ class VecMonitorPlot(VecEnvWrapper):
 			self.dplt.show()
 		if new_ep and self.epcount % self.save_every_num_epidoes == 0 and self.saving == True:
 			self.dplt.save_fig(self.plot_path)
-			print('saving: ',self.epcount)
 		return obs, rews, dones, newinfos
+
+	def close(self):
+		self.dplt.save_fig(self.plot_path)
+		self.dplt.close_fig()
+		return self.venv.close()
+
+	def __del__(self):
+		self.close()
+		self.venv.__del__()
+		
+	def __exit__(self):
+		self.close()
+		self.venv.__exit__()
 
 class VecMonitor(VecEnvWrapper):
 	EXT = "monitor.csv"
@@ -243,3 +255,6 @@ class dynplot():
 		self.fig.canvas.draw()
 		self.fig.canvas.flush_events()
 		self.fig.savefig(path)
+
+	def close_fig(self):
+		plt.close(self.fig)
