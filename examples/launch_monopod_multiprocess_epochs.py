@@ -5,6 +5,7 @@ import numpy as np
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 from BB_gym_Envs.common.mp_env import make_mp_envs
+import multiprocessing
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -12,7 +13,7 @@ logger.set_level(gym.logger.ERROR)
 
 # Available tasks
 env_id = "Monopod-Gazebo-v1"
-NUM_ENVS = 10
+NUM_ENVS = multiprocessing.cpu_count()
 NUMBER_TIME_STEPS = 10000
 seed = 42
 
@@ -26,7 +27,6 @@ seed = 42
 #     env=make_env)
 # env.seed(42)
 
-envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
 envs.reset()
 # Enable the rendering
 # env.render('human')

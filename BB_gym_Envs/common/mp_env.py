@@ -4,7 +4,6 @@ import functools
 from typing import Union
 
 from BB_gym_Envs.common.vec_env import SubprocVecEnv
-
 from BB_gym_Envs import randomizers
 
 SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizations, randomizers.monopod.MonopodEnvRandomizer]
@@ -15,12 +14,12 @@ def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
     import BB_gym_Envs
     return gym.make(env_id, **kwargs)
 
-def make_mp_envs(env_id, num_env, seed, randomizer: SupportedRandomizers, start_idx = 0):
+def make_mp_envs(env_id, nenvs, seed, randomizer: SupportedRandomizers, start_idx = 0, in_series=1):
     """
     Utility function for multiprocessed env.
 
     :param env_id: (str) the environment ID
-    :param num_env: (int) the number of environment you wish to have in subprocesses
+    :param nenvs: (int) the number of environment you wish to have in subprocesses
     :param seed: (int) the inital seed for RNG
     :param randomizer: (SupportedRandomizers) the env randomizer
     :param rank: (int) index of the subprocess
@@ -32,4 +31,4 @@ def make_mp_envs(env_id, num_env, seed, randomizer: SupportedRandomizers, start_
             env.seed(seed + rank)
             return env
         return fn
-    return SubprocVecEnv([make_env(i + start_idx) for i in range(num_env)])
+    return SubprocVecEnv([make_env(i + start_idx) for i in range(nenvs)], in_series=in_series)

@@ -2,6 +2,8 @@ import numpy
 from . import tasks
 from . import models
 from . import randomizers
+from . import monitor
+from . import common
 from gym.envs.registration import register
 
 
