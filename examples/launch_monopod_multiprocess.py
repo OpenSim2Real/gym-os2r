@@ -5,6 +5,7 @@ import numpy as np
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 from BB_gym_Envs.common.mp_env import make_mp_envs
+from BB_gym_Envs.monitor.monitor import VecMonitor
 import multiprocessing
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -27,6 +28,7 @@ seed = 42
 # env.seed(42)
 
 envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
+# envs = VecMonitor(envs)
 envs.reset()
 # Enable the rendering
 # env.render('human')
@@ -35,7 +37,7 @@ current_cumulative_rewards = np.zeros(NUM_ENVS)
 for step in range(NUMBER_TIME_STEPS):
 
     # Execute random actions for each env
-    actions = np.stack([envs.action_space_single.sample() for _ in range(NUM_ENVS)])
+    actions = np.stack([envs.action_space.sample() for _ in range(NUM_ENVS)])
     observation_arr, reward_arr, done_arr, _ = envs.step(actions)
 
     if any(done_arr):
@@ -44,5 +46,5 @@ for step in range(NUMBER_TIME_STEPS):
     current_cumulative_rewards += reward_arr
 
 
-env.close()
+envs.close()
 time.sleep(5)

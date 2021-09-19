@@ -4,12 +4,15 @@ import csv
 import os.path as osp
 import json
 
-from . import BB_gym_Envs.common.vec_env.vec_env.VecEnvWrapper
+from BB_gym_Envs.common.vec_env.vec_env import VecEnvWrapper
 import numpy as np
 import time
 from collections import deque
 
 class VecMonitor(VecEnvWrapper):
+    EXT = "monitor.csv"
+    f = None
+
     def __init__(self, venv, filename=None, keep_buf=0, info_keywords=()):
         VecEnvWrapper.__init__(self, venv)
         self.eprets = None
@@ -64,11 +67,11 @@ class ResultsWriter(object):
     def __init__(self, filename, header='', extra_keys=()):
         self.extra_keys = extra_keys
         assert filename is not None
-        if not filename.endswith(Monitor.EXT):
+        if not filename.endswith(VecMonitor.EXT):
             if osp.isdir(filename):
-                filename = osp.join(filename, Monitor.EXT)
+                filename = osp.join(filename, VecMonitor.EXT)
             else:
-                filename = filename + "." + Monitor.EXT
+                filename = filename + "." + VecMonitor.EXT
         self.f = open(filename, "wt")
         if isinstance(header, dict):
             header = '# {} \n'.format(json.dumps(header))
@@ -84,7 +87,7 @@ class ResultsWriter(object):
 
 
 def get_monitor_files(dir):
-    return glob(osp.join(dir, "*" + Monitor.EXT))
+    return glob(osp.join(dir, "*" + VecMonitor.EXT))
 
 def load_results(dir):
     import pandas
@@ -92,7 +95,7 @@ def load_results(dir):
         glob(osp.join(dir, "*monitor.json")) +
         glob(osp.join(dir, "*monitor.csv"))) # get both csv and (old) json files
     if not monitor_files:
-        raise LoadMonitorResultsError("no monitor files of the form *%s found in %s" % (Monitor.EXT, dir))
+        raise LoadMonitorResultsError("no monitor files of the form *%s found in %s" % (VecMonitor.EXT, dir))
     dfs = []
     headers = []
     for fname in monitor_files:
