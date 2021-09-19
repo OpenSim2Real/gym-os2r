@@ -19,8 +19,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-          'stable-baselines',
-          'pip3 install git+https://github.com/Baesian-Balancer/SIMP.git',
+          'numpy',
+          'SIMP@git+https://github.com/Baesian-Balancer/SIMP.git@v1.0',
           'gym-ignition',
     ],
     python_requires='>=3.8',
