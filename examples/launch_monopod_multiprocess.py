@@ -5,7 +5,7 @@ import numpy as np
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 from BB_gym_Envs.common.mp_env import make_mp_envs
-from BB_gym_Envs.monitor.monitor import VecMonitor
+from BB_gym_Envs.monitor.monitor import VecMonitor, VecMonitorPlot
 import multiprocessing
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -29,6 +29,7 @@ seed = 42
 
 envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
 # envs = VecMonitor(envs)
+envs = VecMonitorPlot(envs)
 envs.reset()
 # Enable the rendering
 # env.render('human')

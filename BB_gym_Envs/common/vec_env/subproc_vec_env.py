@@ -82,15 +82,15 @@ class SubprocVecEnv(VecEnv):
 				   for (work_remote, remote, env_fn) in zip(self.work_remotes, self.remotes, env_fns)]
 		for p in self.ps:
 			p.daemon = True  # if the main process crashes, we should not cause things to hang
-			# with clear_mpi_env_vars():
-			p.start()
+			clear_mpi_env_vars()
+			p.start	()
 		for remote in self.work_remotes:
 			remote.close()
 		self.remotes[0].send(('get_spaces_spec', None))
 		observation_space, action_space, self.spec = self.remotes[0].recv().x
 
 		VecEnv.__init__(self, nenvs, observation_space, action_space)
-		
+
 	def step_async(self, actions):
 		self._assert_not_closed()
 		actions = np.array_split(actions, self.nremotes)
