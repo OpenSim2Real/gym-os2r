@@ -22,6 +22,8 @@ def worker(remote, parent_remote, env_fn):
 			remote.send(env.render())
 		elif cmd == 'action_space':
 			remote.send(env.action_space)
+		elif cmd == 'observation_space':
+			remote.send(env.observation_space)
 		elif cmd == 'close':
 			remote.close()
 			break
@@ -30,10 +32,12 @@ def worker(remote, parent_remote, env_fn):
 
 class SubprocVecEnv(VecEnv):
 	def __init__(self, env_fns):
+		num_envs = len(env_fns)
+		assert num_envs > 0,
+
 		self.waiting = False
 		self.closed = False
-		no_of_envs = len(env_fns)
-		self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(no_of_envs)])
+		self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(num_envs)])
 		self.ps = []
 
 		for wrk, rem, fn in zip(self.work_remotes, self.remotes, env_fns):
@@ -45,9 +49,13 @@ class SubprocVecEnv(VecEnv):
 		for remote in self.work_remotes:
 			remote.close()
 
-		if no_of_envs:
-			self.remotes[0].send(('action_space', None))
-			self.action_space_single = self.remotes[0].recv()
+
+		self.remotes[0].send(('action_space', None))
+		self.action_space = self.remotes[0].recv()
+		self.remotes[0].send(('observation_space', None))
+		self.observation_space = self.remotes[0].recv()
+
+		 super().__init__(num_envs, venv)
 
 	def step_async(self, actions):
 		if self.waiting:

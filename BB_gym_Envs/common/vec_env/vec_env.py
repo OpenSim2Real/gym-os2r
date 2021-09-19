@@ -50,9 +50,10 @@ class VecEnv(ABC):
     be applied per-environment.
     """
 
-    @abstractmethod
-    def __init__(self):
-        pass
+    def __init__(self, num_envs, observation_space, action_space):
+        self.num_envs = num_envs
+        self.observation_space = observation_space
+        self.action_space = action_space
 
     @abstractmethod
     def reset(self):
@@ -100,3 +101,37 @@ class VecEnv(ABC):
         """
         self.step_async(actions)
         return self.step_wait()
+
+class VecEnvWrapper(VecEnv):
+    """
+    An environment wrapper that applies to an entire batch
+    of environments at once.
+    """
+
+    def __init__(self, venv, observation_space=None, action_space=None):
+        self.venv = venv
+        super().__init__(num_envs=venv.num_envs,
+                        observation_space=observation_space or venv.observation_space,
+                        action_space=action_space or venv.action_space)
+
+    def step_async(self, actions):
+        self.venv.step_async(actions)
+
+    @abstractmethod
+    def reset(self):
+        pass
+
+    @abstractmethod
+    def step_wait(self):
+        pass
+
+    def close(self):
+        return self.venv.close()
+
+    def render(self, mode='human'):
+        return self.venv.render(mode=mode)
+
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError("attempted to get missing private attribute '{}'".format(name))
+        return getattr(self.venv, name)
