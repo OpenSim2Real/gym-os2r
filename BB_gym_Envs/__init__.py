@@ -18,3 +18,13 @@ register(
             'physics_rate': 1000,
             'real_time_factor': max_float,
             })
+
+register(
+    id='Monopod-Gazebo-v2',
+    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=5000,
+    kwargs={'task_cls': tasks.monopod_v2_balancing.MonopodV2Balancing,
+            'agent_rate': 1000,
+            'physics_rate': 1000,
+            'real_time_factor': max_float,
+            })
