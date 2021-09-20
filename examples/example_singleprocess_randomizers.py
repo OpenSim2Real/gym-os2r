@@ -39,7 +39,7 @@ env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 
 # Initialize the seed
 env.seed(42)
-print(env)
+# print(env)
 
 beg_time = time.time()
 for epoch in range(1000):
