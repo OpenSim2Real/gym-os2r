@@ -6,7 +6,8 @@ from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing]
+SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
+tasks.monopod_v2_balancing.MonopodV2Balancing]
 
 
 class MonopodEnvNoRandomizations(gazebo_env_randomizer.GazeboEnvRandomizer):

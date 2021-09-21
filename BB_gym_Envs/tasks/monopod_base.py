@@ -6,6 +6,7 @@ from gym_ignition.base import task
 from scenario import core as scenario
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
+from abc import ABC, abstractmethod
 
 class MonopodBase(task.Task, abc.ABC):
 
@@ -19,13 +20,13 @@ class MonopodBase(task.Task, abc.ABC):
 
     Default parameters are used in the init method for torque, position/rotation limits, and
     reset angle. Any of these values can be redefined by passing in the corresponding kwargs.
-    
+
     For the user, this class makes no assumption on the goal of the tasks so the get_reward method
     is left intentionally blank. Also, because the default limits can be changed, the is_done
     method can be easily overwritten for further flexibility.
     """
-    
-    def __init__(self, 
+
+    def __init__(self,
                 agent_rate: float,
                 **kwargs):
 
@@ -37,13 +38,13 @@ class MonopodBase(task.Task, abc.ABC):
 
         # Space for resetting the task
         self.reset_space = None
-        
+
         # Max torque for upper/lower leg
         self.max_torque_upper_leg = 1
         self.max_torque_lower_leg = 1
 
         # Boom reset angle
-        self.reset_boom = 0.30 
+        self.reset_boom = 0.30
 
         # Variable limits
         # Need to set the max joint positions, velocities, torques
@@ -70,7 +71,7 @@ class MonopodBase(task.Task, abc.ABC):
         self._dby_limit = np.deg2rad(10 * 360)  # rad / s
 
         # Optionally overwrite the above using **kwargs
-        self.__dict__.update(kwargs)     
+        self.__dict__.update(kwargs)
 
     def create_spaces(self) -> Tuple[ActionSpace, ObservationSpace]:
 
@@ -117,8 +118,10 @@ class MonopodBase(task.Task, abc.ABC):
                                            dtype=np.float32)
 
         return action_space, observation_space
-    
+
     def set_action(self, action: Action) -> None:
+        if not self.action_space.contains(action):
+            raise RuntimeError("Action Space does not contain the provided action")
         # Get the force value
         torque_upper_leg, torque_lower_leg = action.tolist()
         # Set the force value
@@ -158,14 +161,6 @@ class MonopodBase(task.Task, abc.ABC):
         # Return the observation
         return observation
 
-    def get_reward(self) -> Reward:
-
-        """ 
-        Returns the reward. Implementation left to the user
-        """
-
-        raise NotImplementedError()
-    
     def is_done(self) -> bool:
 
         # Get the observation
@@ -175,6 +170,7 @@ class MonopodBase(task.Task, abc.ABC):
         done = not self.reset_space.contains(observation)
 
         return done
+
 
     def reset_task(self) -> None:
 
@@ -218,3 +214,28 @@ class MonopodBase(task.Task, abc.ABC):
 
         if not (ok_reset_pos and ok_reset_vel):
             raise RuntimeError("Failed to reset the monopod state")
+
+    def get_reward(self) -> Reward:
+
+        """
+        Returns the reward. Implementation left to the user
+        """
+        obs = self.get_observation()
+        return self.calculate_reward(obs)
+
+    def calculate_reward(self, obs: Observation) -> Reward:
+
+        """
+        Returns the reward. Implementation left to the user
+        """
+
+        raise NotImplementedError()
+
+    def do_rollout(self, obs: Observation) -> (Reward, bool):
+
+        """
+        Returns the reward and is_done given a state you provide. Implementation left to the user
+        """
+        reward = self.calculate_reward(obs)
+        done = not self.reset_space.contains(obs)
+        return reward, done
