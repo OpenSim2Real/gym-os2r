@@ -51,9 +51,3 @@ class MonopodEnvNoRandomizations(gazebo_env_randomizer.GazeboEnvRandomizer):
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
-
-        # time.sleep(4)
-        # if task.model_name is None:
-        #     #insert model initially
-        #     model = monopod.Monopod(world=task.world)
-        #     task.model_name = model.name()
