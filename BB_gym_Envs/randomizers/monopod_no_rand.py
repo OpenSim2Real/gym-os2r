@@ -4,6 +4,7 @@ from BB_gym_Envs import tasks
 from BB_gym_Envs.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
+from gym_ignition.utils.typing import Action, Reward, Observation
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
@@ -52,3 +53,6 @@ class MonopodEnvNoRandomizations(gazebo_env_randomizer.GazeboEnvRandomizer):
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
+
+    def do_rollout(self, state: Observation):
+        return self.env.unwrapped.task.do_rollout(state)
