@@ -13,9 +13,11 @@ from BB_gym_Envs.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
+from gym_ignition.utils.typing import Action, Reward, Observation
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing]
+SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
+tasks.monopod_v2_balancing.MonopodV2Balancing]
 
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
@@ -170,3 +172,6 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
         # Initialize the environment randomizer
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
             self, env=env, physics_randomizer=self)
+
+    def do_rollout(self, state: Observation):
+        return self.env.unwrapped.task.do_rollout(state)

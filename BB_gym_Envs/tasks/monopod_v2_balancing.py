@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 from BB_gym_Envs.tasks.monopod_base import MonopodBase
-from gym_ignition.utils.typing import Reward
+from gym_ignition.utils.typing import Action, Reward, Observation
 
 class MonopodV2Balancing(MonopodBase):
 
@@ -35,9 +35,9 @@ class MonopodV2Balancing(MonopodBase):
 
 
     # Rewarding for height and speed
-    def get_reward(self) -> Reward:
+    def calculate_reward(self, obs: Observation) -> Reward:
         # Get vertical boom angle and velocity.
-        _,_,_,_,_,_, bp, dbp,_,_ = self.get_observation()
+        _,_,_,_,_,_, bp, dbp,_,_ = obs
 
         return bp
         # # Discretize bp and dbp number spaces to adjust reward based on "bucket" from np.digitize
@@ -56,4 +56,3 @@ class MonopodV2Balancing(MonopodBase):
     # #     # Get vertical boom angle and velocity.
     # #     _,_,_,_,_,_, bp, dbp,_,_ = self.get_observation()
     # #     return 0.0 #float(height_reward)
-

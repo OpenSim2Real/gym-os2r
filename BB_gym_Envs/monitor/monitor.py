@@ -83,14 +83,6 @@ class VecMonitorPlot(VecEnvWrapper):
 		self.dplt.close_fig()
 		return self.venv.close()
 
-	def __del__(self):
-		self.close()
-		self.venv.__del__()
-
-	def __exit__(self):
-		self.close()
-		self.venv.__exit__()
-
 class VecMonitor(VecEnvWrapper):
 	EXT = "monitor.csv"
 	f = None

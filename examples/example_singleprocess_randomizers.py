@@ -4,6 +4,7 @@ import functools
 from gym_ignition.utils import logger
 from BB_gym_Envs import randomizers
 
+from gym_ignition.utils.typing import Action, Reward, Observation
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
@@ -33,13 +34,11 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 #     env=make_env, num_physics_rollouts=5)
 
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
-
 # Enable the rendering
 # env.render('human')
 
 # Initialize the seed
 env.seed(42)
-# print(env)
 
 beg_time = time.time()
 for epoch in range(1000):
@@ -60,6 +59,8 @@ for epoch in range(1000):
         # Render the environment.
         # It is not required to call this in the loop if physics is not randomized.
         # env.render('human')
+        if done:
+            print('rollout info: ', env.do_rollout(observation), ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward
@@ -70,7 +71,7 @@ for epoch in range(1000):
             msg += "\t%.6f" % value
         logger.debug(msg)
 
-    # print(f"Reward episode #{epoch}: {totalReward}")
+    print(f"Reward episode #{epoch}: {totalReward}")
 print('time for 1000 episodes: ' + str(time.time()-beg_time))
 env.close()
 time.sleep(5)
