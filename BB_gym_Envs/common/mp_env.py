@@ -14,7 +14,7 @@ def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
     import BB_gym_Envs
     return gym.make(env_id, **kwargs)
 
-def make_mp_envs(env_id, nenvs, seed, randomizer: SupportedRandomizers, start_idx = 0, in_series=1):
+def make_mp_envs(env_id, nenvs, seed, randomizer: SupportedRandomizers, start_idx = 0):
     """
     Utility function for multiprocessed env.
 
@@ -31,4 +31,4 @@ def make_mp_envs(env_id, nenvs, seed, randomizer: SupportedRandomizers, start_id
             env.seed(seed + rank)
             return env
         return fn
-    return SubprocVecEnv([make_env(i + start_idx) for i in range(nenvs)], in_series=in_series)
+    return SubprocVecEnv([make_env(i + start_idx) for i in range(nenvs)])

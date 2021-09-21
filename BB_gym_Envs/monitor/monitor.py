@@ -17,7 +17,7 @@ class VecMonitorPlot(VecEnvWrapper):
 	EXT = "monitor.png"
 	f = None
 
-	def __init__(self, venv, plot_path=None, keep_buf=0, episodes_for_refresh=1, save_every_num_epidoes=10):
+	def __init__(self, venv, plot_path=None, keep_buf=0, episodes_for_refresh=5, save_every_num_epidoes=10):
 		VecEnvWrapper.__init__(self, venv)
 		self.eprets = None
 		self.eplens = None
@@ -86,7 +86,7 @@ class VecMonitorPlot(VecEnvWrapper):
 	def __del__(self):
 		self.close()
 		self.venv.__del__()
-		
+
 	def __exit__(self):
 		self.close()
 		self.venv.__exit__()
