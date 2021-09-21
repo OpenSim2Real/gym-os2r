@@ -43,6 +43,7 @@ if __name__ == '__main__':
         envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
         # envs = VecMonitor(envs)
         envs = VecMonitorPlot(envs, plot_path=os.path.expanduser('~')+'/Desktop/plot')
+
         envs.reset()
         main_loop(envs)
     except:
