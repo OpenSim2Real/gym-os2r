@@ -17,6 +17,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
+            'simp_model_names': ['monopod_v1'],
             })
 
 register(
@@ -27,6 +28,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
+            'simp_model_names': ['monopod_v1'],
             })
 
 register(
@@ -37,6 +39,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
+            'simp_model_names': ['monopod_v1_fh'],
             })
 
 register(
@@ -47,4 +50,5 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
+            'simp_model_names': ['monopod_v1_fh_fby'],
             })

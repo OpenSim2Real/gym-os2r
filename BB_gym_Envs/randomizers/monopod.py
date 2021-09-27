@@ -14,12 +14,15 @@ from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
 from gym_ignition.utils.typing import Action, Reward, Observation
+import random
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
-tasks.monopod_v2_balancing.MonopodV2Balancing]
+tasks.monopod_v2_balancing.MonopodV2Balancing, \
+tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip, \
+tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw]
 
-simp_model_name = 'monopod_v1'
+
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                                randomizers.abc.PhysicsRandomizer,
@@ -40,7 +43,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # SDF randomizer
         self._sdf_randomizer = None
-
     # ===========================
     # PhysicsRandomizer interface
     # ===========================
@@ -105,6 +107,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             return self._sdf_randomizer
 
         # Get the model file
+        simp_model_name = random.choice(task.simp_model_names)
         urdf_model_file = monopod.get_model_file_from_name(simp_model_name)
 
         # Convert the URDF to SDF
@@ -149,6 +152,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
+        simp_model_name = random.choice(task.simp_model_names)
         model = monopod.Monopod(world=task.world, monopod_version=simp_model_name,
                                   model_file=monopod_model)
 

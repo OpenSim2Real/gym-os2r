@@ -10,7 +10,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-Gazebo-fh-fby-v1"
+env_id = "Monopod-Gazebo-v1"
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
@@ -33,7 +33,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, num_physics_rollouts=5)
 
-env = randomizers.monopod_fixed_hip_boom_yaw.MonopodEnvRandomizer(env=make_env)
+env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 # Enable the rendering
 env.render('human')
 
@@ -60,7 +60,7 @@ for epoch in range(1000):
         # It is not required to call this in the loop if physics is not randomized.
         # env.render('human')
         if done:
-            print('rollout info: ', env.get_state_info(observation), ' Real Reward: ', reward)
+            print('state info: ', env.get_state_info(observation), ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward

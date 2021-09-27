@@ -10,7 +10,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-Gazebo-v1"
+env_id = "Monopod-Gazebo-fh-fby-v1"
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:

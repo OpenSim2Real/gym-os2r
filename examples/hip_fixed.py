@@ -33,7 +33,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, num_physics_rollouts=5)
 
-env = randomizers.monopod_fixed_hip.MonopodEnvRandomizer(env=make_env)
+env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 # Enable the rendering
 env.render('human')
 
