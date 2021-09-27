@@ -23,9 +23,8 @@ def main_loop(envs):
         actions = np.stack([envs.action_space.sample() for _ in range(NUM_ENVS)])
         observation_arr, reward_arr, done_arr, _ = envs.step(actions)
         if any(done_arr):
-            print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
-            current_cumulative_rewards[done_arr] = 0
-        current_cumulative_rewards += reward_arr
+            print('rollout info: ', envs.get_state_info(observation_arr))
+            print(' Real Reward: ', reward_arr)
 
     envs.close()
     time.sleep(5)
@@ -40,9 +39,6 @@ if __name__ == '__main__':
         seed = 42
 
         fenvs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
-        # envs = VecMonitor(envs)
-        envs = VecMonitorPlot(fenvs, plot_path=os.path.expanduser('~')+'/Desktop/plot')
-
         envs.reset()
         main_loop(envs)
     except Exception as error:
