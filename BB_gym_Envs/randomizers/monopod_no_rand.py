@@ -11,7 +11,7 @@ SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
 tasks.monopod_v2_balancing.MonopodV2Balancing]
 
 
-class MonopodEnvNoRandomizations(gazebo_env_randomizer.GazeboEnvRandomizer):
+class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
     """
     Dummy environment randomizer for monopod tasks.
 

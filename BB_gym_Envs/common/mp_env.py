@@ -6,7 +6,7 @@ from typing import Union
 from BB_gym_Envs.common.vec_env import SubprocVecEnv
 from BB_gym_Envs import randomizers
 
-SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizations, randomizers.monopod.MonopodEnvRandomizer]
+SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer, randomizers.monopod.MonopodEnvRandomizer]
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:

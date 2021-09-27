@@ -16,10 +16,10 @@ from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformPara
 from gym_ignition.utils.typing import Action, Reward, Observation
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
-tasks.monopod_v2_balancing.MonopodV2Balancing]
+SupportedTasks = Union[tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip]
 
-simp_model_name = 'monopod_v1'
+
+simp_model_name = 'monopod_v1_fh'
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                                randomizers.abc.PhysicsRandomizer,

@@ -8,13 +8,14 @@ class Monopod(model_wrapper.ModelWrapper,
                model_with_file.ModelWithFile):
 
     def __init__(self,
-                 world: scenario.World,
+                 world: scenario.World, monopod_version: str,
                  position: List[float] = (0.0, 0.0, 0.0),
                  orientation: List[float] = (1.0, 0, 0, 0),
                  model_file: str = None):
 
         # Get a unique model name
-        model_name = get_unique_model_name(world, "monopod_v1")
+        self.monopod_version = monopod_version
+        model_name = get_unique_model_name(world, "monopod")
 
         # Initial pose
         initial_pose = scenario.Pose(position, orientation)
@@ -39,5 +40,8 @@ class Monopod(model_wrapper.ModelWrapper,
 
     @classmethod
     def get_model_file(cls) -> str:
+        return SIMP.get_model_file(self.monopod_version)
 
-        return SIMP.get_model_file("monopod_v1")
+
+def get_model_file_from_name(model_name: str) -> str:
+    return SIMP.get_model_file(model_name)
