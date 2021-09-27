@@ -27,7 +27,7 @@ class MonopodV1BalancingFixedHip(MonopodBase):
             def gaussian(x, mu, sig):
                 return 1./(np.sqrt(2.*np.pi)*sig)*np.exp(-((x - mu)/sig)*((x - mu)/sig)/2)
             # Get the observation
-            u,_,l,_,_,_, bp, dbp,_, dby = obs
+            u,_,l,_, bp, dbp,_, dby = obs
             # Guassian function distribution of reward around the desired angle of the boom.
             # The variance is determined by the current speed. More speed = more variance
             mu = self.reset_boom
@@ -102,3 +102,44 @@ class MonopodV1BalancingFixedHip(MonopodBase):
 
         # Return the observation
         return observation
+
+    def reset_task(self) -> None:
+
+        if self.model_name not in self.world.model_names():
+            raise RuntimeError("Monopod model not found in the world")
+
+        # Get the model
+        model = self.world.get_model(self.model_name)
+
+        # Control the cart in force mode
+        upper = model.get_joint("upper_leg_joint")
+        ok_mode = upper.set_control_mode(scenario.JointControlMode_force)
+        lower = model.get_joint("lower_leg_joint")
+        ok_mode = ok_mode and lower.set_control_mode(scenario.JointControlMode_force)
+
+        if not ok_mode:
+            raise RuntimeError("Failed to change the control mode of the Monopod")
+
+        # Create a new monopod state
+        #
+        du, dl, dbp, dby = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        u, l, bp, by = self.np_random.uniform(low=-0.005, high=0.005, size=(4,))
+        bp += self.reset_boom
+        u = self.np_random.uniform(low=-0.6, high=0.6)
+        l = -u
+
+        ok_reset_pos = model.to_gazebo().reset_joint_positions([u, l, bp, by],
+            ["upper_leg_joint",
+            "lower_leg_joint",
+            "planarizer_02_joint",
+            "planarizer_01_joint"
+            ])
+        ok_reset_vel = model.to_gazebo().reset_joint_velocities([du, dl, dbp, dby],
+            ["upper_leg_joint",
+            "lower_leg_joint",
+            "planarizer_02_joint",
+            "planarizer_01_joint"
+            ])
+
+        if not (ok_reset_pos and ok_reset_vel):
+            raise RuntimeError("Failed to reset the monopod state")

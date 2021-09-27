@@ -28,3 +28,23 @@ register(
             'physics_rate': 1000,
             'real_time_factor': max_float,
             })
+
+register(
+    id='Monopod-Gazebo-fh-v1',
+    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=5000,
+    kwargs={'task_cls': tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip,
+            'agent_rate': 1000,
+            'physics_rate': 1000,
+            'real_time_factor': max_float,
+            })
+
+register(
+    id='Monopod-Gazebo-fh-fby-v1',
+    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=5000,
+    kwargs={'task_cls': tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw,
+            'agent_rate': 1000,
+            'physics_rate': 1000,
+            'real_time_factor': max_float,
+            })

@@ -157,7 +157,6 @@ class MonopodBase(task.Task, abc.ABC):
 
         # Create the observation
         observation = Observation(np.array([u, du, l, dl, h, dh, bp, dbp, by, dby]))
-
         # Return the observation
         return observation
 
