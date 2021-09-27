@@ -173,5 +173,5 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
             self, env=env, physics_randomizer=self)
 
-    def do_rollout(self, state: Observation):
-        return self.env.unwrapped.task.do_rollout(state)
+    def get_state_info(self, state: Observation):
+        return self.env.unwrapped.task.get_state_info(state)

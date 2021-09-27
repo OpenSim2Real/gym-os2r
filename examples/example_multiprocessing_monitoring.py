@@ -25,7 +25,7 @@ def main_loop(envs):
         observation_arr, reward_arr, done_arr, _ = envs.step(actions)
 
         if any(done_arr):
-            print('rollout info: ', envs.do_rollout(observation_arr))
+            print('rollout info: ', envs.get_state_info(observation_arr))
             print(' Real Reward: ', reward_arr)
             # print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
             current_cumulative_rewards[done_arr] = 0
@@ -48,7 +48,8 @@ if __name__ == '__main__':
 
         envs.reset()
         main_loop(envs)
-    except:
+    except Exception as error:
+        print(error)
         try:
             try:
                 envs.close()

@@ -54,5 +54,5 @@ class MonopodEnvNoRandomizations(gazebo_env_randomizer.GazeboEnvRandomizer):
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
 
-    def do_rollout(self, state: Observation):
+    def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.do_rollout(state)
