@@ -3,15 +3,15 @@ import numpy as np
 import functools
 from typing import Union
 
-from BB_gym_Envs.common.vec_env import SubprocVecEnv
-from BB_gym_Envs import randomizers
+from gym_bb.common.vec_env import SubprocVecEnv
+from gym_bb import randomizers
 
 SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer, randomizers.monopod.MonopodEnvRandomizer]
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
     import gym
-    import BB_gym_Envs
+    import gym_bb
     return gym.make(env_id, **kwargs)
 
 def make_mp_envs(env_id, nenvs, seed, randomizer: SupportedRandomizers, start_idx = 0):

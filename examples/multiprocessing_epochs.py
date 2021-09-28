@@ -3,8 +3,8 @@ import time
 import functools
 import numpy as np
 from gym_ignition.utils import logger
-from BB_gym_Envs import randomizers
-from BB_gym_Envs.common.mp_env import make_mp_envs
+from gym_bb import randomizers
+from gym_bb.common.mp_env import make_mp_envs
 import multiprocessing
 import sys, os
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         seed = 42
         envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
         envs.reset()
-        main_loop(envs) 
+        main_loop(envs)
 
     except:
         try:

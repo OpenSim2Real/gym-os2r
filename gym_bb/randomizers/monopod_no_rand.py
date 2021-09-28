@@ -1,8 +1,8 @@
 import time
 from typing import Union
 import random
-from BB_gym_Envs import tasks
-from BB_gym_Envs.models import monopod
+from gym_bb import tasks
+from gym_bb.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.utils.typing import Action, Reward, Observation

@@ -2,7 +2,8 @@ import gym
 import time
 import functools
 from gym_ignition.utils import logger
-from BB_gym_Envs import randomizers
+from gym_bb import randomizers
+from gym_bb.common.mp_env import make_env_from_id
 
 from gym_ignition.utils.typing import Action, Reward, Observation
 # Set verbosity
@@ -11,12 +12,6 @@ logger.set_level(gym.logger.ERROR)
 
 # Available tasks
 env_id = "Monopod-Gazebo-fh-v1"
-
-
-def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
-    import gym
-    import BB_gym_Envs
-    return gym.make(env_id, **kwargs)
 
 
 # Create a partial function passing the environment id

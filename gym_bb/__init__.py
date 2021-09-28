@@ -7,7 +7,7 @@ from . import common
 from gym.envs.registration import register
 
 
-max_float = float(numpy.finfo(numpy.float32).max)
+max_float = float(numpy.finfo(numpy.float64).max)
 
 register(
     id='Monopod-Gazebo-v1',

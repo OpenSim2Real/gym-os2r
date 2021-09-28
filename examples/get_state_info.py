@@ -3,9 +3,8 @@ import time
 import functools
 import numpy as np
 from gym_ignition.utils import logger
-from BB_gym_Envs import randomizers
-from BB_gym_Envs.common.mp_env import make_mp_envs
-from BB_gym_Envs.monitor.monitor import VecMonitor, VecMonitorPlot
+from gym_bb import randomizers
+from gym_bb.common.mp_env import make_mp_envs
 import multiprocessing
 import os, sys
 
@@ -13,18 +12,20 @@ import os, sys
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
-def main_loop(envs):
+def main_loop(envs, num_envs):
+    NUMBER_TIME_STEPS = 10000
     # Enable the rendering
-    current_cumulative_rewards = np.zeros(NUM_ENVS)
+    envs.reset()
 
+    current_cumulative_rewards = np.zeros(num_envs)
     for step in range(NUMBER_TIME_STEPS):
 
         # Execute random actions for each env
-        actions = np.stack([envs.action_space.sample() for _ in range(NUM_ENVS)])
+        actions = np.stack([envs.action_space.sample() for _ in range(num_envs)])
         observation_arr, reward_arr, done_arr, _ = envs.step(actions)
         if any(done_arr):
-            print('rollout info: ', envs.get_state_info(observation_arr))
-            print(' Real Reward: ', reward_arr)
+            print('state info: ', envs.get_state_info(observation_arr))
+            print(' Real info: ', reward_arr, done_arr)
 
     envs.close()
     time.sleep(5)
@@ -35,12 +36,11 @@ if __name__ == '__main__':
         env_id = "Monopod-Gazebo-v2"
         NUM_ENVS = multiprocessing.cpu_count()
         NUM_ENVS = 1
-        NUMBER_TIME_STEPS = 10000
         seed = 42
 
-        fenvs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
-        envs.reset()
-        main_loop(envs)
+        envs = make_mp_envs(env_id, NUM_ENVS, seed, randomizers.monopod.MonopodEnvRandomizer)
+        main_loop(envs, NUM_ENVS)
+
     except Exception as error:
         print(error)
         try:

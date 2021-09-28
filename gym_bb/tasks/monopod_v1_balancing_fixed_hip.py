@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-from BB_gym_Envs.tasks.monopod_base import MonopodBase
+from .monopod_base import MonopodBase
 from typing import Tuple
 from scenario import core as scenario
 from gym_ignition.utils.typing import Action, Reward, Observation
@@ -41,7 +41,7 @@ class MonopodV1BalancingFixedHip(MonopodBase):
         # Create the action space
         action_space = gym.spaces.Box(low=np.array([-self.max_torque_upper_leg, -self.max_torque_lower_leg]),
                                       high=np.array([self.max_torque_upper_leg,  self.max_torque_lower_leg]),
-                                      dtype=np.float32)
+                                      dtype=np.float64)
         # Configure reset limits
         high = np.array([
             self._u_limit,
@@ -67,14 +67,14 @@ class MonopodV1BalancingFixedHip(MonopodBase):
         # Configure the reset space - this is used to check if it exists inside the reset space when deciding whether to reset.
         self.reset_space = gym.spaces.Box(low=low,
                                           high=high,
-                                          dtype=np.float32)
+                                          dtype=np.float64)
 
         # Configure the observation space
         obs_high = high.copy() * 1.2
         obs_low = low.copy() * 1.2
         observation_space = gym.spaces.Box(low=obs_low,
                                            high=obs_high,
-                                           dtype=np.float32)
+                                           dtype=np.float64)
 
         return action_space, observation_space
 
