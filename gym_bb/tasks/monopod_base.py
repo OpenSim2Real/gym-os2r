@@ -8,11 +8,13 @@ from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from abc import ABC, abstractmethod
 
+
 class MonopodBase(task.Task, abc.ABC):
 
     """
     Provides the base implementation for the MonopodV1 ignition gym environment. This
     class does the following:
+
         1. Defines some important parameters of the robot. Sets position and rotation limits.
            Because of this, is_done is true when these are exceeded.
         2. Implements the methods for env.step(): get_reward, get_observation, is_done
@@ -27,8 +29,8 @@ class MonopodBase(task.Task, abc.ABC):
     """
 
     def __init__(self,
-                agent_rate: float,
-                **kwargs):
+                 agent_rate: float,
+                 **kwargs):
 
         # Initialize the Task base class
         task.Task.__init__(self, agent_rate=agent_rate)
@@ -77,7 +79,8 @@ class MonopodBase(task.Task, abc.ABC):
 
         # Create the action space
         action_space = gym.spaces.Box(low=np.array([-self.max_torque_upper_leg, -self.max_torque_lower_leg]),
-                                      high=np.array([self.max_torque_upper_leg,  self.max_torque_lower_leg]),
+                                      high=np.array(
+                                          [self.max_torque_upper_leg,  self.max_torque_lower_leg]),
                                       dtype=np.float64)
         # Configure reset limits
         high = np.array([
@@ -121,7 +124,8 @@ class MonopodBase(task.Task, abc.ABC):
 
     def set_action(self, action: Action) -> None:
         if not self.action_space.contains(action):
-            raise RuntimeError("Action Space does not contain the provided action")
+            raise RuntimeError(
+                "Action Space does not contain the provided action")
         # Get the force value
         torque_upper_leg, torque_lower_leg = action.tolist()
         # Set the force value
@@ -129,10 +133,12 @@ class MonopodBase(task.Task, abc.ABC):
 
         # Set torque to value given in action
         if not model.get_joint("upper_leg_joint").set_generalized_force_target(torque_upper_leg):
-            raise RuntimeError("Failed to set the torque in the upper leg joint")
+            raise RuntimeError(
+                "Failed to set the torque in the upper leg joint")
 
         if not model.get_joint("lower_leg_joint").set_generalized_force_target(torque_lower_leg):
-            raise RuntimeError("Failed to set the torque in the lower leg joint")
+            raise RuntimeError(
+                "Failed to set the torque in the lower leg joint")
 
     def get_observation(self) -> Observation:
 
@@ -156,7 +162,8 @@ class MonopodBase(task.Task, abc.ABC):
             ])
 
         # Create the observation
-        observation = Observation(np.array([u, du, l, dl, h, dh, bp, dbp, by, dby]))
+        observation = Observation(
+            np.array([u, du, l, dl, h, dh, bp, dbp, by, dby]))
         # Return the observation
         return observation
 
@@ -170,7 +177,6 @@ class MonopodBase(task.Task, abc.ABC):
 
         return done
 
-
     def reset_task(self) -> None:
 
         if self.model_name not in self.world.model_names():
@@ -183,39 +189,42 @@ class MonopodBase(task.Task, abc.ABC):
         upper = model.get_joint("upper_leg_joint")
         ok_mode = upper.set_control_mode(scenario.JointControlMode_force)
         lower = model.get_joint("lower_leg_joint")
-        ok_mode = ok_mode and lower.set_control_mode(scenario.JointControlMode_force)
+        ok_mode = ok_mode and lower.set_control_mode(
+            scenario.JointControlMode_force)
 
         if not ok_mode:
-            raise RuntimeError("Failed to change the control mode of the Monopod")
+            raise RuntimeError(
+                "Failed to change the control mode of the Monopod")
 
         # Create a new monopod state
         #
-        du, dl, dh, dbp, dby = self.np_random.uniform(low=-0.05, high=0.05, size=(5,))
-        u, l, h, bp, by = self.np_random.uniform(low=-0.005, high=0.005, size=(5,))
+        du, dl, dh, dbp, dby = self.np_random.uniform(
+            low=-0.05, high=0.05, size=(5,))
+        u, l, h, bp, by = self.np_random.uniform(
+            low=-0.005, high=0.005, size=(5,))
         bp += self.reset_boom
         u = self.np_random.uniform(low=-0.6, high=0.6)
         l = -u
 
         ok_reset_pos = model.to_gazebo().reset_joint_positions([u, l, h, bp, by],
-            ["upper_leg_joint",
-            "lower_leg_joint",
-            "hip_joint",
-            "planarizer_02_joint",
-            "planarizer_01_joint"
-            ])
+                                                               ["upper_leg_joint",
+                                                                "lower_leg_joint",
+                                                                "hip_joint",
+                                                                "planarizer_02_joint",
+                                                                "planarizer_01_joint"
+                                                                ])
         ok_reset_vel = model.to_gazebo().reset_joint_velocities([du, dl, dh, dbp, dby],
-            ["upper_leg_joint",
-            "lower_leg_joint",
-            "hip_joint",
-            "planarizer_02_joint",
-            "planarizer_01_joint"
-            ])
+                                                                ["upper_leg_joint",
+                                                                 "lower_leg_joint",
+                                                                 "hip_joint",
+                                                                 "planarizer_02_joint",
+                                                                 "planarizer_01_joint"
+                                                                 ])
 
         if not (ok_reset_pos and ok_reset_vel):
             raise RuntimeError("Failed to reset the monopod state")
 
     def get_reward(self) -> Reward:
-
         """
         Returns the reward. Implementation left to the user
         """
@@ -223,15 +232,13 @@ class MonopodBase(task.Task, abc.ABC):
         return self.calculate_reward(obs)
 
     def calculate_reward(self, obs: Observation) -> Reward:
-
         """
         Returns the reward. Implementation left to the user
         """
 
         raise NotImplementedError()
 
-    def get_state_info(self, obs: Observation) -> (Reward, bool):
-
+    def get_state_info(self, obs: Observation) -> Tuple[Reward, bool]:
         """
         Returns the reward and is_done given a state you provide. Implementation left to the user
         """
