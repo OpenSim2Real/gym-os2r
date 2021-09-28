@@ -15,7 +15,6 @@ logger.set_level(gym.logger.ERROR)
 
 def main_loop(envs):
     # Enable the rendering
-    # env.render('human')
     current_cumulative_rewards = np.zeros(NUM_ENVS)
 
     for step in range(NUMBER_TIME_STEPS):
@@ -23,11 +22,8 @@ def main_loop(envs):
         # Execute random actions for each env
         actions = np.stack([envs.action_space.sample() for _ in range(NUM_ENVS)])
         observation_arr, reward_arr, done_arr, _ = envs.step(actions)
-
         if any(done_arr):
-            print('rollout info: ', envs.do_rollout(observation_arr))
-            print(' Real Reward: ', reward_arr)
-            # print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
+            print(f"Step: {step}, {done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
             current_cumulative_rewards[done_arr] = 0
         current_cumulative_rewards += reward_arr
 
@@ -37,8 +33,9 @@ def main_loop(envs):
 if __name__ == '__main__':
     try:
         # Available tasks
-        env_id = "Monopod-Gazebo-v1"
+        env_id = "Monopod-Gazebo-v2"
         NUM_ENVS = multiprocessing.cpu_count()
+        NUM_ENVS = 1
         NUMBER_TIME_STEPS = 10000
         seed = 42
 
@@ -48,7 +45,8 @@ if __name__ == '__main__':
 
         envs.reset()
         main_loop(envs)
-    except:
+    except Exception as error:
+        print(error)
         try:
             try:
                 envs.close()

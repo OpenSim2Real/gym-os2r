@@ -157,7 +157,6 @@ class MonopodBase(task.Task, abc.ABC):
 
         # Create the observation
         observation = Observation(np.array([u, du, l, dl, h, dh, bp, dbp, by, dby]))
-
         # Return the observation
         return observation
 
@@ -231,7 +230,7 @@ class MonopodBase(task.Task, abc.ABC):
 
         raise NotImplementedError()
 
-    def do_rollout(self, obs: Observation) -> (Reward, bool):
+    def get_state_info(self, obs: Observation) -> (Reward, bool):
 
         """
         Returns the reward and is_done given a state you provide. Implementation left to the user

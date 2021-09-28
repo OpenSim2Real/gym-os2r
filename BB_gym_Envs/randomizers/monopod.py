@@ -14,10 +14,14 @@ from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
 from gym_ignition.utils.typing import Action, Reward, Observation
+import random
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
-tasks.monopod_v2_balancing.MonopodV2Balancing]
+tasks.monopod_v2_balancing.MonopodV2Balancing, \
+tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip, \
+tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw]
+
 
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
@@ -39,7 +43,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # SDF randomizer
         self._sdf_randomizer = None
-
     # ===========================
     # PhysicsRandomizer interface
     # ===========================
@@ -104,7 +107,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             return self._sdf_randomizer
 
         # Get the model file
-        urdf_model_file = monopod.Monopod.get_model_file()
+        simp_model_name = random.choice(task.simp_model_names)
+        urdf_model_file = monopod.get_model_file_from_name(simp_model_name)
 
         # Convert the URDF to SDF
         sdf_model_string = scenario.urdffile_to_sdfstring(urdf_model_file)
@@ -148,7 +152,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
-        model = monopod.Monopod(world=task.world,
+        simp_model_name = random.choice(task.simp_model_names)
+        model = monopod.Monopod(world=task.world, monopod_version=simp_model_name,
                                   model_file=monopod_model)
 
         # Store the model name in the task
@@ -173,5 +178,5 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
             self, env=env, physics_randomizer=self)
 
-    def do_rollout(self, state: Observation):
-        return self.env.unwrapped.task.do_rollout(state)
+    def get_state_info(self, state: Observation):
+        return self.env.unwrapped.task.get_state_info(state)

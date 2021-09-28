@@ -20,8 +20,8 @@ def _worker(remote, parent_remote, env_fn_wrapper):
                     info['terminal_observation'] = observation
                     observation = env.reset()
                 remote.send((observation, reward, done, info))
-            elif cmd == 'do_rollout':
-                reward, done = env.do_rollout(data)
+            elif cmd == 'get_state_info':
+                reward, done = env.get_state_info(data)
                 remote.send((reward, done))
             elif cmd == 'seed':
                 remote.send(env.seed(data))
@@ -116,25 +116,25 @@ class SubprocVecEnv(VecEnv):
         obs, rews, dones, infos = zip(*results)
         return _flatten_obs(obs, self.observation_space), np.stack(rews), np.stack(dones), infos
 
-    def do_rollout_async(self, states):
+    def get_state_info_async(self, states):
         for remote, state in zip(self.remotes, states):
-            remote.send(('do_rollout', state))
+            remote.send(('get_state_info', state))
         self.waiting = True
 
-    def do_rollout_wait(self):
+    def get_state_info_wait(self):
         results = [remote.recv() for remote in self.remotes]
         self.waiting = False
         rews, dones = zip(*results)
         return np.stack(rews), np.stack(dones)
 
-    def do_rollout(self, states):
+    def get_state_info(self, states):
         """
         get reward and done of the environments in a given state
         :param actions: ([int] or [float]) the state
         :return: ([float], [bool]) reward, done
         """
-        self.do_rollout_async(states)
-        return self.do_rollout_wait()
+        self.get_state_info_async(states)
+        return self.get_state_info_wait()
 
     def seed(self, seed=None):
         for idx, remote in enumerate(self.remotes):
