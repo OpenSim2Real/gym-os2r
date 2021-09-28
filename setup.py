@@ -21,8 +21,7 @@ setuptools.setup(
     install_requires=[
           'numpy',
           'SIMP@git+https://github.com/Baesian-Balancer/SIMP.git@v1.1',
-          'gym-ignition',
-          'multiprocessing',
+          'gym-ignition'
     ],
     python_requires='>=3.8',
 )
