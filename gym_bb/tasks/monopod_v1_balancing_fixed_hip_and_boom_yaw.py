@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-from BB_gym_Envs.tasks.monopod_base import MonopodBase
+from .monopod_base import MonopodBase
 from typing import Tuple
 from scenario import core as scenario
 from gym_ignition.utils.typing import Action, Reward, Observation

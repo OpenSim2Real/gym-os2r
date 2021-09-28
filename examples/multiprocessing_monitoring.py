@@ -3,9 +3,9 @@ import time
 import functools
 import numpy as np
 from gym_ignition.utils import logger
-from BB_gym_Envs import randomizers
-from BB_gym_Envs.common.mp_env import make_mp_envs
-from BB_gym_Envs.monitor.monitor import VecMonitor, VecMonitorPlot
+from gym_bb import randomizers
+from gym_bb.common.mp_env import make_mp_envs
+from gym_bb.monitor.monitor import VecMonitor, VecMonitorPlot
 import multiprocessing
 import os, sys
 

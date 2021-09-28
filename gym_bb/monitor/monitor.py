@@ -4,7 +4,7 @@ import csv
 import os.path as osp
 import json
 
-from BB_gym_Envs.common.vec_env.vec_env import VecEnvWrapper
+from gym_bb.common.vec_env.vec_env import VecEnvWrapper
 import numpy as np
 import time
 from collections import deque
