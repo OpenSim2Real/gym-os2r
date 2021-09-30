@@ -14,7 +14,6 @@ logger.set_level(gym.logger.ERROR)
 env_id = "Monopod-Gazebo-v1"
 
 
-
 # Create a partial function passing the environment id
 make_env = functools.partial(make_env_from_id, env_id=env_id)
 
@@ -56,7 +55,8 @@ for epoch in range(1000):
         # It is not required to call this in the loop if physics is not randomized.
         # env.render('human')
         if done:
-            print('state info: ', env.get_state_info(observation), ' Real Reward: ', reward)
+            print('state info: ', env.get_state_info(
+                observation), ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward

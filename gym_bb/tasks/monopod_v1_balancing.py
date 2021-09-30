@@ -6,6 +6,7 @@ from scenario import core as scenario
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 
+
 class MonopodV1Balancing(MonopodBase):
 
     def __init__(self,
@@ -25,7 +26,7 @@ class MonopodV1Balancing(MonopodBase):
             def gaussian(x, mu, sig):
                 return 1./(np.sqrt(2.*np.pi)*sig)*np.exp(-((x - mu)/sig)*((x - mu)/sig)/2)
             # Get the observation
-            u,_,l,_,_,_, bp, dbp,_, dby = obs
+            u, _, l, _, _, _, bp, dbp, _, dby = obs
             # Guassian function distribution of reward around the desired angle of the boom.
             # The variance is determined by the current speed. More speed = more variance
             mu = self.reset_boom

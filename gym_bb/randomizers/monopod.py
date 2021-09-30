@@ -10,7 +10,7 @@ from gym_ignition.utils import misc
 from gym_ignition import randomizers
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
-from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
+from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams, GaussianParams
 from gym_ignition.utils.typing import Action, Reward, Observation
 
 from gym_bb import tasks
@@ -18,17 +18,16 @@ from gym_bb.models import monopod
 import random
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing, \
-tasks.monopod_v2_balancing.MonopodV2Balancing, \
-tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip, \
-tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw]
-
+SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing,
+                       tasks.monopod_v2_balancing.MonopodV2Balancing,
+                       tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip,
+                       tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw]
 
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
-                               randomizers.abc.PhysicsRandomizer,
-                               randomizers.abc.ModelDescriptionRandomizer,
-                               abc.ABC):
+                              randomizers.abc.PhysicsRandomizer,
+                              randomizers.abc.ModelDescriptionRandomizer,
+                              abc.ABC):
     """
     Mixin that collects the implementation of task, model and physics randomizations for
     monopod environments.
@@ -118,18 +117,85 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         sdf_model = utils.misc.string_to_file(sdf_model_string)
 
         # Create and initialize the randomizer
-        sdf_randomizer = randomizers.model.sdf.SDFRandomizer(sdf_model=sdf_model)
+        sdf_randomizer = randomizers.model.sdf.SDFRandomizer(
+            sdf_model=sdf_model)
 
         # Use the RNG of the task
         sdf_randomizer.rng = task.np_random
+        # # Add the missing friction/ode/mu element. We assume that friction exists.
+        # frictions = randomizer.find_xpath("*/link/collision/surface/friction")
+        #
+        # for friction in frictions:
+        #
+        #     # Create parent 'ode' first
+        #     if friction.find("ode") is None:
+        #         etree.SubElement(friction, "ode")
+        #
+        #     # Create child 'mu' after
+        #     ode = friction.find("ode")
+        #     if ode.find("mu") is None:
+        #         etree.SubElement(ode, "mu")
+        #
+        #     # Assign a dummy value to mu
+        #     mu = ode.find("mu")
+        #     mu.text = str(0)
+        randomization_config = {
+            "*/link/inertial/mass": {
+                # mass + U(-0.5, 0.5)
+                'method': Method.Coefficient,
+                'distribution': Distribution.Uniform,
+                'params': UniformParams(low=0.8, high=1.2),
+                'ignore_zeros': True,
+                'force_positive': True,
+            },
+            "*/joint/axis/dynamics/friction": {
+                # friction in [0, 5]
+                'method': Method.Absolute,
+                'distribution': Distribution.Uniform,
+                'params': UniformParams(low=0.1, high=0.3),
+                'ignore_zeros': False,  # We initialized the value as 0
+                'force_positive': True,
+            },
+            "*/joint/axis/dynamics/damping": {
+                # damping (= 3.0) * [0.8, 1.2]
+                'method': Method.Coefficient,
+                'distribution': Distribution.Uniform,
+                'params': UniformParams(low=0.8, high=1.2),
+                'ignore_zeros': True,
+                'force_positive': True,
+            },
+            # "*/link/inertial/inertia/ixx": {
+            #     # inertia * N(1, 0.2)
+            #     'method': Method.Coefficient,
+            #     'distribution': Distribution.Gaussian,
+            #     'params': GaussianParams(mean=1.0, variance=0.2),
+            #     'ignore_zeros': True,
+            #     'force_positive': True,
+            # },
+            # "*/link/inertial/inertia/iyy": {
+            #     'method': Method.Coefficient,
+            #     'distribution': Distribution.Gaussian,
+            #     'params': GaussianParams(mean=1.0, variance=0.2),
+            #     'ignore_zeros': True,
+            #     'force_positive': True,
+            # },
+            # "*/link/inertial/inertia/izz": {
+            #     'method': Method.Coefficient,
+            #     'distribution': Distribution.Gaussian,
+            #     'params': GaussianParams(mean=1.0, variance=0.2),
+            #     'ignore_zeros': True,
+            #     'force_positive': True,
+            # },
+        }
 
-        # Randomize the mass of all links
-        sdf_randomizer.new_randomization() \
-            .at_xpath("*/link/inertial/mass") \
-            .method(Method.Additive) \
-            .sampled_from(Distribution.Uniform, UniformParams(low=-0.2, high=0.2)) \
-            .force_positive() \
-            .add()
+        for xpath, config in randomization_config.items():
+            sdf_randomizer.new_randomization() \
+                .at_xpath(xpath) \
+                .method(config["method"]) \
+                .sampled_from(config["distribution"], config['params']) \
+                .force_positive(config["distribution"]) \
+                .ignore_zeros(config["ignore_zeros"]) \
+                .add()
 
         # Process the randomization
         sdf_randomizer.process_data()
@@ -146,7 +212,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         if task.model_name is not None and task.model_name in task.world.model_names():
 
             if not task.world.to_gazebo().remove_model(task.model_name):
-                raise RuntimeError("Failed to remove the monopod from the world")
+                raise RuntimeError(
+                    "Failed to remove the monopod from the world")
 
     @staticmethod
     def _populate_world(task: SupportedTasks, monopod_model: str = None) -> None:
@@ -155,14 +222,14 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # It will create a unique name if there are clashing.
         simp_model_name = random.choice(task.simp_model_names)
         model = monopod.Monopod(world=task.world, monopod_version=simp_model_name,
-                                  model_file=monopod_model)
+                                model_file=monopod_model)
 
         # Store the model name in the task
         task.model_name = model.name()
 
 
 class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
-                            MonopodRandomizersMixin):
+                           MonopodRandomizersMixin):
     """
     Concrete implementation of monopod environments randomization.
     """

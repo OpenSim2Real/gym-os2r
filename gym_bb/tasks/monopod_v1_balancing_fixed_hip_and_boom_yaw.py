@@ -7,7 +7,6 @@ from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 
 
-
 class MonopodV1BalancingFixedHipAndBoomYaw(MonopodBase):
 
     def __init__(self,
@@ -27,7 +26,7 @@ class MonopodV1BalancingFixedHipAndBoomYaw(MonopodBase):
             def gaussian(x, mu, sig):
                 return 1./(np.sqrt(2.*np.pi)*sig)*np.exp(-((x - mu)/sig)*((x - mu)/sig)/2)
             # Get the observation
-            u,_,l,_, bp, dbp, = obs
+            u, _, l, _, bp, dbp, = obs
             # Guassian function distribution of reward around the desired angle of the boom.
             # The variance is determined by the current speed. More speed = more variance
             mu = self.reset_boom
@@ -40,7 +39,8 @@ class MonopodV1BalancingFixedHipAndBoomYaw(MonopodBase):
 
         # Create the action space
         action_space = gym.spaces.Box(low=np.array([-self.max_torque_upper_leg, -self.max_torque_lower_leg]),
-                                      high=np.array([self.max_torque_upper_leg,  self.max_torque_lower_leg]),
+                                      high=np.array(
+                                          [self.max_torque_upper_leg,  self.max_torque_lower_leg]),
                                       dtype=np.float64)
         # Configure reset limits
         high = np.array([
@@ -60,7 +60,8 @@ class MonopodV1BalancingFixedHipAndBoomYaw(MonopodBase):
             self._dbp_limit,
         ])
 
-        # Configure the reset space - this is used to check if it exists inside the reset space when deciding whether to reset.
+        # Configure the reset space - this is used to check if it exists inside
+        # the reset space when deciding whether to reset.
         self.reset_space = gym.spaces.Box(low=low,
                                           high=high,
                                           dtype=np.float64)
@@ -109,10 +110,12 @@ class MonopodV1BalancingFixedHipAndBoomYaw(MonopodBase):
         upper = model.get_joint("upper_leg_joint")
         ok_mode = upper.set_control_mode(scenario.JointControlMode_force)
         lower = model.get_joint("lower_leg_joint")
-        ok_mode = ok_mode and lower.set_control_mode(scenario.JointControlMode_force)
+        ok_mode = ok_mode and lower.set_control_mode(
+            scenario.JointControlMode_force)
 
         if not ok_mode:
-            raise RuntimeError("Failed to change the control mode of the Monopod")
+            raise RuntimeError(
+                "Failed to change the control mode of the Monopod")
 
         # Create a new monopod state
         #
@@ -123,15 +126,15 @@ class MonopodV1BalancingFixedHipAndBoomYaw(MonopodBase):
         l = -u
 
         ok_reset_pos = model.to_gazebo().reset_joint_positions([u, l, bp],
-            ["upper_leg_joint",
-            "lower_leg_joint",
-            "planarizer_02_joint"
-            ])
+                                                               ["upper_leg_joint",
+                                                                "lower_leg_joint",
+                                                                "planarizer_02_joint"
+                                                                ])
         ok_reset_vel = model.to_gazebo().reset_joint_velocities([du, dl, dbp],
-            ["upper_leg_joint",
-            "lower_leg_joint",
-            "planarizer_02_joint"
-            ])
+                                                                ["upper_leg_joint",
+                                                                 "lower_leg_joint",
+                                                                 "planarizer_02_joint"
+                                                                 ])
 
         if not (ok_reset_pos and ok_reset_vel):
             raise RuntimeError("Failed to reset the monopod state")
