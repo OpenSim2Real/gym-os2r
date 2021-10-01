@@ -1,10 +1,10 @@
 import gym
 import numpy as np
-from .monopod_base import MonopodBase
+from .base.monopod_builder import MonopodBuilder
 from gym_ignition.utils.typing import Action, Reward, Observation
 
 
-class MonopodV2Balancing(MonopodBase):
+class MonopodBalancing(MonopodBuilder):
 
     def __init__(self,
                  agent_rate: float,

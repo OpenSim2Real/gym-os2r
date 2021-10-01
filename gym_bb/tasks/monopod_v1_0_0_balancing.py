@@ -1,13 +1,9 @@
-import gym
 import numpy as np
-from .monopod_base import MonopodBase
-from typing import Tuple
-from scenario import core as scenario
-from gym_ignition.utils.typing import Action, Reward, Observation
-from gym_ignition.utils.typing import ActionSpace, ObservationSpace
+from .base.monopod_builder import MonopodBuilder
+from gym_ignition.utils.typing import Reward, Observation
 
 
-class MonopodV1Balancing(MonopodBase):
+class MonopodBalancing(MonopodBuilder):
 
     def __init__(self,
                  agent_rate: float,
@@ -15,7 +11,6 @@ class MonopodV1Balancing(MonopodBase):
                  **kwargs):
 
         super().__init__(agent_rate, **kwargs)
-        self._reward_balance_position = reward_balance_position
 
     def calculate_reward(self, obs: Observation) -> Reward:
 

@@ -7,13 +7,13 @@ from . import common
 from gym.envs.registration import register
 
 
-max_float = float(numpy.finfo(numpy.float64).max)
+max_float = float(numpy.finfo(numpy.float32).max)
 
 register(
-    id='Monopod-Gazebo-v1',
+    id='Monopod-v1.0.0',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
     max_episode_steps=5000,
-    kwargs={'task_cls': tasks.monopod_v1_balancing.MonopodV1Balancing,
+    kwargs={'task_cls': tasks.monopod_v1_0_0_balancing.MonopodBalancing,
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
@@ -21,10 +21,10 @@ register(
             })
 
 register(
-    id='Monopod-Gazebo-v2',
+    id='Monopod-v1.0.1',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
     max_episode_steps=5000,
-    kwargs={'task_cls': tasks.monopod_v2_balancing.MonopodV2Balancing,
+    kwargs={'task_cls': tasks.monopod_v1_0_1_balancing.MonopodBalancing,
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
@@ -32,10 +32,20 @@ register(
             })
 
 register(
-    id='Monopod-Gazebo-fh-v1',
+    id='Monopod-fh-v1.0.0',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
     max_episode_steps=5000,
-    kwargs={'task_cls': tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip,
+    kwargs={'task_cls': tasks.monopod_v1_0_0_balancing.MonopodBalancing,
+            'agent_rate': 1000,
+            'physics_rate': 1000,
+            'real_time_factor': max_float,
+            'simp_model_names': ['monopod_v1_fh'],
+            })
+register(
+    id='Monopod-fh-v1.0.1',
+    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=5000,
+    kwargs={'task_cls': tasks.monopod_v1_0_1_balancing.MonopodBalancing,
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
@@ -43,10 +53,21 @@ register(
             })
 
 register(
-    id='Monopod-Gazebo-fh-fby-v1',
+    id='Monopod-fh-fby-v1.0.0',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
     max_episode_steps=5000,
-    kwargs={'task_cls': tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw,
+    kwargs={'task_cls': tasks.monopod_v1_0_0_balancing.MonopodBalancing,
+            'agent_rate': 1000,
+            'physics_rate': 1000,
+            'real_time_factor': max_float,
+            'simp_model_names': ['monopod_v1_fh_fby'],
+            })
+
+register(
+    id='Monopod-fh-fby-v1.0.1',
+    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=5000,
+    kwargs={'task_cls': tasks.monopod_v1_0_1_balancing.MonopodBalancing,
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
