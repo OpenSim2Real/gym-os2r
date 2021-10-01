@@ -185,7 +185,7 @@ class MonopodBase(task.Task, abc.ABC):
         # Get the model
         model = self.world.get_model(self.model_name)
 
-        # Control the cart in force mode
+        # Control the monopod in force mode
         upper = model.get_joint("upper_leg_joint")
         ok_mode = upper.set_control_mode(scenario.JointControlMode_force)
         lower = model.get_joint("lower_leg_joint")
@@ -226,21 +226,22 @@ class MonopodBase(task.Task, abc.ABC):
 
     def get_reward(self) -> Reward:
         """
-        Returns the reward. Implementation left to the user
+        Returns the reward Calculated in calculate_reward
         """
         obs = self.get_observation()
         return self.calculate_reward(obs)
 
     def calculate_reward(self, obs: Observation) -> Reward:
         """
-        Returns the reward. Implementation left to the user
+        Calculates the reward given observation.
+        Implementation left to the user
         """
 
         raise NotImplementedError()
 
     def get_state_info(self, obs: Observation) -> Tuple[Reward, bool]:
         """
-        Returns the reward and is_done given a state you provide. Implementation left to the user
+        Returns the reward and is_done given a state you provide.
         """
         reward = self.calculate_reward(obs)
         done = not self.reset_space.contains(obs)

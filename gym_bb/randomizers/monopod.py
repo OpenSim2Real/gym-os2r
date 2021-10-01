@@ -122,11 +122,11 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Use the RNG of the task
         sdf_randomizer.rng = task.np_random
+
         # # Add the missing friction/ode/mu element. We assume that friction exists.
         # frictions = randomizer.find_xpath("*/link/collision/surface/friction")
         #
         # for friction in frictions:
-        #
         #     # Create parent 'ode' first
         #     if friction.find("ode") is None:
         #         etree.SubElement(friction, "ode")
@@ -139,6 +139,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         #     # Assign a dummy value to mu
         #     mu = ode.find("mu")
         #     mu.text = str(0)
+
         randomization_config = {
             "*/link/inertial/mass": {
                 # mass + U(-0.5, 0.5)
