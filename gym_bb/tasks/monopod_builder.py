@@ -37,7 +37,7 @@ class MonopodBuilder(MonopodBase):
             'Standing_v1': calculate_balancing_rewards.standing_v1,
             'Balancing_v1': calculate_balancing_rewards.balancing_v1,
         }
-        return reward_setup[self.reward_calculation_type](obs)
+        return reward_setup[self.reward_type](obs)
 
     def reset_task(self) -> None:
         if self.model_name not in self.world.model_names():
