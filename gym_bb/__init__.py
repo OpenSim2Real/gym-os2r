@@ -4,6 +4,10 @@ from . import models
 from . import randomizers
 from . import monitor
 from . import common
+from . import utils
+
+__all__ = ['tasks', 'models', 'randomizers', 'monitor', 'common', 'utils']
+
 from gym.envs.registration import register
 
 

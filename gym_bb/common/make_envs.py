@@ -1,12 +1,12 @@
 import gym
-import numpy as np
 import functools
 from typing import Union
 
 from gym_bb.common.vec_env import SubprocVecEnv
 from gym_bb import randomizers
 
-SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer, randomizers.monopod.MonopodEnvRandomizer]
+SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer,
+                             randomizers.monopod.MonopodEnvRandomizer]
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
@@ -14,7 +14,12 @@ def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
     import gym_bb
     return gym.make(env_id, **kwargs)
 
-def make_mp_envs(env_id, nenvs, seed, randomizer: SupportedRandomizers, start_idx = 0):
+
+def make_mp_envs(env_id,
+                 nenvs,
+                 seed,
+                 randomizer: SupportedRandomizers,
+                 start_idx=0):
     """
     Utility function for multiprocessed env.
 
