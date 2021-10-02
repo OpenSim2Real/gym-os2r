@@ -1,6 +1,5 @@
 import numpy as np
 from .monopod_base import MonopodBase
-from scenario import core as scenario
 from .rewards import calculate_balancing_rewards
 from gym_ignition.utils.typing import Reward, Observation
 
@@ -38,33 +37,6 @@ class MonopodBuilder(MonopodBase):
             'Balancing_v1': calculate_balancing_rewards.balancing_v1,
         }
         return reward_setup[self.reward_type](obs)
-
-    def reset_task(self) -> None:
-        if self.model_name not in self.world.model_names():
-            raise RuntimeError("Monopod model not found in the world")
-
-        # Get the model
-        model = self.world.get_model(self.model_name)
-
-        # Control the monopod in force mode
-        for joint in self.action_names:
-            upper = model.get_joint(joint)
-            ok = upper.set_control_mode(scenario.JointControlMode_force)
-            if not ok:
-                raise RuntimeError(
-                    "Failed to change the control mode of the Monopod")
-
-        # TODO: Make the reset position adjust to the Reward method.
-        pos_reset = vel_reset = [0]*len(self.joint_names)
-        pos_reset[self.joint_names.index(
-            'planarizer_02_joint')] = self.reset_boom
-
-        g_model = model.to_gazebo()
-        ok_pos = g_model.reset_joint_positions(pos_reset, self.joint_names)
-        ok_vel = g_model.reset_joint_velocities(vel_reset, self.joint_names)
-
-        if not (ok_pos and ok_vel):
-            raise RuntimeError("Failed to reset the monopod state")
 
     def _create_original(self):
         self.spaces_definition['observation'] = {

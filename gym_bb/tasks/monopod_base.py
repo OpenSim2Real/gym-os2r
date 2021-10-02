@@ -5,6 +5,7 @@ from typing import Tuple
 from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
+from scenario import core as scenario
 
 
 class MonopodBase(task.Task, abc.ABC):
@@ -117,10 +118,22 @@ class MonopodBase(task.Task, abc.ABC):
 
     def reset_task(self) -> None:
         """
-        Reset the task to the beginning position.
-        Implementation left to the user.
+        Reset_task sets the scenario backend to force controller
+        For ignition simulation positions are reset in randomizer.
         """
-        raise NotImplementedError()
+        if self.model_name not in self.world.model_names():
+            raise RuntimeError("Monopod model not found in the world")
+
+        # Get the model
+        model = self.world.get_model(self.model_name)
+
+        # Control the monopod in force mode
+        for joint in self.action_names:
+            upper = model.get_joint(joint)
+            ok = upper.set_control_mode(scenario.JointControlMode_force)
+            if not ok:
+                raise RuntimeError(
+                    "Failed to change the control mode of the Monopod")
 
     def get_reward(self) -> Reward:
         """

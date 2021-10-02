@@ -79,6 +79,21 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Insert a new model in the world
         self._populate_world(task=task, monopod_model=random_model)
 
+        # TODO: Make the reset position adjust to the Reward method.
+        # Get the model
+        model = task.world.get_model(task.model_name)
+
+        pos_reset = vel_reset = [0]*len(task.joint_names)
+        pos_reset[task.joint_names.index(
+            'planarizer_02_joint')] = task.reset_boom
+
+        g_model = model.to_gazebo()
+        ok_pos = g_model.reset_joint_positions(pos_reset, task.joint_names)
+        ok_vel = g_model.reset_joint_velocities(vel_reset, task.joint_names)
+
+        if not (ok_pos and ok_vel):
+            raise RuntimeError("Failed to reset the monopod state")
+
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
