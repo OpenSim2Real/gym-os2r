@@ -10,18 +10,15 @@ from gym_ignition.utils import misc
 from gym_ignition import randomizers
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
-from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams, GaussianParams
-from gym_ignition.utils.typing import Action, Reward, Observation
+from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
+from gym_ignition.utils.typing import Observation
 
 from gym_bb import tasks
 from gym_bb.models import monopod
 import random
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing,
-                       tasks.monopod_v2_balancing.MonopodV2Balancing,
-                       tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip,
-                       tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw]
+SupportedTasks = Union[tasks.monopod_builder.MonopodBuilder]
 
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
@@ -29,8 +26,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                               randomizers.abc.ModelDescriptionRandomizer,
                               abc.ABC):
     """
-    Mixin that collects the implementation of task, model and physics randomizations for
-    monopod environments.
+    Mixin that collects the implementation of task, model and physics
+    randomizations for monopod environments.
     """
 
     def __init__(self, randomize_physics_after_rollouts: int = 0):
@@ -107,7 +104,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             return self._sdf_randomizer
 
         # Get the model file
-        simp_model_name = random.choice(task.simp_model_names)
+        simp_model_name = random.choice(task.supported_models)
         urdf_model_file = monopod.get_model_file_from_name(simp_model_name)
 
         # Convert the URDF to SDF
@@ -221,7 +218,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
-        simp_model_name = random.choice(task.simp_model_names)
+        simp_model_name = random.choice(task.supported_models)
         model = monopod.Monopod(world=task.world, monopod_version=simp_model_name,
                                 model_file=monopod_model)
 
@@ -237,7 +234,8 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
     def __init__(self,
                  env: MakeEnvCallable,
-                 num_physics_rollouts: int = 0):
+                 num_physics_rollouts: int = 0,
+                 **kwargs):
 
         # Initialize the mixin
         MonopodRandomizersMixin.__init__(
@@ -245,7 +243,7 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
         # Initialize the environment randomizer
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
-            self, env=env, physics_randomizer=self)
+            self, env=env, physics_randomizer=self, **kwargs)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)

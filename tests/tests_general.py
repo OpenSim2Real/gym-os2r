@@ -5,8 +5,7 @@ import functools
 import numpy as np
 from gym_ignition.utils import logger
 from gym_bb import randomizers
-from gym_bb.common.mp_env import make_mp_envs, make_env_from_id
-from gym_bb.monitor.monitor import VecMonitor, VecMonitorPlot
+from gym_bb.common.make_envs import make_mp_envs, make_env_from_id
 
 import pytest
 import numpy as np
@@ -15,6 +14,7 @@ from gym import envs
 from gym.envs.tests.spec_list import spec_list
 from gym.spaces import Box
 from gym.utils.env_checker import check_env
+
 
 def check_registered_envs():
 
@@ -32,7 +32,8 @@ def check_registered_envs():
         ob_space = env.observation_space
         act_space = env.action_space
         ob = env.reset()
-        assert ob_space.contains(ob), "Reset observation: {!r} not in space".format(ob)
+        assert ob_space.contains(
+            ob), "Reset observation: {!r} not in space".format(ob)
         if isinstance(ob_space, Box):
             # Only checking dtypes for Box spaces to avoid iterating through tuple entries
             assert (
@@ -44,8 +45,10 @@ def check_registered_envs():
         assert ob_space.contains(observation), "Step observation: {!r} not in space".format(
             observation
         )
-        assert np.isscalar(reward), "{} is not a scalar for {}".format(reward, env)
-        assert isinstance(done, bool), "Expected {} to be a boolean".format(done)
+        assert np.isscalar(
+            reward), "{} is not a scalar for {}".format(reward, env)
+        assert isinstance(
+            done, bool), "Expected {} to be a boolean".format(done)
         if isinstance(ob_space, Box):
             assert (
                 observation.dtype == ob_space.dtype
@@ -60,6 +63,7 @@ def check_registered_envs():
 
         env.close()
 
+
 def test_random_rollout():
     all_envs = envs.registry.all()
     env_ids = [env_spec.id for env_spec in all_envs if "Monopod" in env_spec.id]
@@ -67,7 +71,7 @@ def test_random_rollout():
         make_env = functools.partial(make_env_from_id, env_id=env_id)
         env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
         env.seed(42)
-        agent = lambda ob: env.action_space.sample()
+        def agent(ob): return env.action_space.sample()
         ob = env.reset()
         for _ in range(10):
             assert env.observation_space.contains(ob)
@@ -78,8 +82,9 @@ def test_random_rollout():
                 break
         env.close()
 
+
 def single_process():
-    env_id = "Monopod-Gazebo-v1"
+    env_id = "Monopod-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
     env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
     env.seed(42)
@@ -87,17 +92,21 @@ def single_process():
 
     assert len(observation) == 10, "base monopod should have 10 observations"
 
-    assert env.get_state_info(observation)[1] == False, "Should not need reset after getting reset."
+    assert env.get_state_info(observation)[
+                              1] == False, "Should not need reset after getting reset."
 
     action = env.action_space.sample()
     observation_after_step, reward, done, _ = env.step(action)
 
-    assert env.get_state_info(observation_after_step)[0] == reward, "should have same reward from step and get state info."
-    assert all(observation_after_step != observation), "should have different observation after step."
+    assert env.get_state_info(observation_after_step)[
+                              0] == reward, "should have same reward from step and get state info."
+    assert all(observation_after_step
+               != observation), "should have different observation after step."
     env.close()
 
+
 def single_process_fixed_hip():
-    env_id = "Monopod-Gazebo-fh-v1"
+    env_id = "Monopod-fh-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
     env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
     env.seed(42)
@@ -105,16 +114,20 @@ def single_process_fixed_hip():
 
     assert len(observation) == 8, "Fixed hip monopod should have 8 observations"
 
-    assert env.get_state_info(observation)[1] == False, "Should not need reset after getting reset."
+    assert env.get_state_info(observation)[
+                              1] == False, "Should not need reset after getting reset."
 
     action = env.action_space.sample()
     observation_after_step, reward, done, _ = env.step(action)
-    assert env.get_state_info(observation_after_step)[0] == reward, "should have same reward from step and get state info."
-    assert all(observation_after_step != observation), "should have different observation after step."
+    assert env.get_state_info(observation_after_step)[
+                              0] == reward, "should have same reward from step and get state info."
+    assert all(observation_after_step
+               != observation), "should have different observation after step."
     env.close()
 
+
 def test_monopod_model():
-    env_id = "Monopod-Gazebo-v1"
+    env_id = "Monopod-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
     env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
     env.seed(42)
@@ -122,22 +135,23 @@ def test_monopod_model():
     assert len(observation) == 10, "base monopod should have 10 observations"
     env.close()
 
-    env_id = "Monopod-Gazebo-fh-v1"
+    env_id = "Monopod-fh-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
     env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
     observation = env.reset()
     assert len(observation) == 8, "fixed hip monopod should have 8 observations"
     env.close()
 
-    env_id = "Monopod-Gazebo-fh-fby-v1"
+    env_id = "Monopod-fh-fby-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
     env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
     observation = env.reset()
-    assert len(observation) == 6, "fixed hip and fixed boom yaw monopod should have 6 observations"
+    assert len(
+        observation) == 6, "fixed hip and fixed boom yaw monopod should have 6 observations"
     env.close()
 
 # def multi_process_fixed_hip():
-    # env_id = "Monopod-Gazebo-v1"
+    # env_id = "Monopod-v1"
     # make_env = functools.partial(make_env_from_id, env_id=env_id)
     # env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
     # env.seed(42)
@@ -152,7 +166,6 @@ def test_monopod_model():
     #
     # assert env.get_state_info(observation_after_step)[0] == reward, "should have same reward from step and get state info."
     # assert observation_after_step != observation, "should have different observation after step."
-
 
 
 if __name__ == "__main__":

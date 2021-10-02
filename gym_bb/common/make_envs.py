@@ -10,6 +10,11 @@ SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer,
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
+    """
+    Utility function for making a single gym env from id.
+
+    param env_id: (str) the environment ID
+    """
     import gym
     import gym_bb
     return gym.make(env_id, **kwargs)
@@ -19,12 +24,14 @@ def make_mp_envs(env_id,
                  nenvs,
                  seed,
                  randomizer: SupportedRandomizers,
-                 start_idx=0):
+                 start_idx=0,
+                 **kwargs):
     """
     Utility function for multiprocessed env.
 
     :param env_id: (str) the environment ID
-    :param nenvs: (int) the number of environment you wish to have in subprocesses
+    :param nenvs: (int) the number of environment you wish to have in
+                        subprocesses
     :param seed: (int) the inital seed for RNG
     :param randomizer: (SupportedRandomizers) the env randomizer
     :param rank: (int) index of the subprocess
