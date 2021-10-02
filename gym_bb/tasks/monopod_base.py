@@ -52,7 +52,6 @@ class MonopodBase(task.Task, abc.ABC):
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
         self.joint_names = [*self.spaces_definition['observation']]
-        print(self.joint_names)
 
         # Create the action space
         action_lims = np.array(list(self.spaces_definition['action'].values()))
@@ -62,7 +61,7 @@ class MonopodBase(task.Task, abc.ABC):
         # Configure action limits
         low = np.array(action_lims[:, 0])
         high = np.array(action_lims[:, 1])
-        action_space = gym.spaces.Box(low=low, high=high)
+        action_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
         # Configure reset limits
         a = observation_lims
@@ -70,10 +69,11 @@ class MonopodBase(task.Task, abc.ABC):
         high = np.concatenate((a[:, 0], a[:, 2]))
         # Configure the reset space - this is used to check if it exists inside
         # the reset space when deciding whether to reset.
-        self.reset_space = gym.spaces.Box(low=low, high=high)
+        self.reset_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
         # Configure the observation space
-        observation_space = gym.spaces.Box(low=low*1.2, high=high*1.2)
+        observation_space = gym.spaces.Box(low=low*1.2, high=high*1.2,
+                                           dtype=np.float64)
 
         return action_space, observation_space
 

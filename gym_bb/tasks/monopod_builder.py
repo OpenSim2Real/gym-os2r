@@ -23,7 +23,6 @@ class MonopodBuilder(MonopodBase):
             # Fixed Hip and boom yaw
             'monopod_v1_fh_fby': self._create_fh_fby
         }
-        print(kwargs)
         try:
             env_setup[kwargs['supported_models'][0]]()
         except KeyError:
@@ -36,11 +35,11 @@ class MonopodBuilder(MonopodBase):
     def calculate_reward(self, obs: Observation) -> Reward:
         reward_setup = {
             'Standing_v1': calculate_balancing_rewards.standing_v1,
+            'Balancing_v1': calculate_balancing_rewards.balancing_v1,
         }
         return reward_setup[self.reward_calculation_type](obs)
 
     def reset_task(self) -> None:
-
         if self.model_name not in self.world.model_names():
             raise RuntimeError("Monopod model not found in the world")
 
@@ -55,7 +54,7 @@ class MonopodBuilder(MonopodBase):
                 raise RuntimeError(
                     "Failed to change the control mode of the Monopod")
 
-        # Create a new monopod state
+        # TODO: Make the reset position adjust to the Reward method.
         pos_reset = vel_reset = [0]*len(self.joint_names)
         pos_reset[self.joint_names.index(
             'planarizer_02_joint')] = self.reset_boom

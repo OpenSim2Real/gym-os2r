@@ -3,7 +3,7 @@ import time
 import functools
 from gym_ignition.utils import logger
 from gym_bb import randomizers
-from gym_bb.common.mp_env import make_env_from_id
+from gym_bb.common.make_envs import make_env_from_id
 
 from gym_ignition.utils.typing import Action, Reward, Observation
 # Set verbosity
@@ -11,7 +11,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-Gazebo-fh-v1"
+env_id = "Monopod-fh-v1"
 
 
 # Create a partial function passing the environment id
@@ -28,7 +28,8 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 # env = randomizers.monopod.MonopodEnvRandomizer(
 #     env=make_env, num_physics_rollouts=5)
 
-env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+env = randomizers.monopod.MonopodEnvRandomizer(env=make_env,
+                                               reward_calculation_type='Balancing_v1')
 # Enable the rendering
 env.render('human')
 
@@ -55,7 +56,8 @@ for epoch in range(1000):
         # It is not required to call this in the loop if physics is not randomized.
         # env.render('human')
         if done:
-            print('rollout info: ', env.get_state_info(observation), ' Real Reward: ', reward)
+            print('rollout info: ', env.get_state_info(
+                observation), ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward

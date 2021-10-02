@@ -39,7 +39,7 @@ def make_mp_envs(env_id,
     def make_env(rank):
         def fn():
             make_env = functools.partial(make_env_from_id, env_id=env_id)
-            env = randomizer(env=make_env)
+            env = randomizer(env=make_env, **kwargs)
             env.seed(seed + rank)
             return env
         return fn

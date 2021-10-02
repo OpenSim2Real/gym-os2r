@@ -1,4 +1,4 @@
-from . import monitors
+from . import monitor
 
 
-__all__ = ['monitors']
+__all__ = ['monitor']

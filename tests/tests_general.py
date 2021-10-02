@@ -22,7 +22,8 @@ def check_registered_envs():
     env_ids = [env_spec.id for env_spec in all_envs if "Monopod" in env_spec.id]
     for env_id in env_ids:
         make_env = functools.partial(make_env_from_id, env_id=env_id)
-        env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+        env = randomizers.monopod.MonopodEnvRandomizer(
+            env=make_env, reward_calculation_type='Balancing_v1')
         env.seed(42)
         # Test if env adheres to Gym API
         check_env(env, warn=True, skip_render_check=True)
@@ -69,7 +70,8 @@ def test_random_rollout():
     env_ids = [env_spec.id for env_spec in all_envs if "Monopod" in env_spec.id]
     for env_id in env_ids:
         make_env = functools.partial(make_env_from_id, env_id=env_id)
-        env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+        env = randomizers.monopod.MonopodEnvRandomizer(
+            env=make_env, reward_calculation_type='Balancing_v1')
         env.seed(42)
         def agent(ob): return env.action_space.sample()
         ob = env.reset()
@@ -86,7 +88,8 @@ def test_random_rollout():
 def single_process():
     env_id = "Monopod-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
-    env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+    env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(
+        env=make_env, reward_calculation_type='Balancing_v1')
     env.seed(42)
     observation = env.reset()
 
@@ -108,7 +111,8 @@ def single_process():
 def single_process_fixed_hip():
     env_id = "Monopod-fh-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
-    env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+    env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(
+        env=make_env, reward_calculation_type='Balancing_v1')
     env.seed(42)
     observation = env.reset()
 
@@ -129,7 +133,8 @@ def single_process_fixed_hip():
 def test_monopod_model():
     env_id = "Monopod-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
-    env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+    env = randomizers.monopod.MonopodEnvRandomizer(
+        env=make_env, reward_calculation_type='Balancing_v1')
     env.seed(42)
     observation = env.reset()
     assert len(observation) == 10, "base monopod should have 10 observations"
@@ -137,14 +142,16 @@ def test_monopod_model():
 
     env_id = "Monopod-fh-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
-    env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+    env = randomizers.monopod.MonopodEnvRandomizer(
+        env=make_env, reward_calculation_type='Balancing_v1')
     observation = env.reset()
     assert len(observation) == 8, "fixed hip monopod should have 8 observations"
     env.close()
 
     env_id = "Monopod-fh-fby-v1"
     make_env = functools.partial(make_env_from_id, env_id=env_id)
-    env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+    env = randomizers.monopod.MonopodEnvRandomizer(
+        env=make_env, reward_calculation_type='Balancing_v1')
     observation = env.reset()
     assert len(
         observation) == 6, "fixed hip and fixed boom yaw monopod should have 6 observations"
@@ -153,7 +160,7 @@ def test_monopod_model():
 # def multi_process_fixed_hip():
     # env_id = "Monopod-v1"
     # make_env = functools.partial(make_env_from_id, env_id=env_id)
-    # env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+    # env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env, reward_calculation_type='Balancing_v1')
     # env.seed(42)
     # observation = env.reset()
     #
