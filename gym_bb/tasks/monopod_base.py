@@ -89,7 +89,7 @@ class MonopodBase(task.Task, abc.ABC):
             # Set torque to value given in action
             if not model.get_joint(joint).set_generalized_force_target(value):
                 raise RuntimeError(
-                    "Failed to set the torque in the " + joint)
+                    "Failed to set the torque for joint: " + joint)
 
     def get_observation(self) -> Observation:
 

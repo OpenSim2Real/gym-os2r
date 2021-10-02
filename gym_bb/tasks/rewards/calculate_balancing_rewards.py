@@ -21,3 +21,8 @@ def standing_v1(obs: Observation) -> Reward:
     # Get vertical boom angle and velocity.
     bp = obs[2]
     return bp
+
+
+"""
+Hopping tasks. Start either standing or from ground. favour circular movement.
+"""
