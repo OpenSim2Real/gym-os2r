@@ -1,4 +1,4 @@
-from . import calculate_balancing_rewards
+from . import reward_definition
 
 
-__all__ = ['calculate_balancing_rewards']
+__all__ = ['reward_definition']

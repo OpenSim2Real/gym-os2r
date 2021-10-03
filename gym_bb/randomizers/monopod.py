@@ -40,6 +40,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # SDF randomizer
         self._sdf_randomizer = None
+
     # ===========================
     # PhysicsRandomizer interface
     # ===========================
@@ -87,9 +88,10 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         pos_reset[task.joint_names.index(
             'planarizer_02_joint')] = task.reset_boom
 
-        g_model = model.to_gazebo()
-        ok_pos = g_model.reset_joint_positions(pos_reset, task.joint_names)
-        ok_vel = g_model.reset_joint_velocities(vel_reset, task.joint_names)
+        ok_pos = model.to_gazebo().reset_joint_positions(
+            pos_reset, task.joint_names)
+        ok_vel = model.to_gazebo().reset_joint_velocities(
+            vel_reset, task.joint_names)
 
         if not (ok_pos and ok_vel):
             raise RuntimeError("Failed to reset the monopod state")
@@ -118,6 +120,9 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         if self._sdf_randomizer is not None:
             return self._sdf_randomizer
 
+        # Check env supports at least one model
+        if not len(task.supported_models):
+            raise RuntimeError('No monopod models support by environement...')
         # Get the model file
         simp_model_name = random.choice(task.supported_models)
         urdf_model_file = monopod.get_model_file_from_name(simp_model_name)
@@ -135,7 +140,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Use the RNG of the task
         sdf_randomizer.rng = task.np_random
 
-        # # Add the missing friction/ode/mu element. We assume that friction exists.
+        # Add the missing friction/ode/mu element. We assume that friction exists.
         # frictions = randomizer.find_xpath("*/link/collision/surface/friction")
         #
         # for friction in frictions:
@@ -176,29 +181,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                 'params': UniformParams(low=0.8, high=1.2),
                 'ignore_zeros': True,
                 'force_positive': True,
-            },
-            # "*/link/inertial/inertia/ixx": {
-            #     # inertia * N(1, 0.2)
-            #     'method': Method.Coefficient,
-            #     'distribution': Distribution.Gaussian,
-            #     'params': GaussianParams(mean=1.0, variance=0.2),
-            #     'ignore_zeros': True,
-            #     'force_positive': True,
-            # },
-            # "*/link/inertial/inertia/iyy": {
-            #     'method': Method.Coefficient,
-            #     'distribution': Distribution.Gaussian,
-            #     'params': GaussianParams(mean=1.0, variance=0.2),
-            #     'ignore_zeros': True,
-            #     'force_positive': True,
-            # },
-            # "*/link/inertial/inertia/izz": {
-            #     'method': Method.Coefficient,
-            #     'distribution': Distribution.Gaussian,
-            #     'params': GaussianParams(mean=1.0, variance=0.2),
-            #     'ignore_zeros': True,
-            #     'force_positive': True,
-            # },
+            }
         }
 
         for xpath, config in randomization_config.items():
@@ -249,16 +232,16 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
     def __init__(self,
                  env: MakeEnvCallable,
-                 num_physics_rollouts: int = 0,
-                 **kwargs):
-
+                 reward_type: str,
+                 num_physics_rollouts: int = 0
+                 ):
         # Initialize the mixin
         MonopodRandomizersMixin.__init__(
             self, randomize_physics_after_rollouts=num_physics_rollouts)
 
         # Initialize the environment randomizer
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
-            self, env=env, physics_randomizer=self, **kwargs)
+            self, env=env, physics_randomizer=self, reward_type=reward_type)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)

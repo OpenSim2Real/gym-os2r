@@ -44,6 +44,9 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
 
+        # Check env supports at least one model
+        if not len(task.supported_models):
+            raise RuntimeError('No monopod models support by environement...')
         # Insert a new monopod model (randomally choosen a compatible one)
         model = monopod.Monopod(world=task.world,
                                 monopod_version=random.choice(
