@@ -1,23 +1,55 @@
 from gym_ignition.utils.typing import Reward, Observation
+from abc import abstractmethod
+import sys
+
+_all_reset_types = ['stand', 'ground']
+_all_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw']
+Supported_rewards = {
+    'StandingV1': _all_task_modes,
+    'BalancingV1': _all_task_modes
+}
+
+"""
+Public Methods
+"""
 
 
-def get_reward(reward_type):
-    if reward_type == 'Standing_v1':
-        return standing_v1
-    elif reward_type == 'Balancing_v1':
-        return balancing_v1
-    else:
-        raise RuntimeError(
-            'Reward type ' + reward_type + ' not supported in '
-            'monopod environment.')
+def get_reward_class(reward_class_name: str):
+    return str_to_class(reward_class_name)
+
+
+def str_to_class(classname):
+    return getattr(sys.modules[__name__], classname)
 
 
 def supported_rewards():
-    Supported_rewards = {
-        'Standing_v1': ['free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw'],
-        'Balancing_v1': ['free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw']
-    }
+    """
+    Returns dictionary where each key is a supported reward method and
+    each task that the reward supports.
+    """
     return Supported_rewards
+
+
+"""
+Base Class
+"""
+
+
+class RewardBase():
+    """
+    Baseclass for a reward. Please follow this convention when making a reward.
+    """
+
+    def __init__(self, observation_index: dict):
+        self.observation_index = observation_index
+
+    @abstractmethod
+    def calculate_reward(self, obs: Observation) -> Reward:
+        pass
+
+    @abstractmethod
+    def get_reset_type(self):
+        pass
 
 
 """
@@ -25,10 +57,17 @@ Balancing tasks. Start from standing and stay standing.
 """
 
 
-def balancing_v1(obs: Observation) -> Reward:
-    # Get vertical boom angle and velocity.
-    bp = obs[2]
-    return bp
+class BalancingV1(RewardBase):
+    """
+    Standing reward
+    """
+
+    def calculate_reward(self, obs: Observation) -> Reward:
+        bp = obs[self.observation_index['planarizer_02_joint_pos']]
+        return bp
+
+    def get_reset_type(self):
+        return 'stand'
 
 
 """
@@ -36,10 +75,17 @@ Standing tasks. Start from ground and stand up.
 """
 
 
-def standing_v1(obs: Observation) -> Reward:
-    # Get vertical boom angle and velocity.
-    bp = obs[2]
-    return bp
+class StandingV1(RewardBase):
+    """
+    Standing reward
+    """
+
+    def calculate_reward(self, obs: Observation) -> Reward:
+        bp = obs[self.observation_index['planarizer_02_joint_pos']]
+        return bp
+
+    def get_reset_type(self):
+        return 'ground'
 
 
 """

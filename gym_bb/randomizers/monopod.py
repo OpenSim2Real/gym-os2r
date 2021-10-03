@@ -86,7 +86,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         pos_reset = vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
-            'planarizer_02_joint')] = task.reset_boom
+            'planarizer_02_joint')] = 0.3
 
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)
@@ -232,7 +232,7 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
     def __init__(self,
                  env: MakeEnvCallable,
-                 reward_type: str,
+                 reward_class_name: str,
                  num_physics_rollouts: int = 0,
                  **kwargs
                  ):
@@ -242,7 +242,7 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
         # Initialize the environment randomizer
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(self, env=env, physics_randomizer=self,
-                                                           reward_type=reward_type, **kwargs)
+                                                           reward_class_name=reward_class_name, **kwargs)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)

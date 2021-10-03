@@ -6,6 +6,7 @@ from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
+from .rewards.reward_definition import get_reward_class
 
 
 class MonopodBase(task.Task, abc.ABC):
@@ -38,21 +39,29 @@ class MonopodBase(task.Task, abc.ABC):
         self.model_name = None
         # Space for resetting the task
         self.reset_space = None
-        self.reset_boom = 0.3
         # Set max torque for the monopod joints
         self.spaces_definition['action'] = {
             'upper_leg_joint': [-1, 1],
             'lower_leg_joint': [-1, 1]
         }
 
+        # Get names joints
+        self.action_names = [*self.spaces_definition['action']]
+        self.joint_names = [*self.spaces_definition['observation']]
+
+        # Create dict of index in obs for obs type
+        self.observation_index = {}
+        for i, joint in enumerate(self.joint_names):
+            self.observation_index[joint + '_pos'] = i
+            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
+        kwargs['observation_index'] = self.observation_index
+        self.reward_class = get_reward_class(
+            self.reward_class_name)(self.observation_index)
+
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
     def create_spaces(self) -> Tuple[ActionSpace, ObservationSpace]:
-
-        # Get names joints
-        self.action_names = [*self.spaces_definition['action']]
-        self.joint_names = [*self.spaces_definition['observation']]
 
         # Create the action space
         action_lims = np.array(list(self.spaces_definition['action'].values()))
@@ -147,8 +156,7 @@ class MonopodBase(task.Task, abc.ABC):
         Calculates the reward given observation.
         Implementation left to the user
         """
-
-        raise NotImplementedError()
+        return self.reward_class.calculate_reward(obs)
 
     def get_state_info(self, obs: Observation) -> Tuple[Reward, bool]:
         """
@@ -156,4 +164,5 @@ class MonopodBase(task.Task, abc.ABC):
         """
         reward = self.calculate_reward(obs)
         done = not self.reset_space.contains(obs)
+        return reward, done
         return reward, done

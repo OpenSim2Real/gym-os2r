@@ -6,6 +6,7 @@ from typing import Sequence, Optional, List, Union
 import cloudpickle
 import numpy as np
 
+
 class AlreadySteppingError(Exception):
     """
     Raised when an asynchronous step is running while
@@ -247,10 +248,12 @@ class VecEnvWrapper(VecEnv):
         """
         blocked_class = self.getattr_depth_check(name, already_found=False)
         if blocked_class is not None:
-            own_class = "{0}.{1}".format(type(self).__module__, type(self).__name__)
+            own_class = "{0}.{1}".format(
+                type(self).__module__, type(self).__name__)
             format_str = ("Error: Recursive attribute lookup for {0} from {1} is "
                           "ambiguous and hides attribute from {2}")
-            raise AttributeError(format_str.format(name, own_class, blocked_class))
+            raise AttributeError(format_str.format(
+                name, own_class, blocked_class))
 
         return self.getattr_recursive(name)
 
@@ -286,13 +289,15 @@ class VecEnvWrapper(VecEnv):
         all_attributes = self._get_all_attributes()
         if name in all_attributes and already_found:
             # this venv's attribute is being hidden because of a higher venv.
-            shadowed_wrapper_class = "{0}.{1}".format(type(self).__module__, type(self).__name__)
+            shadowed_wrapper_class = "{0}.{1}".format(
+                type(self).__module__, type(self).__name__)
         elif name in all_attributes and not already_found:
             # we have found the first reference to the attribute. Now check for duplicates.
             shadowed_wrapper_class = self.venv.getattr_depth_check(name, True)
         else:
             # this wrapper does not have the attribute. Keep searching.
-            shadowed_wrapper_class = self.venv.getattr_depth_check(name, already_found)
+            shadowed_wrapper_class = self.venv.getattr_depth_check(
+                name, already_found)
 
         return shadowed_wrapper_class
 

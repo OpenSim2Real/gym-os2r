@@ -1,8 +1,7 @@
 import numpy as np
 import warnings
 from .monopod_base import MonopodBase
-from .rewards.reward_definition import get_reward, supported_rewards
-from gym_ignition.utils.typing import Reward, Observation
+from .rewards.reward_definition import supported_rewards
 
 
 class MonopodBuilder(MonopodBase):
@@ -13,7 +12,8 @@ class MonopodBuilder(MonopodBase):
     """
 
     def __init__(self, agent_rate, **kwargs):
-        required_kwargs = ['supported_models', 'task_mode', 'reward_type']
+        required_kwargs = ['supported_models',
+                           'task_mode', 'reward_class_name']
         for rkwarg in required_kwargs:
             if rkwarg not in list(kwargs.keys()):
                 raise RuntimeError('Missing required kwarg: ' + rkwarg
@@ -25,25 +25,21 @@ class MonopodBuilder(MonopodBase):
             warnings.warn('# WARNING: Supplied Kwargs, ' + str(kwargs)
                           + ' Contains more entries than expected.',
                           SyntaxWarning, stacklevel=2)
-        task_mode = kwargs['task_mode']
-        reward_type = kwargs['reward_type']
-        if reward_type not in supported_rewards().keys():
+
+        self.__dict__.update(kwargs)
+        if self.reward_class_name not in supported_rewards().keys():
             raise RuntimeError(
-                reward_type
-                + ' Reward not found in supported reward definitions.')
-        if task_mode not in supported_rewards()[reward_type]:
-            raise RuntimeError(task_mode
+                self.reward_class_name
+                + ' Reward class not found in supported reward definitions.')
+        if self.task_mode not in supported_rewards()[self.reward_class_name]:
+            raise RuntimeError(self.task_mode
                                + ' task mode not supported by '
-                               + reward_type + ' reward type.')
+                               + self.reward_class_name + ' reward class.')
 
         self.spaces_definition = {}
-        obs_space = self.obs_factory(task_mode)
+        obs_space = self.obs_factory(self.task_mode)
         self.spaces_definition['observation'] = obs_space()
         super().__init__(agent_rate, **kwargs)
-
-    def calculate_reward(self, obs: Observation) -> Reward:
-        reward_definition = get_reward(self.reward_type)
-        return reward_definition(obs)
 
     def obs_factory(self, task_mode):
         if task_mode == 'free_hip':
