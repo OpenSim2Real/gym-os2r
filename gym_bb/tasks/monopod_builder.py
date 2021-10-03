@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from .monopod_base import MonopodBase
 from .rewards.reward_definition import get_reward, supported_rewards
 from gym_ignition.utils.typing import Reward, Observation
@@ -20,7 +21,10 @@ class MonopodBuilder(MonopodBase):
                                    + str(required_kwargs)
                                    + '\n in the MonopodBuilder class.'
                                    ' (These can be specified in env init)')
-
+        if len(required_kwargs) != len(list(kwargs.keys())):
+            warnings.warn('# WARNING: Supplied Kwargs, ' + str(kwargs)
+                          + ' Contains more entries than expected.',
+                          SyntaxWarning, stacklevel=2)
         task_mode = kwargs['task_mode']
         reward_type = kwargs['reward_type']
         if reward_type not in supported_rewards().keys():
