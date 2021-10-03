@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import inspect
-import pickle
 from typing import Sequence, Optional, List, Union
+from gym_ignition.utils import logger
 
 import cloudpickle
 import numpy as np
