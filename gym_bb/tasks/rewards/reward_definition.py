@@ -13,8 +13,11 @@ def get_reward(reward_type):
 
 
 def supported_rewards():
-    reward_types = ['standing_v1', 'Balancing_v1']
-    return reward_types
+    Supported_rewards = {
+        'Standing_v1': ['free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw'],
+        'Balancing_v1': ['free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw']
+    }
+    return Supported_rewards
 
 
 """

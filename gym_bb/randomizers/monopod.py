@@ -233,15 +233,16 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
     def __init__(self,
                  env: MakeEnvCallable,
                  reward_type: str,
-                 num_physics_rollouts: int = 0
+                 num_physics_rollouts: int = 0,
+                 **kwargs
                  ):
         # Initialize the mixin
         MonopodRandomizersMixin.__init__(
             self, randomize_physics_after_rollouts=num_physics_rollouts)
 
         # Initialize the environment randomizer
-        gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
-            self, env=env, physics_randomizer=self, reward_type=reward_type)
+        gazebo_env_randomizer.GazeboEnvRandomizer.__init__(self, env=env, physics_randomizer=self,
+                                                           reward_type=reward_type, **kwargs)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)

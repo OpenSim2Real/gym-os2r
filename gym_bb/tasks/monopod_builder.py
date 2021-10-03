@@ -6,17 +6,33 @@ from gym_ignition.utils.typing import Reward, Observation
 
 class MonopodBuilder(MonopodBase):
     """
-    Default parameters are used in the init method for torque, position/rotation
-    limits, and reset angle. Any of these values can be redefined by passing in
-    the corresponding kwargs.
+    Default parameters are used in the init method for torque,
+    position/rotation limits, and reset angle. Any of these values can be
+    redefined by passing in the corresponding kwargs.
     """
 
     def __init__(self, agent_rate, **kwargs):
-        if kwargs['reward_type'] not in supported_rewards():
-            raise RuntimeError('Reward Not supported in reward definitions')
+        required_kwargs = ['supported_models', 'task_mode', 'reward_type']
+        for rkwarg in required_kwargs:
+            if rkwarg not in list(kwargs.keys()):
+                raise RuntimeError('Missing required kwarg: ' + rkwarg
+                                   + '. We require the following kwargs, '
+                                   + str(required_kwargs)
+                                   + '\n in the MonopodBuilder class.'
+                                   ' (These can be specified in env init)')
+
+        task_mode = kwargs['task_mode']
+        reward_type = kwargs['reward_type']
+        if reward_type not in supported_rewards().keys():
+            raise RuntimeError(
+                reward_type
+                + ' Reward not found in supported reward definitions.')
+        if task_mode not in supported_rewards()[reward_type]:
+            raise RuntimeError(task_mode
+                               + ' task mode not supported by '
+                               + reward_type + ' reward type.')
 
         self.spaces_definition = {}
-        task_mode = kwargs['task_mode']
         obs_space = self.obs_factory(task_mode)
         self.spaces_definition['observation'] = obs_space()
         super().__init__(agent_rate, **kwargs)
