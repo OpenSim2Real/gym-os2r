@@ -9,7 +9,11 @@ Base Class
 
 class RewardBase():
     """
-    Baseclass for a reward. Please follow this convention when making a reward.
+    Baseclass for a reward. Please follow this convention when making a new
+    reward.
+
+    observation_index is a dictionary which gives the index of the observation
+    for a specfied joints position or velocity.
     """
 
     def __init__(self, observation_index: dict):
@@ -44,7 +48,7 @@ Balancing tasks. Start from standing and stay standing.
 
 class BalancingV1(RewardBase):
     """
-    Standing reward
+    Standing reward. Start from standing and stay standing.
     """
 
     def __init__(self, observation_index: dict):
@@ -66,7 +70,7 @@ Standing tasks. Start from ground and stand up.
 
 class StandingV1(RewardBase):
     """
-    Standing reward
+    Standing reward. Start from ground and stand up.
     """
 
     def __init__(self, observation_index: dict):
