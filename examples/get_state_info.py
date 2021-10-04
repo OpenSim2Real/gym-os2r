@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
         envs = make_mp_envs(env_id, NUM_ENVS, seed,
                             randomizers.monopod.MonopodEnvRandomizer,
-                            reward_class_name='Balancing_v1')
+                            reward_class_name='BalancingV1')
         main_loop(envs, NUM_ENVS)
 
     except Exception as error:
