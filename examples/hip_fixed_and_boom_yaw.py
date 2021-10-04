@@ -29,7 +29,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 #     env=make_env, num_physics_rollouts=5)
 
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env,
-                                               reward_type='Balancing_v1')
+                                               reward_class_name='Balancing_v1')
 # Enable the rendering
 env.render('human')
 

@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
         fenvs = make_mp_envs(env_id, NUM_ENVS, seed,
                              randomizers.monopod.MonopodEnvRandomizer,
-                             reward_type='Balancing_v1')
+                             reward_class_name='Balancing_v1')
         # envs = VecMonitor(envs)
         envs = VecMonitorPlot(
             fenvs, plot_path=os.path.expanduser('~')+'/Desktop/plot')
