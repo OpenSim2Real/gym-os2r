@@ -1,17 +1,9 @@
-import gym
 from gym import envs
-import time
 import functools
 import numpy as np
-from gym_ignition.utils import logger
 from gym_bb import randomizers
 from gym_bb.common.make_envs import make_mp_envs, make_env_from_id
 
-import pytest
-import numpy as np
-
-from gym import envs
-from gym.envs.tests.spec_list import spec_list
 from gym.spaces import Box
 from gym.utils.env_checker import check_env
 from gym_bb.rewards.reward_definition import BalancingV1, StandingV1
