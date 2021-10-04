@@ -57,6 +57,7 @@ class MonopodBase(task.Task, abc.ABC):
 
         # Initialize Reward Class from Kwarg passed in.
         self.reward = self.reward_class(self.observation_index)
+        # Verify that the taskmode is compatible with the reward.
         if not self.reward.is_task_supported(self.task_mode):
             raise RuntimeError(self.task_mode
                                + ' task mode not supported by '
