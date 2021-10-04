@@ -4,6 +4,7 @@ import functools
 from gym_ignition.utils import logger
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_bb.monitor.monitor import MonitorPlot
+from gym_bb.rewards.reward_definition import BalancingV1
 
 from gym_bb import randomizers
 from gym_bb.common.make_envs import make_env_from_id
@@ -30,7 +31,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 #     env=make_env, num_physics_rollouts=5)
 
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env,
-                                               reward_class_name='BalancingV1')
+                                               reward_class=BalancingV1)
 env = MonitorPlot(env)
 # Enable the rendering
 env.render('human')

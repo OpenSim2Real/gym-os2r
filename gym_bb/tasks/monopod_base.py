@@ -6,7 +6,6 @@ from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
-from .rewards.reward_definition import get_reward_class
 
 
 class MonopodBase(task.Task, abc.ABC):
@@ -55,8 +54,13 @@ class MonopodBase(task.Task, abc.ABC):
             self.observation_index[joint + '_pos'] = i
             self.observation_index[joint + '_vel'] = i + len(self.joint_names)
         kwargs['observation_index'] = self.observation_index
-        self.reward_class = get_reward_class(
-            self.reward_class_name)(self.observation_index)
+
+        # Initialize Reward Class from Kwarg passed in.
+        self.reward = self.reward_class(self.observation_index)
+        if not self.reward.is_task_supported(self.task_mode):
+            raise RuntimeError(self.task_mode
+                               + ' task mode not supported by '
+                               + str(self.reward) + ' reward class.')
 
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
@@ -156,7 +160,7 @@ class MonopodBase(task.Task, abc.ABC):
         Calculates the reward given observation.
         Implementation left to the user
         """
-        return self.reward_class.calculate_reward(obs)
+        return self.reward.calculate_reward(obs)
 
     def get_state_info(self, obs: Observation) -> Tuple[Reward, bool]:
         """

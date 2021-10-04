@@ -7,6 +7,7 @@ from gym_bb import randomizers
 from gym_bb.common.make_envs import make_mp_envs
 from gym_bb.monitor.monitor import VecMonitorPlot
 import multiprocessing
+from gym_bb.rewards.reward_definition import BalancingV1
 import os
 import sys
 
@@ -46,7 +47,7 @@ if __name__ == '__main__':
 
         fenvs = make_mp_envs(env_id, NUM_ENVS, seed,
                              randomizers.monopod.MonopodEnvRandomizer,
-                             reward_class_name='BalancingV1')
+                             reward_class=BalancingV1)
         # envs = VecMonitor(envs)
         envs = VecMonitorPlot(
             fenvs, plot_path=os.path.expanduser('~')+'/Desktop/plot')

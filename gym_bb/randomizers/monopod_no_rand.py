@@ -5,6 +5,7 @@ from gym_bb.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.utils.typing import Observation
+from gym_bb.rewards.reward_definition import RewardBase
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod_builder.MonopodBuilder]
@@ -18,9 +19,9 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
     for an example that randomizes the task, the physics, and the model.
     """
 
-    def __init__(self, env: MakeEnvCallable, **kwargs):
+    def __init__(self, env: MakeEnvCallable, reward_class: RewardBase, **kwargs):
 
-        super().__init__(env=env, **kwargs)
+        super().__init__(env=env, reward_class=reward_class, **kwargs)
 
     def randomize_task(self, task: SupportedTasks, **kwargs) -> None:
         """

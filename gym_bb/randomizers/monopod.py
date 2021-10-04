@@ -16,6 +16,7 @@ from gym_ignition.utils.typing import Observation
 from gym_bb import tasks
 from gym_bb.models import monopod
 import random
+from gym_bb.rewards.reward_definition import RewardBase
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod_builder.MonopodBuilder]
@@ -232,7 +233,7 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
     def __init__(self,
                  env: MakeEnvCallable,
-                 reward_class_name: str,
+                 reward_class: RewardBase,
                  num_physics_rollouts: int = 0,
                  **kwargs
                  ):
@@ -242,7 +243,7 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
         # Initialize the environment randomizer
         gazebo_env_randomizer.GazeboEnvRandomizer.__init__(self, env=env, physics_randomizer=self,
-                                                           reward_class_name=reward_class_name, **kwargs)
+                                                           reward_class=reward_class, **kwargs)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)

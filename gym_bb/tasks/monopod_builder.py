@@ -1,7 +1,6 @@
 import numpy as np
 import warnings
 from .monopod_base import MonopodBase
-from .rewards.reward_definition import supported_rewards
 
 
 class MonopodBuilder(MonopodBase):
@@ -13,7 +12,7 @@ class MonopodBuilder(MonopodBase):
 
     def __init__(self, agent_rate, **kwargs):
         required_kwargs = ['supported_models',
-                           'task_mode', 'reward_class_name']
+                           'task_mode', 'reward_class']
         for rkwarg in required_kwargs:
             if rkwarg not in list(kwargs.keys()):
                 raise RuntimeError('Missing required kwarg: ' + rkwarg
@@ -27,15 +26,6 @@ class MonopodBuilder(MonopodBase):
                           SyntaxWarning, stacklevel=2)
 
         self.__dict__.update(kwargs)
-        if self.reward_class_name not in supported_rewards().keys():
-            raise RuntimeError(
-                self.reward_class_name
-                + ' Reward class not found in supported reward definitions.')
-        if self.task_mode not in supported_rewards()[self.reward_class_name]:
-            raise RuntimeError(self.task_mode
-                               + ' task mode not supported by '
-                               + self.reward_class_name + ' reward class.')
-
         self.spaces_definition = {}
         obs_space = self.obs_factory(self.task_mode)
         self.spaces_definition['observation'] = obs_space()

@@ -1,6 +1,5 @@
 import gym
 import time
-import functools
 import numpy as np
 from gym_ignition.utils import logger
 from gym_bb import randomizers
@@ -8,6 +7,7 @@ from gym_bb.common.make_envs import make_mp_envs
 import multiprocessing
 import sys
 import os
+from gym_bb.rewards.reward_definition import BalancingV1
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         seed = 42
         envs = make_mp_envs(env_id, NUM_ENVS, seed,
                             randomizers.monopod.MonopodEnvRandomizer,
-                            reward_class_name='BalancingV1')
+                            reward_class=BalancingV1)
         envs.reset()
         main_loop(envs)
 

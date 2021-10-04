@@ -5,6 +5,7 @@ from gym_ignition.utils import logger
 
 from gym_bb import randomizers
 from gym_bb.common.make_envs import make_env_from_id
+from gym_bb.rewards.reward_definition import BalancingV1
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
@@ -28,7 +29,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id)
 #     env=make_env, num_physics_rollouts=5)
 
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env,
-                                               reward_class_name='BalancingV1')
+                                               reward_class=BalancingV1)
 # Enable the rendering
 env.render('human')
 
