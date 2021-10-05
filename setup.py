@@ -20,8 +20,8 @@ setuptools.setup(
     ],
     install_requires=[
           'numpy',
-          'SIMP@git+https://github.com/Baesian-Balancer/SIMP.git@v1.1',
-          'gym-ignition',
+          'SIMP@git+https://github.com/Baesian-Balancer/SIMP.git@v1.0.0',
+          'gym-ignition==v1.3.0',
     ],
     python_requires='>=3.8',
 )

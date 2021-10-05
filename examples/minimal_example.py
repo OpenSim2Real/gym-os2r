@@ -8,8 +8,8 @@ from gym_bb.common.make_envs import make_env_from_id
 
 from gym_bb.rewards.reward_definition import BalancingV1
 # Set verbosity
-logger.set_level(gym.logger.ERROR)
-# logger.set_level(gym.logger.DEBUG)
+# logger.set_level(gym.logger.ERROR)
+logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
 env_id = "Monopod-v1"
