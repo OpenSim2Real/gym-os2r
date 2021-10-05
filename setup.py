@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="gym-bb",  # Replace with your own username
-    version="1.1.0",
+    version="1.0.0",
     author="Dawson Horvath",
     author_email="horvath.dawson@gmail.com",
     description="gym-ignition environments for baesian balacning development",
@@ -20,8 +20,8 @@ setuptools.setup(
     ],
     install_requires=[
           'numpy',
-          'SIMP@git+https://github.com/Baesian-Balancer/SIMP.git@v1.1',
-          'gym-ignition',
+          'SIMP@git+https://github.com/Baesian-Balancer/SIMP.git@v1.0.0',
+          'gym-ignition==v1.2.0',
     ],
     python_requires='>=3.8',
 )
