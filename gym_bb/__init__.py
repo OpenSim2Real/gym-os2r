@@ -21,7 +21,6 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
-            'supported_models': ['monopod_v1'],
             'task_mode': 'free_hip'
             })
 register(
@@ -32,7 +31,6 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
-            'supported_models': ['monopod_v1_fh'],
             'task_mode': 'fixed_hip'
             })
 
@@ -44,6 +42,5 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
-            'supported_models': ['monopod_v1_fh_fby'],
             'task_mode': 'fixed_hip_and_boom_yaw'
             })

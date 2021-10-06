@@ -1,5 +1,6 @@
-models:
+task_modes:
   free_hip:
+    model: 'monopod'
     spaces:
       action:
         upper_leg_joint: [1, -1]
@@ -14,6 +15,7 @@ models:
         hip_joint: [3.14, -3.14, .inf, -.inf]
 
   fixed_hip:
+    model: 'monopod-fixed_hip'
     spaces:
       action:
         upper_leg_joint: [1, -1]
@@ -25,6 +27,7 @@ models:
         boom_yaw_joint: [.inf, -.inf, .inf, -.inf]
 
   fixed_hip_and_boom_yaw:
+    model: 'monopod-fixed_hip_and_boom_yaw'
     spaces:
       action:
         upper_leg_joint: [1, -1]

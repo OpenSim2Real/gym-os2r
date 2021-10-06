@@ -35,14 +35,13 @@ class MonopodTask(task.Task, abc.ABC):
                  **kwargs):
         self.supported_task_modes = ['free_hip',
                                      'fixed_hip', 'fixed_hip_and_boom_yaw']
-        required_kwargs = ['supported_models',
-                           'task_mode', 'reward_class']
+        required_kwargs = ['task_mode', 'reward_class']
         for rkwarg in required_kwargs:
             if rkwarg not in list(kwargs.keys()):
                 raise RuntimeError('Missing required kwarg: ' + rkwarg
                                    + '. We require the following kwargs, '
                                    + str(required_kwargs)
-                                   + '\n in the MonopodBuilder class.'
+                                   + '\n in the MonopodTask class.'
                                    ' (These can be specified in env init)')
         if len(required_kwargs) != len(list(kwargs.keys())):
             warnings.warn('# WARNING: Supplied Kwargs, ' + str(kwargs)
@@ -61,7 +60,7 @@ class MonopodTask(task.Task, abc.ABC):
              'task mode ' + self.task_mode + ' not supported in '
              'monopod environment.')
         try:
-            xpath = 'models/' + self.task_mode + '/spaces'
+            xpath = 'task_modes/' + self.task_mode + '/spaces'
             self.spaces_definition = cfg.get_config(xpath)
         except KeyError:
             raise RuntimeError(
