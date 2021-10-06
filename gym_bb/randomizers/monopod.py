@@ -87,7 +87,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         pos_reset = vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
-            'planarizer_02_joint')] = 0.3
+            'boom_pitch_joint')] = 0.3
 
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)

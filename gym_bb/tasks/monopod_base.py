@@ -6,7 +6,6 @@ from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
-from gym_bb.config.config import SettingsConfig
 
 
 class MonopodBase(task.Task, abc.ABC):
@@ -32,21 +31,12 @@ class MonopodBase(task.Task, abc.ABC):
     def __init__(self,
                  agent_rate: float,
                  **kwargs):
-        try:
-            cfg = kwargs['config']
-        except KeyError:
-            cfg = SettingsConfig()
         # Initialize the Task base class
         task.Task.__init__(self, agent_rate=agent_rate)
         # Name of the monopod model
         self.model_name = None
         # Space for resetting the task
         self.reset_space = None
-        # Set max torque for the monopod joints
-        self.spaces_definition['action'] = {
-            'upper_leg_joint': [-1, 1],
-            'lower_leg_joint': [-1, 1]
-        }
 
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
@@ -78,8 +68,8 @@ class MonopodBase(task.Task, abc.ABC):
             list(self.spaces_definition['observation'].values()))
 
         # Configure action limits
-        low = np.array(action_lims[:, 0])
-        high = np.array(action_lims[:, 1])
+        low = np.array(action_lims[:, 1])
+        high = np.array(action_lims[:, 0])
         action_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
         # Configure reset limits

@@ -1,6 +1,7 @@
 from operator import getitem
 from functools import reduce
 import yaml
+import os
 
 
 class BaseConfig():
@@ -10,7 +11,9 @@ class BaseConfig():
     """
 
     def __init__(self, yaml_path: str):
-        with open(yaml_path) as f:
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, yaml_path)
+        with open(filename) as f:
             self.config_dict = yaml.load(f, Loader=yaml.FullLoader)
 
     def set_config(self, value, xpath: str):

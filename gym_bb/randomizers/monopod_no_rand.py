@@ -59,7 +59,7 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         # TODO: Make the reset position adjust to the Reward method.
         pos_reset = vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
-            'planarizer_02_joint')] = 0.3
+            'boom_pitch_joint')] = 0.3
 
         g_model = model.to_gazebo()
         ok_pos = g_model.reset_joint_positions(pos_reset, task.joint_names)

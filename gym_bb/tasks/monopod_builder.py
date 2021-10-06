@@ -1,5 +1,5 @@
-import numpy as np
 import warnings
+from gym_bb.config.config import SettingsConfig
 from .monopod_base import MonopodBase
 
 
@@ -11,6 +11,8 @@ class MonopodBuilder(MonopodBase):
     """
 
     def __init__(self, agent_rate, **kwargs):
+        self.supported_task_modes = ['free_hip',
+                                     'fixed_hip', 'fixed_hip_and_boom_yaw']
         required_kwargs = ['supported_models',
                            'task_mode', 'reward_class']
         for rkwarg in required_kwargs:
@@ -22,50 +24,24 @@ class MonopodBuilder(MonopodBase):
                                    ' (These can be specified in env init)')
         if len(required_kwargs) != len(list(kwargs.keys())):
             warnings.warn('# WARNING: Supplied Kwargs, ' + str(kwargs)
-                          + ' Contains more entries than expected.',
+                          + ' Contains more entries than expected. '
+                          'Could be caused by config object.',
                           SyntaxWarning, stacklevel=2)
-
         self.__dict__.update(kwargs)
-        self.spaces_definition = {}
-        obs_space = self.obs_factory(self.task_mode)
-        self.spaces_definition['observation'] = obs_space()
-        super().__init__(agent_rate, **kwargs)
+        try:
+            cfg = kwargs['config']
+        except KeyError:
+            cfg = SettingsConfig()
 
-    def obs_factory(self, task_mode):
-        if task_mode == 'free_hip':
-            return self._free_hip
-        elif task_mode == 'fixed_hip':
-            return self._fixed_hip
-        elif task_mode == 'fixed_hip_and_boom_yaw':
-            return self._fixed_hip_and_boom_yaw
-        else:
+        if self.task_mode not in self.supported_task_modes:
             raise RuntimeError(
-                'task mode ' + task_mode + ' not supported in '
+                'task mode ' + self.task_mode + ' not supported in '
                 'monopod environment.')
-
-    def _free_hip(self):
-        return {
-            # pos high, pos low, vel high, vel low
-            'upper_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            'lower_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            "boom_pitch_joint": [1.57, -1.57, np.inf, -np.inf],
-            "boom_yaw_joint": [np.inf, -np.inf, np.inf, -np.inf],
-            'hip_joint': [3.14, -3.14, np.inf, -np.inf]
-            }
-
-    def _fixed_hip(self):
-        return {
-            # pos high, pos low, vel high, vel low
-            'upper_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            'lower_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            "boom_pitch_joint": [1.57, -1.57, np.inf, -np.inf],
-            "boom_yaw_joint": [np.inf, -np.inf, np.inf, -np.inf]
-            }
-
-    def _fixed_hip_and_boom_yaw(self):
-        return {
-            # pos high, pos low, vel high, vel low
-            'upper_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            'lower_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            "boom_pitch_joint": [1.57, -1.57, np.inf, -np.inf]
-            }
+        try:
+            xpath = self.task_mode + '/spaces'
+            self.spaces_definition = cfg.get_config(xpath)
+        except KeyError:
+            raise RuntimeError(
+                'task mode ' + self.task_mode + ' does not contain a spaces '
+                'key in monopod environment config file.')
+        super().__init__(agent_rate, **kwargs)

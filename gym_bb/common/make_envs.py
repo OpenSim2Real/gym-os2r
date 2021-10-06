@@ -4,7 +4,7 @@ from typing import Union
 
 from gym_bb.common.vec_env import SubprocVecEnv
 from gym_bb import randomizers
-from gym_bb.rewards.reward_definition import RewardBase
+from gym_bb.rewards.rewards import RewardBase
 
 SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer,
                              randomizers.monopod.MonopodEnvRandomizer]
