@@ -7,7 +7,7 @@ from gym_bb import randomizers
 from gym_bb.common.make_envs import make_mp_envs
 from gym_bb.monitor.monitor import VecMonitorPlot
 import multiprocessing
-from gym_bb.rewards.reward_definition import BalancingV1
+from gym_bb.rewards.rewards import BalancingV1
 import os
 import sys
 

@@ -4,7 +4,7 @@ import functools
 from gym_ignition.utils import logger
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_bb.monitor.monitor import MonitorPlot
-from gym_bb.rewards.reward_definition import BalancingV1
+from gym_bb.rewards.rewards import BalancingV1
 
 from gym_bb import randomizers
 from gym_bb.common.make_envs import make_env_from_id

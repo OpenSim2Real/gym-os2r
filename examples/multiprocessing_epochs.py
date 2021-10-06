@@ -7,7 +7,7 @@ from gym_bb.common.make_envs import make_mp_envs
 import multiprocessing
 import sys
 import os
-from gym_bb.rewards.reward_definition import BalancingV1
+from gym_bb.rewards.rewards import BalancingV1
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)

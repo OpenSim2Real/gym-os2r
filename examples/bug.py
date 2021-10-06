@@ -1,9 +1,12 @@
+from gym_ignition.utils import logger
 import gym
 import functools
 from gym_bb import randomizers
 from gym_bb.rewards.reward_definition import BalancingV1
 
 env_id = "Monopod-v1"
+
+logger.set_level(gym.logger.DEBUG)
 
 
 def make_env_from_id(env_id: str, **kwargs) -> gym.Env:

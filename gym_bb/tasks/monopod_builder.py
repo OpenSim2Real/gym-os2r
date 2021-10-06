@@ -48,8 +48,8 @@ class MonopodBuilder(MonopodBase):
             # pos high, pos low, vel high, vel low
             'upper_leg_joint': [3.14, -3.14, np.inf, -np.inf],
             'lower_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            "planarizer_02_joint": [1.57, -1.57, np.inf, -np.inf],
-            "planarizer_01_joint": [np.inf, -np.inf, np.inf, -np.inf],
+            "boom_pitch_joint": [1.57, -1.57, np.inf, -np.inf],
+            "boom_yaw_joint": [np.inf, -np.inf, np.inf, -np.inf],
             'hip_joint': [3.14, -3.14, np.inf, -np.inf]
             }
 
@@ -58,8 +58,8 @@ class MonopodBuilder(MonopodBase):
             # pos high, pos low, vel high, vel low
             'upper_leg_joint': [3.14, -3.14, np.inf, -np.inf],
             'lower_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            "planarizer_02_joint": [1.57, -1.57, np.inf, -np.inf],
-            "planarizer_01_joint": [np.inf, -np.inf, np.inf, -np.inf]
+            "boom_pitch_joint": [1.57, -1.57, np.inf, -np.inf],
+            "boom_yaw_joint": [np.inf, -np.inf, np.inf, -np.inf]
             }
 
     def _fixed_hip_and_boom_yaw(self):
@@ -67,5 +67,5 @@ class MonopodBuilder(MonopodBase):
             # pos high, pos low, vel high, vel low
             'upper_leg_joint': [3.14, -3.14, np.inf, -np.inf],
             'lower_leg_joint': [3.14, -3.14, np.inf, -np.inf],
-            "planarizer_02_joint": [1.57, -1.57, np.inf, -np.inf]
+            "boom_pitch_joint": [1.57, -1.57, np.inf, -np.inf]
             }

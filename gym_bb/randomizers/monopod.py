@@ -16,7 +16,7 @@ from gym_ignition.utils.typing import Observation
 from gym_bb import tasks
 from gym_bb.models import monopod
 import random
-from gym_bb.rewards.reward_definition import RewardBase
+from gym_bb.rewards.rewards import RewardBase
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod_builder.MonopodBuilder]

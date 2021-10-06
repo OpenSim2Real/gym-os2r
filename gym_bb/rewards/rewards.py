@@ -56,7 +56,7 @@ class BalancingV1(RewardBase):
         self.supported_task_modes = self._all_task_modes
 
     def calculate_reward(self, obs: Observation) -> Reward:
-        bp = obs[self.observation_index['planarizer_02_joint_pos']]
+        bp = obs[self.observation_index['boom_pitch_joint_pos']]
         return bp
 
     def get_reset_type(self):
@@ -78,7 +78,7 @@ class StandingV1(RewardBase):
         self.supported_task_modes = self._all_task_modes
 
     def calculate_reward(self, obs: Observation) -> Reward:
-        bp = obs[self.observation_index['planarizer_02_joint_pos']]
+        bp = obs[self.observation_index['boom_pitch_joint_pos']]
         return bp
 
     def get_reset_type(self):
