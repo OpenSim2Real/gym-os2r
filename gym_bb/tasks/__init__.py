@@ -1,5 +1,4 @@
-from . import monopod_builder
-from . import monopod_base
+from . import monopod
 
 
-__all__ = ['monopod_base', 'monopod_builder']
+__all__ = ['monopod']

@@ -33,8 +33,7 @@ models:
         upper_leg_joint: [3.14, -3.14, .inf, -.inf]
         lower_leg_joint: [3.14, -3.14, .inf, -.inf]
         boom_pitch_joint: [1.57, -1.57, .inf, -.inf]
-
-reset:
+resets:
   stand:
     laying_down: False
     boom_pitch_joint_pos: 0.3
@@ -47,6 +46,6 @@ reset:
   lay:
     laying_down: True
     boom_pitch_joint_pos: 0.05
-  fly:
+  float:
     laying_down: False
     boom_pitch_joint_pos: 0.5

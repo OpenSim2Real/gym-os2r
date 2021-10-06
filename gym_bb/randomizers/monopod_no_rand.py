@@ -8,7 +8,7 @@ from gym_ignition.utils.typing import Observation
 from gym_bb.rewards.rewards import RewardBase
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_builder.MonopodBuilder]
+SupportedTasks = Union[tasks.monopod.MonopodTask]
 
 
 class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
