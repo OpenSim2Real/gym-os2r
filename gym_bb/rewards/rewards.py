@@ -19,7 +19,6 @@ class RewardBase():
     def __init__(self, observation_index: dict):
         self.observation_index = observation_index
         self.supported_task_modes = []
-        self._all_reset_types = ['stand', 'ground']
         self._all_task_modes = ['free_hip',
                                 'fixed_hip', 'fixed_hip_and_boom_yaw']
 
@@ -33,9 +32,6 @@ class RewardBase():
 
     def is_task_supported(self, task_mode: str):
         return task_mode in self.supported_task_modes
-
-    def get_all_reset_types(self):
-        return self._all_reset_types
 
     def get_supported_task_modes(self):
         return self.supported_task_modes

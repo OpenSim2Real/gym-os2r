@@ -38,10 +38,10 @@ class MonopodBuilder(MonopodBase):
                 'task mode ' + self.task_mode + ' not supported in '
                 'monopod environment.')
         try:
-            xpath = self.task_mode + '/spaces'
+            xpath = 'models/' + self.task_mode + '/spaces'
             self.spaces_definition = cfg.get_config(xpath)
         except KeyError:
             raise RuntimeError(
-                'task mode ' + self.task_mode + ' does not contain a spaces '
-                'key in monopod environment config file.')
+                'task mode ' + self.task_mode + ' does not contain spaces '
+                'definition in monopod environment config file.')
         super().__init__(agent_rate, **kwargs)
