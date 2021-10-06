@@ -19,9 +19,9 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
     for an example that randomizes the task, the physics, and the model.
     """
 
-    def __init__(self, env: MakeEnvCallable, reward_class: RewardBase, **kwargs):
+    def __init__(self, env: MakeEnvCallable, **kwargs):
 
-        super().__init__(env=env, reward_class=reward_class, **kwargs)
+        super().__init__(env=env, **kwargs)
 
     def randomize_task(self, task: SupportedTasks, **kwargs) -> None:
         """

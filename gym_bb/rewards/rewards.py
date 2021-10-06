@@ -26,10 +26,6 @@ class RewardBase():
     def calculate_reward(self, obs: Observation) -> Reward:
         pass
 
-    @abstractmethod
-    def get_reset_type(self):
-        pass
-
     def is_task_supported(self, task_mode: str):
         return task_mode in self.supported_task_modes
 
@@ -55,9 +51,6 @@ class BalancingV1(RewardBase):
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
         return bp
 
-    def get_reset_type(self):
-        return 'stand'
-
 
 """
 Standing tasks. Start from ground and stand up.
@@ -77,8 +70,24 @@ class StandingV1(RewardBase):
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
         return bp
 
-    def get_reset_type(self):
-        return 'ground'
+
+"""
+Walking tasks. Start from ground and stand up.
+"""
+
+
+class WalkingV1(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = ['free_hip', 'fixed_hip']
+
+    def calculate_reward(self, obs: Observation) -> Reward:
+        by = obs[self.observation_index['boom_yaw_joint_vel']]
+        return by
 
 
 """

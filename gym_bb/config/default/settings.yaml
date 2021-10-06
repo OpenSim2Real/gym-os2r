@@ -39,16 +39,21 @@ task_modes:
 resets:
   stand:
     laying_down: False
-    boom_pitch_joint_pos: 0.3
+    joint_pos:
+      boom_pitch_joint: 0.3
   half_stand:
     laying_down: False
-    boom_pitch_joint_pos: 0.15
+    joint_pos:
+      boom_pitch_joint: 0.15
   ground:
     laying_down: False
-    boom_pitch_joint_pos: 0.05
+    joint_pos:
+      boom_pitch_joint: 0.05
   lay:
     laying_down: True
-    boom_pitch_joint_pos: 0.05
+    joint_pos:
+      boom_pitch_joint: 0.05
   float:
     laying_down: False
-    boom_pitch_joint_pos: 0.5
+    joint_pos:
+      boom_pitch_joint: 0.5

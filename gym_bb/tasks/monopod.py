@@ -35,7 +35,8 @@ class MonopodTask(task.Task, abc.ABC):
                  **kwargs):
         self.supported_task_modes = ['free_hip',
                                      'fixed_hip', 'fixed_hip_and_boom_yaw']
-        required_kwargs = ['task_mode', 'reward_class']
+
+        required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
             if rkwarg not in list(kwargs.keys()):
                 raise RuntimeError('Missing required kwarg: ' + rkwarg
@@ -46,14 +47,15 @@ class MonopodTask(task.Task, abc.ABC):
         if len(required_kwargs) != len(list(kwargs.keys())):
             warnings.warn('# WARNING: Supplied Kwargs, ' + str(kwargs)
                           + ' Contains more entries than expected. '
-                          'Could be caused by config object.',
+                          'Required Kwargs are ' + str(required_kwargs)
+                          + '. Could be caused by config object.',
                           SyntaxWarning, stacklevel=2)
 
         self.__dict__.update(kwargs)
         try:
-            cfg = kwargs['config']
+            self.cfg = kwargs['config']
         except KeyError:
-            cfg = SettingsConfig()
+            self.cfg = SettingsConfig()
 
         if self.task_mode not in self.supported_task_modes:
             raise RuntimeError(
@@ -61,7 +63,7 @@ class MonopodTask(task.Task, abc.ABC):
              'monopod environment.')
         try:
             xpath = 'task_modes/' + self.task_mode + '/spaces'
-            self.spaces_definition = cfg.get_config(xpath)
+            self.spaces_definition = self.cfg.get_config(xpath)
         except KeyError:
             raise RuntimeError(
                 'task mode ' + self.task_mode + ' does not contain spaces '

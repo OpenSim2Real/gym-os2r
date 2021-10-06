@@ -16,7 +16,6 @@ from gym_ignition.utils.typing import Observation
 from gym_bb import tasks
 from gym_bb.models import monopod
 import random
-from gym_bb.rewards.rewards import RewardBase
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod.MonopodTask]
@@ -82,6 +81,10 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         self._populate_world(task=task, monopod_model=random_model)
 
         # TODO: Make the reset position adjust to the Reward method.
+        reset_position = random.choice(task.reset_positions)
+        xpath = 'resets/' + reset_position
+        reset_conf = task.cfg.get_config(xpath)
+        print(reset_conf)
         # Get the model
         model = task.world.get_model(task.model_name)
 
@@ -100,6 +103,13 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
+
+    def leg_joint_angles(self, boom_pitch_joint_pos: float, laying_down: bool):
+        # Get leg lengths from task
+        # Find angles of legs to not clip into ground based on boom pitch pos
+        # Account for central pivot height
+        # Return angles needed
+        pass
 
     # ====================================
     # ModelDescriptionRandomizer interface
@@ -121,12 +131,10 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         if self._sdf_randomizer is not None:
             return self._sdf_randomizer
 
-        # Check env supports at least one model
-        if not len(task.supported_models):
-            raise RuntimeError('No monopod models support by environement...')
+        xpath = 'task_modes/' + task.task_mode + '/model'
+        monopod_model = task.cfg.get_config(xpath)
         # Get the model file
-        simp_model_name = random.choice(task.supported_models)
-        urdf_model_file = monopod.get_model_file_from_name(simp_model_name)
+        urdf_model_file = monopod.get_model_file_from_name(monopod_model)
 
         # Convert the URDF to SDF
         sdf_model_string = scenario.urdffile_to_sdfstring(urdf_model_file)
@@ -217,8 +225,9 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
-        simp_model_name = random.choice(task.supported_models)
-        model = monopod.Monopod(world=task.world, monopod_version=simp_model_name,
+        xpath = 'task_modes/' + task.task_mode + '/model'
+        monopod_model = task.cfg.get_config(xpath)
+        model = monopod.Monopod(world=task.world, monopod_version=monopod_model,
                                 model_file=monopod_model)
 
         # Store the model name in the task
@@ -233,7 +242,6 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
     def __init__(self,
                  env: MakeEnvCallable,
-                 reward_class: RewardBase,
                  num_physics_rollouts: int = 0,
                  **kwargs
                  ):
@@ -242,8 +250,9 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
             self, randomize_physics_after_rollouts=num_physics_rollouts)
 
         # Initialize the environment randomizer
-        gazebo_env_randomizer.GazeboEnvRandomizer.__init__(self, env=env, physics_randomizer=self,
-                                                           reward_class=reward_class, **kwargs)
+        gazebo_env_randomizer.GazeboEnvRandomizer.__init__(self, env=env,
+                                                           physics_randomizer=self,
+                                                           **kwargs)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)
