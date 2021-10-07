@@ -84,13 +84,11 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         reset_position = random.choice(task.reset_positions)
         xpath = 'resets/' + reset_position
         reset_conf = task.cfg.get_config(xpath)
-        print(reset_conf)
         # Get the model
         model = task.world.get_model(task.model_name)
 
         pos_reset = vel_reset = [0]*len(task.joint_names)
-        pos_reset[task.joint_names.index(
-            'boom_pitch_joint')] = 0.3
+        pos_reset[task.joint_names.index('boom_pitch_joint')] = 0.3
 
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)
