@@ -59,9 +59,6 @@ register(
             'agent_rate': 1000,
             'physics_rate': 1000,
             'real_time_factor': max_float,
-            'task_mode': 'free_hip',
-            'reward_class': BalancingV1,
-            'reset_positions': ['stand', 'float']
             })
 # register(
 #     id='Monopod-fixed_hip-v1',

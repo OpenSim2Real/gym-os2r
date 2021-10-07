@@ -8,12 +8,11 @@ from gym_bb.common.make_envs import make_env_from_id
 
 
 # Set verbosity
-logger.set_level(gym.logger.ERROR)
-# logger.set_level(gym.logger.DEBUG)
+# logger.set_level(gym.logger.ERROR)
+logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-v1"
-
+env_id = "Monopod-stand-v1"
 
 # Create a partial function passing the environment id
 kwargs = {}
@@ -39,6 +38,7 @@ for epoch in range(1000):
         # Execute a random action
         action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
+        time.sleep(0.002)
 
 env.close()
 time.sleep(5)

@@ -8,6 +8,7 @@ from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
 import warnings
 from gym_bb.config.config import SettingsConfig
+from gym_ignition.utils import logger
 
 
 class MonopodTask(task.Task, abc.ABC):
@@ -162,7 +163,14 @@ class MonopodTask(task.Task, abc.ABC):
 
         # The environment is done if the observation is outside its space
         done = not self.reset_space.contains(observation)
-
+        if done:
+            reason = ~np.logical_and((observation >= self.reset_space.low), (
+                observation <= self.reset_space.high))
+            msg = ''
+            obs_name = np.array(list(self.observation_index.keys()))
+            for joint, value in zip(obs_name[reason], observation[reason]):
+                msg += joint + " caused reset at %.6f, \t " % value
+            logger.debug(msg)
         return done
 
     def reset_task(self) -> None:
@@ -177,9 +185,11 @@ class MonopodTask(task.Task, abc.ABC):
         model = self.world.get_model(self.model_name)
 
         # Control the monopod in force mode
-        for joint in self.action_names:
-            upper = model.get_joint(joint)
-            ok = upper.set_control_mode(scenario.JointControlMode_force)
+        for joint_name in self.action_names:
+            joint = model.get_joint(joint_name)
+            ok = joint.set_control_mode(scenario.JointControlMode_force)
+            ok = ok and joint.set_max_generalized_force(
+                max(self.action_space.high))
             if not ok:
                 raise RuntimeError(
                     "Failed to change the control mode of the Monopod")
