@@ -3,8 +3,8 @@ task_modes:
     model: 'monopod'
     spaces:
       action:
-        upper_leg_joint: [1, -1]
-        lower_leg_joint: [1, -1]
+        upper_leg_joint: [20, -20]
+        lower_leg_joint: [20, -20]
       observation:
         # Defined the observation space for tasks the values of the array are in
         # the form [max_pos, min_pos, max_vel, min_vel]
@@ -18,8 +18,8 @@ task_modes:
     model: 'monopod-fixed_hip'
     spaces:
       action:
-        upper_leg_joint: [1, -1]
-        lower_leg_joint: [1, -1]
+        upper_leg_joint: [20, -20]
+        lower_leg_joint: [20, -20]
       observation:
         upper_leg_joint: [3.14, -3.14, .inf, -.inf]
         lower_leg_joint: [3.14, -3.14, .inf, -.inf]
@@ -30,8 +30,8 @@ task_modes:
     model: 'monopod-fixed_hip_and_boom_yaw'
     spaces:
       action:
-        upper_leg_joint: [1, -1]
-        lower_leg_joint: [1, -1]
+        upper_leg_joint: [20, -20]
+        lower_leg_joint: [20, -20]
       observation:
         upper_leg_joint: [3.14, -3.14, .inf, -.inf]
         lower_leg_joint: [3.14, -3.14, .inf, -.inf]
