@@ -50,13 +50,16 @@ class MonopodTask(task.Task, abc.ABC):
                           'Required Kwargs are ' + str(required_kwargs)
                           + '. Could be caused by config object.',
                           SyntaxWarning, stacklevel=2)
-
         self.__dict__.update(kwargs)
         try:
             self.cfg = kwargs['config']
         except KeyError:
             self.cfg = SettingsConfig()
-
+        supported_reset_pos = list(self.cfg.get_config('/resets').keys())
+        if not set(self.reset_positions).issubset(set(supported_reset_pos)):
+            raise RuntimeError('One or more of the reset positions provided'
+                               ' were not in the supported reset positions. '
+                               + str(supported_reset_pos))
         if self.task_mode not in self.supported_task_modes:
             raise RuntimeError(
              'task mode ' + self.task_mode + ' not supported in '
