@@ -84,6 +84,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         reset_position = random.choice(task.reset_positions)
         xpath = 'resets/' + reset_position
         reset_conf = task.cfg.get_config(xpath)
+        # Randomization,
+        reset_conf['boom_pitch_joint'] *= random.uniform(0.8, 1.2)
 
         joint_angles = (0, 0)
         if not reset_conf['laying_down']:
@@ -93,7 +95,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             joint_angles = leg_joint_angles(robot_def)
         else:
             joint_angles = (1.57,  0)
-
+        joint_angles *= random.choice([-1, 1])
         # Get the model
         model = task.world.get_model(task.model_name)
 
