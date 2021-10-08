@@ -2,10 +2,11 @@ import gym
 import time
 import functools
 from gym_ignition.utils import logger
-from gym_bb.monitor.monitor import MonitorPlot
 
 from gym_bb import randomizers
 from gym_bb.common.make_envs import make_env_from_id
+
+
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
@@ -17,7 +18,6 @@ env_id = "Monopod-balance-v1"
 kwargs = {}
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
-env = MonitorPlot(env)
 # Enable the rendering
 env.render('human')
 
@@ -35,28 +35,10 @@ for epoch in range(1000):
     totalReward = 0
 
     while not done:
-
         # Execute a random action
         action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
+        time.sleep(0.002)
 
-        # Render the environment.
-        # It is not required to call this in the loop if physics is not randomized.
-        # env.render('human')
-        if done:
-            print('state info: ', env.get_state_info(
-                observation), ' Real Reward: ', reward)
-
-        # Accumulate the reward
-        totalReward += reward
-
-        # Print the observation
-        msg = ""
-        for value in observation:
-            msg += "\t%.6f" % value
-        logger.debug(msg)
-
-    print(f"Reward episode #{epoch}: {totalReward}")
-print('time for 1000 episodes: ' + str(time.time()-beg_time))
 env.close()
 time.sleep(5)

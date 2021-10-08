@@ -4,6 +4,7 @@ from gym_ignition.utils.scenario import get_unique_model_name
 from gym_ignition.scenario import model_wrapper, model_with_file
 import SIMP
 
+
 class Monopod(model_wrapper.ModelWrapper, model_with_file.ModelWithFile):
     def __init__(self,
                  world: scenario.World, monopod_version: str,
@@ -38,7 +39,7 @@ class Monopod(model_wrapper.ModelWrapper, model_with_file.ModelWithFile):
     @classmethod
     def get_model_file(cls) -> str:
         '''
-        This function is set to only get a default Monopod currently 
+        This function is set to only get a default Monopod currently
         '''
         return SIMP.get_model_file('monopod_v1')
 

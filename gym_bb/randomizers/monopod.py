@@ -10,18 +10,16 @@ from gym_ignition.utils import misc
 from gym_ignition import randomizers
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
-from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams, GaussianParams
-from gym_ignition.utils.typing import Action, Reward, Observation
+from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
+from gym_ignition.utils.typing import Observation
 
 from gym_bb import tasks
 from gym_bb.models import monopod
 import random
+from gym_bb.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
-SupportedTasks = Union[tasks.monopod_v1_balancing.MonopodV1Balancing,
-                       tasks.monopod_v2_balancing.MonopodV2Balancing,
-                       tasks.monopod_v1_balancing_fixed_hip.MonopodV1BalancingFixedHip,
-                       tasks.monopod_v1_balancing_fixed_hip_and_boom_yaw.MonopodV1BalancingFixedHipAndBoomYaw]
+SupportedTasks = Union[tasks.monopod.MonopodTask]
 
 
 class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
@@ -29,8 +27,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                               randomizers.abc.ModelDescriptionRandomizer,
                               abc.ABC):
     """
-    Mixin that collects the implementation of task, model and physics randomizations for
-    monopod environments.
+    Mixin that collects the implementation of task, model and physics
+    randomizations for monopod environments.
     """
 
     def __init__(self, randomize_physics_after_rollouts: int = 0):
@@ -43,6 +41,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # SDF randomizer
         self._sdf_randomizer = None
+
     # ===========================
     # PhysicsRandomizer interface
     # ===========================
@@ -82,9 +81,48 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Insert a new model in the world
         self._populate_world(task=task, monopod_model=random_model)
 
+        reset_position = random.choice(task.reset_positions)
+        xpath = 'resets/' + reset_position
+        reset_conf = task.cfg.get_config(xpath)
+        # Randomization,
+        reset_conf['boom_pitch_joint'] *= random.uniform(0.8, 1.2)
+
+        joint_angles = (0, 0)
+        if not reset_conf['laying_down']:
+            xpath = 'task_modes/' + task.task_mode + '/definition'
+            robot_def = task.cfg.get_config(xpath)
+            robot_def['boom_pitch_joint'] = reset_conf['boom_pitch_joint']
+            joint_angles = leg_joint_angles(robot_def)
+        else:
+            joint_angles = (1.57,  0)
+        joint_angles *= random.choice([-1, 1])
+        # Get the model
+        model = task.world.get_model(task.model_name)
+
+        pos_reset = vel_reset = [0]*len(task.joint_names)
+        pos_reset[task.joint_names.index(
+            'boom_pitch_joint')] = reset_conf['boom_pitch_joint']
+        pos_reset[task.joint_names.index('upper_leg_joint')] = joint_angles[0]
+        pos_reset[task.joint_names.index('lower_leg_joint')] = joint_angles[1]
+
+        ok_pos = model.to_gazebo().reset_joint_positions(
+            pos_reset, task.joint_names)
+        ok_vel = model.to_gazebo().reset_joint_velocities(
+            vel_reset, task.joint_names)
+
+        if not (ok_pos and ok_vel):
+            raise RuntimeError("Failed to reset the monopod state")
+
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
+
+    def leg_joint_angles(self, boom_pitch_joint_pos: float, laying_down: bool):
+        # Get leg lengths from task
+        # Find angles of legs to not clip into ground based on boom pitch pos
+        # Account for central pivot height
+        # Return angles needed
+        pass
 
     # ====================================
     # ModelDescriptionRandomizer interface
@@ -106,9 +144,10 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         if self._sdf_randomizer is not None:
             return self._sdf_randomizer
 
+        xpath = 'task_modes/' + task.task_mode + '/model'
+        monopod_model = task.cfg.get_config(xpath)
         # Get the model file
-        simp_model_name = random.choice(task.simp_model_names)
-        urdf_model_file = monopod.get_model_file_from_name(simp_model_name)
+        urdf_model_file = monopod.get_model_file_from_name(monopod_model)
 
         # Convert the URDF to SDF
         sdf_model_string = scenario.urdffile_to_sdfstring(urdf_model_file)
@@ -123,7 +162,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Use the RNG of the task
         sdf_randomizer.rng = task.np_random
 
-        # # Add the missing friction/ode/mu element. We assume that friction exists.
+        # Add the missing friction/ode/mu element. We assume that friction exists.
         # frictions = randomizer.find_xpath("*/link/collision/surface/friction")
         #
         # for friction in frictions:
@@ -164,29 +203,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                 'params': UniformParams(low=0.8, high=1.2),
                 'ignore_zeros': True,
                 'force_positive': True,
-            },
-            # "*/link/inertial/inertia/ixx": {
-            #     # inertia * N(1, 0.2)
-            #     'method': Method.Coefficient,
-            #     'distribution': Distribution.Gaussian,
-            #     'params': GaussianParams(mean=1.0, variance=0.2),
-            #     'ignore_zeros': True,
-            #     'force_positive': True,
-            # },
-            # "*/link/inertial/inertia/iyy": {
-            #     'method': Method.Coefficient,
-            #     'distribution': Distribution.Gaussian,
-            #     'params': GaussianParams(mean=1.0, variance=0.2),
-            #     'ignore_zeros': True,
-            #     'force_positive': True,
-            # },
-            # "*/link/inertial/inertia/izz": {
-            #     'method': Method.Coefficient,
-            #     'distribution': Distribution.Gaussian,
-            #     'params': GaussianParams(mean=1.0, variance=0.2),
-            #     'ignore_zeros': True,
-            #     'force_positive': True,
-            # },
+            }
         }
 
         for xpath, config in randomization_config.items():
@@ -221,8 +238,9 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
-        simp_model_name = random.choice(task.simp_model_names)
-        model = monopod.Monopod(world=task.world, monopod_version=simp_model_name,
+        xpath = 'task_modes/' + task.task_mode + '/model'
+        monopod_model = task.cfg.get_config(xpath)
+        model = monopod.Monopod(world=task.world, monopod_version=monopod_model,
                                 model_file=monopod_model)
 
         # Store the model name in the task
@@ -237,15 +255,17 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
     def __init__(self,
                  env: MakeEnvCallable,
-                 num_physics_rollouts: int = 0):
-
+                 num_physics_rollouts: int = 0,
+                 **kwargs
+                 ):
         # Initialize the mixin
         MonopodRandomizersMixin.__init__(
             self, randomize_physics_after_rollouts=num_physics_rollouts)
 
         # Initialize the environment randomizer
-        gazebo_env_randomizer.GazeboEnvRandomizer.__init__(
-            self, env=env, physics_randomizer=self)
+        gazebo_env_randomizer.GazeboEnvRandomizer.__init__(self, env=env,
+                                                           physics_randomizer=self,
+                                                           **kwargs)
 
     def get_state_info(self, state: Observation):
         return self.env.unwrapped.task.get_state_info(state)
