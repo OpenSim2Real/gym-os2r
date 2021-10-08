@@ -116,7 +116,7 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
         value = np.where(in_bounds, 1.0, 0.0)
     else:
         d = np.where(x < lower, lower - x, x - upper) / margin
-
-    value = np.where(in_bounds, 1.0, _sigmoids(d, value_at_margin, sigmoid))
+        value = np.where(in_bounds, 1.0, _sigmoids(
+            d, value_at_margin, sigmoid))
 
     return float(value) if np.isscalar(x) else value
