@@ -23,7 +23,7 @@ register(
             'real_time_factor': max_float,
             'task_mode': 'free_hip',
             'reward_class': StandingV1,
-            'reset_positions': ['ground', 'lay']
+            'reset_positions': ['ground']
             })
 register(
     id='Monopod-balance-v1',
@@ -35,7 +35,7 @@ register(
             'real_time_factor': max_float,
             'task_mode': 'free_hip',
             'reward_class': BalancingV1,
-            'reset_positions': ['stand', 'ground', 'float']
+            'reset_positions': ['stand']
             })
 
 register(

@@ -38,7 +38,7 @@ for epoch in range(1000):
         # Execute a random action
         action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
-        time.sleep(0.002)
+        # time.sleep(0.002)
 
 env.close()
 time.sleep(5)
