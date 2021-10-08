@@ -16,6 +16,7 @@ from gym_ignition.utils.typing import Observation
 from gym_bb import tasks
 from gym_bb.models import monopod
 import random
+from gym_bb.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod.MonopodTask]
@@ -80,15 +81,27 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Insert a new model in the world
         self._populate_world(task=task, monopod_model=random_model)
 
-        # TODO: Make the reset position adjust to the Reward method.
         reset_position = random.choice(task.reset_positions)
         xpath = 'resets/' + reset_position
         reset_conf = task.cfg.get_config(xpath)
+
+        joint_angles = (0, 0)
+        if not reset_conf['laying_down']:
+            xpath = 'task_modes/' + task.task_mode + '/definition'
+            robot_def = task.cfg.get_config(xpath)
+            robot_def['boom_pitch_joint'] = reset_conf['boom_pitch_joint']
+            joint_angles = leg_joint_angles(robot_def)
+        else:
+            joint_angles = (1.57,  0)
+
         # Get the model
         model = task.world.get_model(task.model_name)
 
         pos_reset = vel_reset = [0]*len(task.joint_names)
-        pos_reset[task.joint_names.index('boom_pitch_joint')] = 0.3
+        pos_reset[task.joint_names.index(
+            'boom_pitch_joint')] = reset_conf['boom_pitch_joint']
+        pos_reset[task.joint_names.index('upper_leg_joint')] = joint_angles[0]
+        pos_reset[task.joint_names.index('lower_leg_joint')] = joint_angles[1]
 
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)

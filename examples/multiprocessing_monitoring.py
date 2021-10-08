@@ -38,20 +38,18 @@ def main_loop(envs):
 
 if __name__ == '__main__':
     try:
-        # Available tasks
-        env_id = "Monopod-v1"
-        # NUM_ENVS = multiprocessing.cpu_count()
-        NUM_ENVS = 1
+        NUM_ENVS = multiprocessing.cpu_count()
         NUMBER_TIME_STEPS = 10000
         seed = 42
+        # Available tasks
+        env_id = "Monopod-balance-v1"
 
+        # Create a partial function passing the environment id
+        kwargs = {'task_mode': 'fixed_hip_and_boom_yaw'}
         fenvs = make_mp_envs(env_id, NUM_ENVS, seed,
-                             randomizers.monopod.MonopodEnvRandomizer,
-                             reward_class=BalancingV1)
-        # envs = VecMonitor(envs)
+                             randomizers.monopod.MonopodEnvRandomizer, **kwargs)
         envs = VecMonitorPlot(
             fenvs, plot_path=os.path.expanduser('~')+'/Desktop/plot')
-
         envs.reset()
         main_loop(envs)
     except Exception as error:

@@ -7,7 +7,6 @@ from gym_bb.common.make_envs import make_mp_envs
 import multiprocessing
 import sys
 import os
-from gym_bb.rewards.rewards import BalancingV1
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -37,13 +36,16 @@ def main_loop(envs):
 
 if __name__ == '__main__':
     try:
-        env_id = "Monopod-v1"
         NUM_ENVS = multiprocessing.cpu_count()
         NUMBER_TIME_STEPS = 10000
         seed = 42
+        # Available tasks
+        env_id = "Monopod-balance-v1"
+
+        # Create a partial function passing the environment id
+        kwargs = {'task_mode': 'fixed_hip_and_boom_yaw'}
         envs = make_mp_envs(env_id, NUM_ENVS, seed,
-                            randomizers.monopod.MonopodEnvRandomizer,
-                            reward_class=BalancingV1)
+                            randomizers.monopod.MonopodEnvRandomizer, **kwargs)
         envs.reset()
         main_loop(envs)
 

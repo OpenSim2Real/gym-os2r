@@ -25,7 +25,6 @@ def make_mp_envs(env_id,
                  nenvs,
                  seed,
                  randomizer: SupportedRandomizers,
-                 reward_class: RewardBase,
                  start_idx=0,
                  **kwargs):
     """
@@ -40,8 +39,9 @@ def make_mp_envs(env_id,
     """
     def make_env(rank):
         def fn():
-            make_env = functools.partial(make_env_from_id, env_id=env_id)
-            env = randomizer(env=make_env, reward_class=reward_class, **kwargs)
+            make_env = functools.partial(
+                make_env_from_id, env_id=env_id, **kwargs)
+            env = randomizer(env=make_env)
             env.seed(seed + rank)
             return env
         return fn

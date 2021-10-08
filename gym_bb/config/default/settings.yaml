@@ -1,6 +1,13 @@
 task_modes:
   free_hip:
     model: 'monopod'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 200
+      central_pivot_height: 75
+      length_boom: 1500
+      hip_offset: 20
+      clipping_adjust: 25
     spaces:
       action:
         upper_leg_joint: [20, -20]
@@ -16,6 +23,13 @@ task_modes:
 
   fixed_hip:
     model: 'monopod-fixed_hip'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 200
+      central_pivot_height: 75
+      length_boom: 1500
+      hip_offset: 20
+      clipping_adjust: 25
     spaces:
       action:
         upper_leg_joint: [20, -20]
@@ -28,6 +42,13 @@ task_modes:
 
   fixed_hip_and_boom_yaw:
     model: 'monopod-fixed_hip_and_boom_yaw'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 200
+      central_pivot_height: 75
+      length_boom: 1500
+      hip_offset: 20
+      clipping_adjust: 25
     spaces:
       action:
         upper_leg_joint: [20, -20]
@@ -39,21 +60,16 @@ task_modes:
 resets:
   stand:
     laying_down: False
-    joint_pos:
-      boom_pitch_joint: 0.3
+    boom_pitch_joint: 0.24
   half_stand:
     laying_down: False
-    joint_pos:
-      boom_pitch_joint: 0.15
+    boom_pitch_joint: 0.15
   ground:
     laying_down: False
-    joint_pos:
-      boom_pitch_joint: 0.05
+    boom_pitch_joint: 0.05
   lay:
     laying_down: True
-    joint_pos:
-      boom_pitch_joint: 0.05
+    boom_pitch_joint: 0.05
   float:
     laying_down: False
-    joint_pos:
-      boom_pitch_joint: 0.5
+    boom_pitch_joint: 0.5

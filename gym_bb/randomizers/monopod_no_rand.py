@@ -5,7 +5,7 @@ from gym_bb.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.utils.typing import Observation
-from gym_bb.rewards.rewards import RewardBase
+from gym_bb.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod.MonopodTask]
@@ -56,14 +56,33 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         # Store the model name in the task
         task.model_name = model.name()
 
-        # TODO: Make the reset position adjust to the Reward method.
+        # RESET the monopod
+        reset_position = random.choice(task.reset_positions)
+        xpath = 'resets/' + reset_position
+        reset_conf = task.cfg.get_config(xpath)
+
+        joint_angles = (0, 0)
+        if not reset_conf['laying_down']:
+            xpath = 'task_modes/' + task.task_mode + '/definition'
+            robot_def = task.cfg.get_config(xpath)
+            robot_def['boom_pitch_joint'] = reset_conf['boom_pitch_joint']
+            joint_angles = leg_joint_angles(robot_def)
+        else:
+            joint_angles = (1.57,  0)
+
+        # Get the model
+        model = task.world.get_model(task.model_name)
+
         pos_reset = vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
-            'boom_pitch_joint')] = 0.3
+            'boom_pitch_joint')] = reset_conf['boom_pitch_joint']
+        pos_reset[task.joint_names.index('upper_leg_joint')] = joint_angles[0]
+        pos_reset[task.joint_names.index('lower_leg_joint')] = joint_angles[1]
 
-        g_model = model.to_gazebo()
-        ok_pos = g_model.reset_joint_positions(pos_reset, task.joint_names)
-        ok_vel = g_model.reset_joint_velocities(vel_reset, task.joint_names)
+        ok_pos = model.to_gazebo().reset_joint_positions(
+            pos_reset, task.joint_names)
+        ok_vel = model.to_gazebo().reset_joint_velocities(
+            vel_reset, task.joint_names)
 
         if not (ok_pos and ok_vel):
             raise RuntimeError("Failed to reset the monopod state")
