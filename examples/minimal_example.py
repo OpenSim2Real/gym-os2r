@@ -17,7 +17,7 @@ env_id = "Monopod-balance-v1"
 # Create a partial function passing the environment id
 kwargs = {}
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
-env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
 # Enable the rendering
 env.render('human')
 
