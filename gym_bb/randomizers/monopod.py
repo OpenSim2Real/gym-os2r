@@ -95,7 +95,9 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             joint_angles = leg_joint_angles(robot_def)
         else:
             joint_angles = (1.57,  0)
-        joint_angles *= random.choice([-1, 1])
+
+        joint_angles = [angle * random.choice([-1, 1])
+                        for angle in joint_angles]
         # Get the model
         model = task.world.get_model(task.model_name)
 

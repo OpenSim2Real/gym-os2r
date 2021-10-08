@@ -1,5 +1,6 @@
 from gym_ignition.utils.typing import Reward, Observation
 from abc import abstractmethod
+from .rewards_utils import tolerance
 
 
 """
@@ -48,8 +49,10 @@ class BalancingV1(RewardBase):
         self.supported_task_modes = self._all_task_modes
 
     def calculate_reward(self, obs: Observation) -> Reward:
+        _BALANCE_HEIGHT = 0.2
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
-        return bp
+        balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
+        return balancing
 
 
 """
@@ -67,8 +70,10 @@ class StandingV1(RewardBase):
         self.supported_task_modes = self._all_task_modes
 
     def calculate_reward(self, obs: Observation) -> Reward:
+        _STAND_HEIGHT = 0.2
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
-        return bp
+        standing = tolerance(bp, (_STAND_HEIGHT, 0.4))
+        return standing
 
 
 """
