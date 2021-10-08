@@ -60,7 +60,7 @@ task_modes:
 resets:
   stand:
     laying_down: False
-    boom_pitch_joint: 0.24
+    boom_pitch_joint: 0.3
   half_stand:
     laying_down: False
     boom_pitch_joint: 0.15

@@ -12,7 +12,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-balance-v1"
+env_id = "Monopod-stand-v1"
 
 # Create a partial function passing the environment id
 kwargs = {}
@@ -38,7 +38,7 @@ for epoch in range(1000):
         # Execute a random action
         action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
-        # time.sleep(0.002)
+        time.sleep(0.003)
 
 env.close()
 time.sleep(5)
