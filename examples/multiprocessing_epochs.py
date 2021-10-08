@@ -43,7 +43,7 @@ if __name__ == '__main__':
         env_id = "Monopod-balance-v1"
 
         # Create a partial function passing the environment id
-        kwargs = {'task_mode': 'fixed_hip_and_boom_yaw'}
+        kwargs = {'task_mode': 'fixed_hip'}
         envs = make_mp_envs(env_id, NUM_ENVS, seed,
                             randomizers.monopod.MonopodEnvRandomizer, **kwargs)
         envs.reset()
