@@ -166,8 +166,8 @@ class MonopodTask(task.Task, abc.ABC):
             reason = ~np.logical_and((observation >= self.reset_space.low), (
                 observation <= self.reset_space.high))
             msg = ''
-            obs_name = sorted(self.observation_index.keys(),
-                              key=self.observation_index.get)
+            obs_name = np.array(sorted(self.observation_index.keys(),
+                                       key=self.observation_index.get))
             for joint, value in zip(obs_name[reason], observation[reason]):
                 msg += joint + " caused reset at %.6f, \t " % value
             logger.debug(msg)
