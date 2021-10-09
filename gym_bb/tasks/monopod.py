@@ -9,6 +9,7 @@ from scenario import core as scenario
 import warnings
 from gym_bb.config.config import SettingsConfig
 from gym_ignition.utils import logger
+from collections import deque
 
 
 class MonopodTask(task.Task, abc.ABC):
@@ -99,6 +100,7 @@ class MonopodTask(task.Task, abc.ABC):
                                + ' task mode not supported by '
                                + str(self.reward) + ' reward class.')
 
+        self.action_history = deque(maxlen=100)
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
@@ -131,7 +133,8 @@ class MonopodTask(task.Task, abc.ABC):
         if not self.action_space.contains(action):
             raise RuntimeError(
                 "Action Space does not contain the provided action")
-
+        # Store last actions
+        self.action_history.append(action)
         # Set the force value
         model = self.world.get_model(self.model_name)
 
@@ -204,9 +207,9 @@ class MonopodTask(task.Task, abc.ABC):
     def calculate_reward(self, obs: Observation) -> Reward:
         """
         Calculates the reward given observation.
-        Implementation left to the user
+        Implementation left to the user using the reward classes
         """
-        return self.reward.calculate_reward(obs)
+        return self.reward.calculate_reward(obs, self.action_history[-1])
 
     def get_state_info(self, obs: Observation) -> Tuple[Reward, bool]:
         """
