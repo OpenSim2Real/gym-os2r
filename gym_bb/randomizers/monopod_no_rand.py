@@ -58,7 +58,6 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         reset_position = random.choice(task.reset_positions)
         xpath = 'resets/' + reset_position
         reset_conf = task.cfg.get_config(xpath)
-
         joint_angles = (0, 0)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
