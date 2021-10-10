@@ -4,7 +4,7 @@ from gym_bb import tasks
 from gym_bb.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
-from gym_ignition.utils.typing import Observation
+from gym_ignition.utils.typing import Observation, Action
 from gym_bb.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
@@ -88,5 +88,5 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
 
-    def get_state_info(self, state: Observation):
-        return self.env.unwrapped.task.get_state_info(state)
+    def get_state_info(self, state: Observation, action: Action):
+        return self.env.unwrapped.task.get_state_info(state, action)

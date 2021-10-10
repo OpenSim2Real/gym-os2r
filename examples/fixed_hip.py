@@ -43,7 +43,7 @@ for epoch in range(1000):
         # env.render('human')
         if done:
             print('rollout info: ', env.get_state_info(
-                observation), ' Real Reward: ', reward)
+                observation, action), ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward

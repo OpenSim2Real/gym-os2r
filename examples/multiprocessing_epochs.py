@@ -22,7 +22,7 @@ def main_loop(envs):
         actions = np.stack([envs.action_space.sample()
                             for _ in range(NUM_ENVS)])
         observation_arr, reward_arr, done_arr, _ = envs.step(actions)
-
+        print(envs.get_state_info(observation_arr, actions))
         if any(done_arr):
             print(
                 f"{done_arr} ... their reward: {current_cumulative_rewards[done_arr]}")
