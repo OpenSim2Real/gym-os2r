@@ -24,7 +24,7 @@ class RewardBase():
                                 'fixed_hip', 'fixed_hip_and_boom_yaw']
 
     @abstractmethod
-    def calculate_reward(self, obs: Observation, act: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         pass
 
     def is_task_supported(self, task_mode: str):
@@ -48,7 +48,7 @@ class BalancingV1(RewardBase):
         super().__init__(observation_index)
         self.supported_task_modes = self._all_task_modes
 
-    def calculate_reward(self, obs: Observation, act: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _BALANCE_HEIGHT = 0.2
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
         balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
@@ -64,11 +64,11 @@ class BalancingV2(RewardBase):
         super().__init__(observation_index)
         self.supported_task_modes = self._all_task_modes
 
-    def calculate_reward(self, obs: Observation, act: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _BALANCE_HEIGHT = 0.2
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
         balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
-        small_control = tolerance(act,
+        small_control = tolerance(action,
                                   margin=1, value_at_margin=0,
                                   sigmoid='quadratic').mean()
         small_control = (small_control + 4) / 5
@@ -89,7 +89,7 @@ class StandingV1(RewardBase):
         super().__init__(observation_index)
         self.supported_task_modes = self._all_task_modes
 
-    def calculate_reward(self, obs: Observation, act: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.2
         bp = obs[self.observation_index['boom_pitch_joint_pos']]
         standing = tolerance(bp, (_STAND_HEIGHT, 0.4))
@@ -110,7 +110,7 @@ class WalkingV1(RewardBase):
         super().__init__(observation_index)
         self.supported_task_modes = ['free_hip', 'fixed_hip']
 
-    def calculate_reward(self, obs: Observation, act: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.2
         _HOP_SPEED = 1
         bp_pos = obs[self.observation_index['boom_pitch_joint_pos']]

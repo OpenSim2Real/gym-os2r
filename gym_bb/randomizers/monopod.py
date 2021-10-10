@@ -11,7 +11,7 @@ from gym_ignition import randomizers
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
-from gym_ignition.utils.typing import Observation
+from gym_ignition.utils.typing import Observation, Action
 
 from gym_bb import tasks
 from gym_bb.models import monopod
@@ -269,5 +269,5 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
                                                            physics_randomizer=self,
                                                            **kwargs)
 
-    def get_state_info(self, state: Observation):
-        return self.env.unwrapped.task.get_state_info(state)
+    def get_state_info(self, state: Observation, action: Action):
+        return self.env.unwrapped.task.get_state_info(state, action)

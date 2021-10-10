@@ -202,19 +202,19 @@ class MonopodTask(task.Task, abc.ABC):
         Returns the reward Calculated in calculate_reward
         """
         obs = self.get_observation()
-        return self.calculate_reward(obs)
+        return self.calculate_reward(obs, self.action_history[-1])
 
-    def calculate_reward(self, obs: Observation) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         """
         Calculates the reward given observation.
         Implementation left to the user using the reward classes
         """
-        return self.reward.calculate_reward(obs, self.action_history[-1])
+        return self.reward.calculate_reward(obs, action)
 
-    def get_state_info(self, obs: Observation) -> Tuple[Reward, bool]:
+    def get_state_info(self, obs: Observation, action: Action) -> Tuple[Reward, bool]:
         """
         Returns the reward and is_done given a state you provide.
         """
-        reward = self.calculate_reward(obs)
+        reward = self.calculate_reward(obs, action)
         done = not self.reset_space.contains(obs)
         return reward, done
