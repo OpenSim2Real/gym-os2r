@@ -50,16 +50,16 @@ register(
             'reward_class': WalkingV1,
             'reset_positions': ['stand']
             })
-
-register(
-    id='Monopod-v1',
-    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=5000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
-            'agent_rate': 1000,
-            'physics_rate': 1000,
-            'real_time_factor': max_float,
-            })
+#
+# register(
+#     id='Monopod-v1',
+#     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+#     max_episode_steps=5000,
+#     kwargs={'task_cls': tasks.monopod.MonopodTask,
+#             'agent_rate': 1000,
+#             'physics_rate': 1000,
+#             'real_time_factor': max_float,
+#             })
 # register(
 #     id='Monopod-fixed_hip-v1',
 #     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
