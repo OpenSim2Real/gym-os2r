@@ -15,26 +15,27 @@ from collections import deque
 class MonopodTask(task.Task, abc.ABC):
 
     """
-    Provides the base implementation for the monopod ignition gym environment.
-    This class does the following:
+    Monopod task defines the main task functionality for the monopod
+    environment. Task requires the kwargs; 'task_mode', 'reward_class',
+    'reset_positions'.
 
-        1. Defines some important parameters of the robot. Sets position and
-           rotation limits. Because of this, is_done is true when these are
-           exceeded.
-        2. Implements the methods for env.step(): get_reward, get_observation,
-           is_done
-        3. Provides methods to configure action/observation spaces, and perform
-           an action
+    Task must be wrapped in a runtime or randomizer class to use with igntion
+    or the real robot.
 
-    For the user, this class makes no assumption on the goal of the tasks so
-    the get_reward method is left intentionally blank. Also, because the
-    default limits can be changed, the is_done method can be easily overwritten
-    for further flexibility.
+    Attributes:
+        task_mode (str): The defined monopod task. current default tasks;
+        'free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw'.
+        reward_class (:class:`gym_bb.rewards.rewards.RewardBase`): Class
+        defining the reward. Must have same functions as RewardBase.
+        reset_positions (str): Reset locations of the task. currently supports;
+        'stand', 'half_stand', 'ground', 'lay', 'float'.
+        observation_index (dict): dictionry with the joint_name_pos and
+        joint_name_vel as keys with values corresponding to its index in the
+        observation space.
+
     """
 
-    def __init__(self,
-                 agent_rate: float,
-                 **kwargs):
+    def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip',
                                      'fixed_hip', 'fixed_hip_and_boom_yaw']
 
@@ -105,7 +106,15 @@ class MonopodTask(task.Task, abc.ABC):
         self.__dict__.update(kwargs)
 
     def create_spaces(self) -> Tuple[ActionSpace, ObservationSpace]:
+        """
+        Constructs observtion and action spaces for monopod task. Spaces
+        definition is defined in ../config/default/settings.yaml ...
 
+        Returns:
+            ndarray: action space.
+            ndarray: observation space.
+
+        """
         # Create the action space
         action_lims = np.array(list(self.spaces_definition['action'].values()))
         observation_lims = np.array(
@@ -130,6 +139,16 @@ class MonopodTask(task.Task, abc.ABC):
         return action_space, observation_space
 
     def set_action(self, action: Action) -> None:
+        """
+        Set generalized force target for each controlled joint.
+
+        Args:
+            action (ndrray): Generalized force target for each
+                             controlled joint.
+        Raise:
+            RuntimeError: Failed to set joints torque target.
+
+        """
         if not self.action_space.contains(action):
             raise RuntimeError(
                 "Action Space does not contain the provided action")
@@ -145,7 +164,13 @@ class MonopodTask(task.Task, abc.ABC):
                     "Failed to set the torque for joint: " + joint)
 
     def get_observation(self) -> Observation:
+        """
+        Returns the current observation state of the monopod.
 
+        Returns:
+            ndarray: Array of joint positions nad velocities.
+
+        """
         # Get the model
         model = self.world.get_model(self.model_name)
 
@@ -159,7 +184,14 @@ class MonopodTask(task.Task, abc.ABC):
         return observation
 
     def is_done(self) -> bool:
+        """
+        Checks if the current state of the robot is outside of the reset_space.
+        logs the reason for the reset as a debug message.
 
+        Returns:
+            bool: True for done, False otherwise.
+
+        """
         # Get the observation
         observation = self.get_observation()
 
@@ -178,8 +210,10 @@ class MonopodTask(task.Task, abc.ABC):
 
     def reset_task(self) -> None:
         """
-        Reset_task sets the scenario backend to force controller
-        For ignition simulation positions are reset in randomizer.
+        Resets the environment into default state.
+        sets the scenario backend into force controller mode
+        Sets the max generalized force for each joint.
+
         """
         if self.model_name not in self.world.model_names():
             raise RuntimeError("Monopod model not found in the world")
@@ -199,21 +233,45 @@ class MonopodTask(task.Task, abc.ABC):
 
     def get_reward(self) -> Reward:
         """
-        Returns the reward Calculated in calculate_reward
+        Returns the reward for the current monopod state.
+
+        Returns:
+            bool: True for done, False otherwise.
+
         """
         obs = self.get_observation()
         return self.calculate_reward(obs, self.action_history[-1])
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         """
-        Calculates the reward given observation.
-        Implementation left to the user using the reward classes
+        Calculates the reward given observation and action. The reward is
+        calculated in a provided reward class defined in the tasks kwargs.
+
+        Args:
+            obs (np.array): numpy array with the same size task dimensions as
+                            observation space.
+            action (np.array): numpy array with the same size task dimensions
+                            as action space.
+
+        Returns:
+            bool: True for done, False otherwise.
         """
         return self.reward.calculate_reward(obs, action)
 
     def get_state_info(self, obs: Observation, action: Action) -> Tuple[Reward, bool]:
         """
-        Returns the reward and is_done given a state you provide.
+        Returns the reward and is_done for some observation and action space.
+
+        Args:
+            obs (np.array): numpy array with the same size task dimensions as
+                            observation space.
+            action (np.array): numpy array with the same size task dimensions
+                            as action space.
+
+        Returns:
+            Reward: Rewrd given the state.
+            bool: True for done, False otherwise.
+
         """
         reward = self.calculate_reward(obs, action)
         done = not self.reset_space.contains(obs)

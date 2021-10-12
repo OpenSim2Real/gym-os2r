@@ -39,9 +39,9 @@ class Monopod(model_wrapper.ModelWrapper, model_with_file.ModelWithFile):
     @classmethod
     def get_model_file(cls) -> str:
         '''
-        This function is set to only get a default Monopod currently
+        This function is set to only get a default Monopod.
         '''
-        return SIMP.get_model_file('monopod_v1')
+        return SIMP.get_model_file('monopod')
 
 
 def get_model_file_from_name(model_name: str) -> str:
