@@ -22,7 +22,8 @@ env_id = "Monopod-walk-v1"
 # kwargs = {'reward_class': BalancingV2}
 kwargs = {}
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
-env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 # Enable the rendering
 env.render('human')
 
