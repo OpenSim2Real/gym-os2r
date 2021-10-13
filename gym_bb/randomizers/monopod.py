@@ -91,7 +91,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
         reset_conf['boom_pitch_joint'] *= random.uniform(0.8, 1.2)
-
         joint_angles = (0, 0)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
@@ -187,7 +186,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             "*/link/collision/surface/friction/ode/mu": {
                 'method': Method.Absolute,
                 'distribution': Distribution.Uniform,
-                'params': UniformParams(low=0.7, high=1.2),
+                'params': UniformParams(low=0.8, high=1.2),
                 'ignore_zeros': False,
                 'force_positive': True,
             }
