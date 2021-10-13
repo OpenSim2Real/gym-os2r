@@ -91,7 +91,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
         reset_conf['boom_pitch_joint'] *= random.uniform(0.8, 1.2)
-
         joint_angles = (0, 0)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'

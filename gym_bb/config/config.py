@@ -2,6 +2,7 @@ from operator import getitem
 from functools import reduce
 import yaml
 import os
+from copy import copy
 
 
 class BaseConfig():
@@ -35,7 +36,7 @@ class BaseConfig():
         support * regex in the xpath.
         """
         mapList = xpath.strip('/').split('/')
-        return reduce(getitem, mapList[:-1], self.config_dict)[mapList[-1]]
+        return copy(reduce(getitem, mapList[:-1], self.config_dict)[mapList[-1]])
 
 
 class SettingsConfig(BaseConfig):
