@@ -2,32 +2,19 @@ import gym
 import time
 import functools
 from gym_ignition.utils import logger
-from gym_ignition.utils.typing import Action, Reward, Observation
-
 from gym_bb import randomizers
-from gym_bb.common.mp_env import make_env_from_id
+from gym_bb.common.make_envs import make_env_from_id
+
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-Gazebo-v1"
-
+env_id = "Monopod-balance-v1"
 
 # Create a partial function passing the environment id
-make_env = functools.partial(make_env_from_id, env_id=env_id)
-
-# Wrap the environment with the randomizer.
-# This is a simple example no randomization are applied.
-# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizations(env=make_env)
-
-# # Wrap the environment with the randomizer.
-# # This is a complex example that randomizes both the physics and the model.
-# env = randomizers.monopod.MonopodEnvRandomizer(
-#     env=make_env, seed=42, num_physics_rollouts=5)
-# env = randomizers.monopod.MonopodEnvRandomizer(
-#     env=make_env, num_physics_rollouts=5)
-
+kwargs = {'task_mode': 'fixed_hip_and_boom_yaw'}
+make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 # Enable the rendering
 env.render('human')
@@ -55,7 +42,7 @@ for epoch in range(1000):
         # It is not required to call this in the loop if physics is not randomized.
         # env.render('human')
         if done:
-            print('state info: ', env.get_state_info(
+            print('rollout info: ', env.get_state_info(
                 observation), ' Real Reward: ', reward)
 
         # Accumulate the reward

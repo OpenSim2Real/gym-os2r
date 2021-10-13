@@ -7,6 +7,7 @@ import gym
 import numpy as np
 from .vec_env import VecEnv, CloudpickleWrapper
 
+
 def _worker(remote, parent_remote, env_fn_wrapper):
     parent_remote.close()
     env = env_fn_wrapper.var()
@@ -21,7 +22,7 @@ def _worker(remote, parent_remote, env_fn_wrapper):
                     observation = env.reset()
                 remote.send((observation, reward, done, info))
             elif cmd == 'get_state_info':
-                reward, done = env.get_state_info(data)
+                reward, done = env.get_state_info(*data)
                 remote.send((reward, done))
             elif cmd == 'seed':
                 remote.send(env.seed(data))
@@ -44,7 +45,8 @@ def _worker(remote, parent_remote, env_fn_wrapper):
             elif cmd == 'set_attr':
                 remote.send(setattr(env, data[0], data[1]))
             else:
-                raise NotImplementedError("`{}` is not implemented in the worker".format(cmd))
+                raise NotImplementedError(
+                    "`{}` is not implemented in the worker".format(cmd))
         except EOFError:
             break
 
@@ -91,12 +93,14 @@ class SubprocVecEnv(VecEnv):
             start_method = 'forkserver' if forkserver_available else 'spawn'
         ctx = multiprocessing.get_context(start_method)
 
-        self.remotes, self.work_remotes = zip(*[ctx.Pipe(duplex=True) for _ in range(n_envs)])
+        self.remotes, self.work_remotes = zip(
+            *[ctx.Pipe(duplex=True) for _ in range(n_envs)])
         self.processes = []
         for work_remote, remote, env_fn in zip(self.work_remotes, self.remotes, env_fns):
             args = (work_remote, remote, CloudpickleWrapper(env_fn))
             # daemon=True: if the main process crashes, we should not cause things to hang
-            process = ctx.Process(target=_worker, args=args, daemon=True)  # pytype:disable=attribute-error
+            # pytype:disable=attribute-error
+            process = ctx.Process(target=_worker, args=args, daemon=True)
             process.start()
             self.processes.append(process)
             work_remote.close()
@@ -116,9 +120,9 @@ class SubprocVecEnv(VecEnv):
         obs, rews, dones, infos = zip(*results)
         return _flatten_obs(obs, self.observation_space), np.stack(rews), np.stack(dones), infos
 
-    def get_state_info_async(self, states):
-        for remote, state in zip(self.remotes, states):
-            remote.send(('get_state_info', state))
+    def get_state_info_async(self, states, actions):
+        for remote, state, action in zip(self.remotes, states, actions):
+            remote.send(('get_state_info', [state, action]))
         self.waiting = True
 
     def get_state_info_wait(self):
@@ -127,13 +131,13 @@ class SubprocVecEnv(VecEnv):
         rews, dones = zip(*results)
         return np.stack(rews), np.stack(dones)
 
-    def get_state_info(self, states):
+    def get_state_info(self, states, actions):
         """
         get reward and done of the environments in a given state
         :param actions: ([int] or [float]) the state
         :return: ([float], [bool]) reward, done
         """
-        self.get_state_info_async(states)
+        self.get_state_info_async(states, actions)
         return self.get_state_info_wait()
 
     def seed(self, seed=None):
@@ -186,7 +190,8 @@ class SubprocVecEnv(VecEnv):
         """Call instance methods of vectorized environments."""
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
-            remote.send(('env_method', (method_name, method_args, method_kwargs)))
+            remote.send(
+                ('env_method', (method_name, method_args, method_kwargs)))
         return [remote.recv() for remote in target_remotes]
 
     def _get_target_remotes(self, indices):
@@ -210,15 +215,19 @@ def _flatten_obs(obs, space):
             A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays.
             Each NumPy array has the environment index as its first axis.
     """
-    assert isinstance(obs, (list, tuple)), "expected list or tuple of observations per environment"
+    assert isinstance(
+        obs, (list, tuple)), "expected list or tuple of observations per environment"
     assert len(obs) > 0, "need observations from at least one environment"
 
     if isinstance(space, gym.spaces.Dict):
-        assert isinstance(space.spaces, OrderedDict), "Dict space must have ordered subspaces"
-        assert isinstance(obs[0], dict), "non-dict observation for environment with Dict observation space"
+        assert isinstance(
+            space.spaces, OrderedDict), "Dict space must have ordered subspaces"
+        assert isinstance(
+            obs[0], dict), "non-dict observation for environment with Dict observation space"
         return OrderedDict([(k, np.stack([o[k] for o in obs])) for k in space.spaces.keys()])
     elif isinstance(space, gym.spaces.Tuple):
-        assert isinstance(obs[0], tuple), "non-tuple observation for environment with Tuple observation space"
+        assert isinstance(
+            obs[0], tuple), "non-tuple observation for environment with Tuple observation space"
         obs_len = len(space.spaces)
         return tuple((np.stack([o[i] for o in obs]) for i in range(obs_len)))
     else:

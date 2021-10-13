@@ -4,9 +4,10 @@ import functools
 import numpy as np
 from gym_ignition.utils import logger
 from gym_bb import randomizers
-from gym_bb.common.mp_env import make_mp_envs
+from gym_bb.common.make_envs import make_mp_envs
 from gym_bb.monitor.monitor import VecMonitorPlot
 import multiprocessing
+from gym_bb.rewards.rewards import BalancingV1
 import os
 import sys
 
@@ -37,19 +38,18 @@ def main_loop(envs):
 
 if __name__ == '__main__':
     try:
-        # Available tasks
-        env_id = "Monopod-Gazebo-v2"
         NUM_ENVS = multiprocessing.cpu_count()
-        # NUM_ENVS = 1
         NUMBER_TIME_STEPS = 10000
         seed = 42
+        # Available tasks
+        env_id = "Monopod-balance-v1"
 
+        # Create a partial function passing the environment id
+        kwargs = {}
         fenvs = make_mp_envs(env_id, NUM_ENVS, seed,
-                             randomizers.monopod.MonopodEnvRandomizer)
-        # envs = VecMonitor(envs)
+                             randomizers.monopod.MonopodEnvRandomizer, **kwargs)
         envs = VecMonitorPlot(
             fenvs, plot_path=os.path.expanduser('~')+'/Desktop/plot')
-
         envs.reset()
         main_loop(envs)
     except Exception as error:
