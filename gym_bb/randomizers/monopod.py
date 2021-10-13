@@ -187,7 +187,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             "*/link/collision/surface/friction/ode/mu": {
                 'method': Method.Absolute,
                 'distribution': Distribution.Uniform,
-                'params': UniformParams(low=0.7, high=1.2),
+                'params': UniformParams(low=0.8, high=1.2),
                 'ignore_zeros': False,
                 'force_positive': True,
             }
