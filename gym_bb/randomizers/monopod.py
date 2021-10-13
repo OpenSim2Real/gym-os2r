@@ -100,9 +100,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             joint_angles = leg_joint_angles(robot_def)
         else:
             joint_angles = (1.57,  0)
-
-        joint_angles = [angle * random.choice([-1, 1])
-                        for angle in joint_angles]
+        random_dir = random.choice([-1, 1])
+        joint_angles = [angle * random_dir for angle in joint_angles]
         # Get the model
         model = task.world.get_model(task.model_name)
 
@@ -123,13 +122,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
-
-    def leg_joint_angles(self, boom_pitch_joint_pos: float, laying_down: bool):
-        # Get leg lengths from task
-        # Find angles of legs to not clip into ground based on boom pitch pos
-        # Account for central pivot height
-        # Return angles needed
-        pass
 
     # ====================================
     # ModelDescriptionRandomizer interface
