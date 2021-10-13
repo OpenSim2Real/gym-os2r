@@ -9,7 +9,7 @@ class Monopod(model_wrapper.ModelWrapper, model_with_file.ModelWithFile):
     def __init__(self,
                  world: scenario.World, monopod_version: str,
                  position: List[float] = (0.0, 0.0, 0.0),
-                 orientation: List[float] = (1.0, 0, 0, 0),
+                 orientation: List[float] = (1.0, 0.0, 0.0, 0.0),
                  model_file: str = None):
 
         # Get a unique model name
