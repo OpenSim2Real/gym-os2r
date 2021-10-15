@@ -177,7 +177,6 @@ class MonopodTask(task.Task, abc.ABC):
         # Get the new joint positions and velocities
         pos = model.joint_positions(self.joint_names)
         vel = model.joint_velocities(self.joint_names)
-
         # Create the observation
         observation = Observation(np.array([*pos, *vel]))
         # Return the observation
