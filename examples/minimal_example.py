@@ -13,17 +13,18 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-walk-v1"
+env_id = "Monopod-balance-v1"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'fixed_hip_and_boom_yaw'}
+kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
 # kwargs = {'reset_positions': ['float']}
 # kwargs = {'reward_class': BalancingV2}
-kwargs = {}
+# kwargs = {}
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 # env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
-env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
+env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
 # Enable the rendering
 env.render('human')
 
@@ -35,6 +36,7 @@ for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
+    print(observation)
 
     # Initialize returned values
     done = False
