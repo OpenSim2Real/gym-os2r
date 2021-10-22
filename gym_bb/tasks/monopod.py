@@ -221,14 +221,14 @@ class MonopodTask(task.Task, abc.ABC):
         model = self.world.get_model(self.model_name)
 
         # Control the monopod in force mode
-        for joint_name in self.action_names:
-            joint = model.get_joint(joint_name)
-            ok = joint.set_control_mode(scenario.JointControlMode_force)
-            ok = ok and joint.set_max_generalized_force(
-                max(self.action_space.high))
-            if not ok:
-                raise RuntimeError(
-                    "Failed to change the control mode of the Monopod")
+
+        ok = model.set_joint_control_mode(scenario.JointControlMode_force)
+        ok = ok and [model.get_joint(joint_name).set_max_generalized_force(
+            self.action_space.high[i]) for i, joint_name in enumerate(
+            self.action_names)]
+        if not ok:
+            raise RuntimeError(
+                "Failed to change the control mode of the Monopod")
 
     def get_reward(self) -> Reward:
         """
