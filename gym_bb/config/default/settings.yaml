@@ -69,7 +69,7 @@ resets:
     boom_pitch_joint: 0.045
   lay:
     laying_down: True
-    boom_pitch_joint: 0.05
+    boom_pitch_joint: -0.005
   float:
     laying_down: False
     boom_pitch_joint: 0.5
