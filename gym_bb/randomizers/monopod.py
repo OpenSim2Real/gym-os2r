@@ -4,6 +4,13 @@
 
 import abc
 from typing import Union
+
+import random
+import os
+from lxml import etree
+from operator import add
+from functools import reduce
+
 from scenario import gazebo as scenario
 from gym_ignition import utils
 from gym_ignition.utils import misc
@@ -16,12 +23,7 @@ from gym_ignition.utils import logger
 
 from gym_bb import tasks
 from gym_bb.models import monopod
-import random
 from gym_bb.utils.reset import leg_joint_angles
-import os
-from lxml import etree
-from operator import add
-from functools import reduce
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod.MonopodTask]

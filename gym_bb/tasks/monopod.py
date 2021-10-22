@@ -82,6 +82,8 @@ class MonopodTask(task.Task, abc.ABC):
         # Space for resetting the task
         self.reset_space = None
 
+        self.low_level_controller_period = 5000  # hz
+
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
         self.joint_names = [*self.spaces_definition['observation']]
@@ -226,6 +228,8 @@ class MonopodTask(task.Task, abc.ABC):
         ok = ok and [model.get_joint(joint_name).set_max_generalized_force(
             self.action_space.high[i]) for i, joint_name in enumerate(
             self.action_names)]
+        ok = ok and model.set_controller_period(
+            1/self.low_level_controller_period)
         if not ok:
             raise RuntimeError(
                 "Failed to change the control mode of the Monopod")
