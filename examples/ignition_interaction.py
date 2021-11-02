@@ -18,10 +18,11 @@ world.insert_model(SIMP.get_model_file("ground_plane"))
 world.set_physics_engine(scenario_gazebo.PhysicsEngine_dart)
 
 # Insert monopod
-world.insert_model(SIMP.get_model_file("monopod_v1"))
+world.insert_model(SIMP.get_model_file("monopod"))
 
 # Get the monopod model
-monopod = world.get_model("monopod_v1")
+
+monopod = world.get_model("monopod")
 # Open the GUI
 gazebo.gui()
 
@@ -39,9 +40,8 @@ gazebo.run(paused=True)
 #    lower_leg.set_joint_generalized_force_target([0.3])
 #    gazebo.run()
 #    print('lower leg: ', lower_leg.joint_position(),'upper leg: ', upper_leg.joint_position())
-    
+
 
 # Close the simulator
 time.sleep(1000)
 gazebo.close()
-
