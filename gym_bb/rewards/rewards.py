@@ -10,7 +10,7 @@ Base Class
 
 class RewardBase():
     """
-    Baseclass for a reward. Please follow this convention when making a new
+    Baseclass for rewards. Please follow this convention when making a new
     reward.
 
     observation_index is a dictionary which gives the index of the observation
@@ -25,6 +25,19 @@ class RewardBase():
 
     @abstractmethod
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        """
+        Calculates the reward given observation and action. The reward is
+        calculated in a provided reward class defined in the tasks kwargs.
+
+        Args:
+            obs (np.array): numpy array with the same size task dimensions as
+                            observation space.
+            action (np.array): numpy array with the same size task dimensions
+                            as action space.
+
+        Returns:
+            bool: True for done, False otherwise.
+        """
         pass
 
     def is_task_supported(self, task_mode: str):

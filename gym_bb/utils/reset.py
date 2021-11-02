@@ -2,6 +2,20 @@ import numpy as np
 
 
 def leg_joint_angles(robot_def: dict):
+    """
+    leg_joint_angles returns the joint positions needed to avoid clipping into
+    the ground based on the inputed robot parameters.
+
+    Args:
+        robot_def (dict): Robot definition dictionary. must contain the
+            following keys. required = ['boom_pitch_joint', 'upper_leg_length',
+            'lower_leg_length', 'central_pivot_height', 'length_boom',
+            'hip_offset', 'clipping_adjust']
+
+    Returns:
+        Tuple: (upper_leg_angle, lower_leg_angle) in radians.
+
+    """
     required = ['boom_pitch_joint', 'upper_leg_length',
                 'lower_leg_length', 'central_pivot_height', 'length_boom',
                 'hip_offset', 'clipping_adjust']

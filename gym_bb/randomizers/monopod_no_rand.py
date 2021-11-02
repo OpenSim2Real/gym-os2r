@@ -70,12 +70,12 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         # Get the model
         model = task.world.get_model(task.model_name)
 
-        pos_reset = vel_reset = [0]*len(task.joint_names)
+        pos_reset = [0]*len(task.joint_names)
+        vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
             'boom_pitch_joint')] = reset_conf['boom_pitch_joint']
         pos_reset[task.joint_names.index('upper_leg_joint')] = joint_angles[0]
         pos_reset[task.joint_names.index('lower_leg_joint')] = joint_angles[1]
-
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)
         ok_vel = model.to_gazebo().reset_joint_velocities(

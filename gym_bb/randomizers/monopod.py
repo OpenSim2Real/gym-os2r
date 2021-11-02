@@ -4,6 +4,13 @@
 
 import abc
 from typing import Union
+
+import random
+import os
+from lxml import etree
+from operator import add
+from functools import reduce
+
 from scenario import gazebo as scenario
 from gym_ignition import utils
 from gym_ignition.utils import misc
@@ -12,10 +19,10 @@ from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
 from gym_ignition.utils.typing import Observation, Action
+from gym_ignition.utils import logger
 
 from gym_bb import tasks
 from gym_bb.models import monopod
-import random
 from gym_bb.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
@@ -86,7 +93,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
         reset_conf['boom_pitch_joint'] *= random.uniform(0.8, 1.2)
-
         joint_angles = (0, 0)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
@@ -95,13 +101,13 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             joint_angles = leg_joint_angles(robot_def)
         else:
             joint_angles = (1.57,  0)
-
-        joint_angles = [angle * random.choice([-1, 1])
-                        for angle in joint_angles]
+        random_dir = random.choice([-1, 1])
+        joint_angles = [angle * random_dir for angle in joint_angles]
         # Get the model
         model = task.world.get_model(task.model_name)
 
-        pos_reset = vel_reset = [0]*len(task.joint_names)
+        pos_reset = [0]*len(task.joint_names)
+        vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
             'boom_pitch_joint')] = reset_conf['boom_pitch_joint']
         pos_reset[task.joint_names.index('upper_leg_joint')] = joint_angles[0]
@@ -118,13 +124,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Execute a paused run to process model insertion
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
-
-    def leg_joint_angles(self, boom_pitch_joint_pos: float, laying_down: bool):
-        # Get leg lengths from task
-        # Find angles of legs to not clip into ground based on boom pitch pos
-        # Account for central pivot height
-        # Return angles needed
-        pass
 
     # ====================================
     # ModelDescriptionRandomizer interface
@@ -164,23 +163,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         # Use the RNG of the task
         sdf_randomizer.rng = task.np_random
 
-        # Add the missing friction/ode/mu element. We assume that friction exists.
-        # frictions = randomizer.find_xpath("*/link/collision/surface/friction")
-        #
-        # for friction in frictions:
-        #     # Create parent 'ode' first
-        #     if friction.find("ode") is None:
-        #         etree.SubElement(friction, "ode")
-        #
-        #     # Create child 'mu' after
-        #     ode = friction.find("ode")
-        #     if ode.find("mu") is None:
-        #         etree.SubElement(ode, "mu")
-        #
-        #     # Assign a dummy value to mu
-        #     mu = ode.find("mu")
-        #     mu.text = str(0)
-
         randomization_config = {
             "*/link/inertial/mass": {
                 # mass + U(-0.5, 0.5)
@@ -191,24 +173,61 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                 'force_positive': True,
             },
             "*/joint/axis/dynamics/friction": {
-                # friction in [0, 5]
                 'method': Method.Absolute,
                 'distribution': Distribution.Uniform,
-                'params': UniformParams(low=0.1, high=0.3),
+                'params': UniformParams(low=0.01, high=0.1),
                 'ignore_zeros': False,  # We initialized the value as 0
                 'force_positive': True,
             },
             "*/joint/axis/dynamics/damping": {
-                # damping (= 3.0) * [0.8, 1.2]
                 'method': Method.Coefficient,
                 'distribution': Distribution.Uniform,
                 'params': UniformParams(low=0.8, high=1.2),
                 'ignore_zeros': True,
                 'force_positive': True,
+            },
+            "*/link/collision/surface/friction/ode/mu": {
+                'method': Method.Absolute,
+                'distribution': Distribution.Uniform,
+                'params': UniformParams(low=0.8, high=1.2),
+                'ignore_zeros': False,
+                'force_positive': True,
             }
         }
 
+        def recursive_element_helper(path, randomizer):
+            if path in ['', '*']:
+                # Return if at base case (last element of xpath)
+                return randomizer.find_xpath('*'), []
+            path_split = os.path.split(path)
+            # Depth first.
+            elements, _ = recursive_element_helper(
+                path_split[0], randomizer)
+            """ Check if current path has elements in it.
+             If current path has no elements then make them using one level
+             down path. (loop invariant is the level below must exist)"""
+            changed = []
+            for element in elements:
+                if element.find(path_split[1]) is None:
+                    etree.SubElement(element, path_split[1])
+                    changed.append(element)
+                    logger.debug('Added the child ' + str(path_split[1])
+                                 + ' to the sdf element ' + str(path_split[0]))
+            changed = [element.findall(path_split[1]) for element in changed]
+            changed = reduce(add, changed) if changed else changed
+            new = reduce(add, [element.findall(path_split[1])
+                               for element in elements])
+            return new, changed
+
+        def recursive_element_init(path, randomizer):
+            elements, changed = recursive_element_helper(path, randomizer)
+            for element in changed:
+                logger.debug('The leaf element added with the tag: '
+                             + str(element.tag) + ' got set to the value 0')
+                element.text = str(0)
+
         for xpath, config in randomization_config.items():
+            recursive_element_init(xpath, sdf_randomizer)
             sdf_randomizer.new_randomization() \
                 .at_xpath(xpath) \
                 .method(config["method"]) \
