@@ -1,5 +1,5 @@
-import gym_bb.models.models as models
 import time
+import gym_bb.models.models as models
 from scenario import gazebo as scenario_gazebo
 
 # Create the simulator
