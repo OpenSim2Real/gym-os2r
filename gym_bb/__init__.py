@@ -8,7 +8,7 @@ from . import utils
 __all__ = ['tasks', 'models', 'randomizers', 'common', 'utils']
 
 from gym.envs.registration import register
-from gym_bb.rewards.rewards import BalancingV1, StandingV1, WalkingV1
+from gym_bb.rewards import BalancingV1, StandingV1, WalkingV1
 
 max_float = float(numpy.finfo(numpy.float32).max)
 

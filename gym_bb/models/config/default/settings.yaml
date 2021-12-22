@@ -1,0 +1,134 @@
+task_modes:
+  free_hip:
+    model: 'monopod'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 190
+      central_pivot_height: 80
+      length_boom: 2100
+      hip_offset: 0
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: [20, -20]
+        knee_joint: [20, -20]
+      observation:
+        # Defined the observation space for tasks the values of the array are in
+        # the form [max_pos, min_pos, max_vel, min_vel]
+        hip_joint: [6.30, -6.30, .inf, -.inf]
+        knee_joint: [.inf, -.inf, .inf, -.inf]
+        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
+        boom_connector_joint: [6.30, -6.30, .inf, -.inf]
+
+  fixed_hip:
+    model: 'monopod-fixed_hip'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 190
+      central_pivot_height: 80
+      length_boom: 2100
+      hip_offset: 0
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: [20, -20]
+        knee_joint: [20, -20]
+      observation:
+        hip_joint: [6.30, -6.30, .inf, -.inf]
+        knee_joint: [6.30, -6.30, .inf, -.inf]
+        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
+
+  fixed:
+    model: 'monopod-fixed'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 190
+      central_pivot_height: 80
+      length_boom: 2100
+      hip_offset: 0
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: [20, -20]
+        knee_joint: [20, -20]
+      observation:
+        hip_joint: [6.30, -6.30, .inf, -.inf]
+        knee_joint: [6.30, -6.30, .inf, -.inf]
+        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
+
+  old-free_hip:
+    model: 'old-monopod'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 200
+      central_pivot_height: 75
+      length_boom: 1500
+      hip_offset: 20
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: [20, -20]
+        knee_joint: [20, -20]
+      observation:
+        # Defined the observation space for tasks the values of the array are in
+        # the form [max_pos, min_pos, max_vel, min_vel]
+        hip_joint: [6.30, -6.30, .inf, -.inf]
+        knee_joint: [6.30, -6.30, .inf, -.inf]
+        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
+        boom_connector_joint: [6.30, -6.30, .inf, -.inf]
+
+  old-fixed_hip:
+    model: 'old-monopod-fixed_hip'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 200
+      central_pivot_height: 75
+      length_boom: 1500
+      hip_offset: 20
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: [20, -20]
+        knee_joint: [20, -20]
+      observation:
+        hip_joint: [6.30, -6.30, .inf, -.inf]
+        knee_joint: [6.30, -6.30, .inf, -.inf]
+        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
+
+  old-fixed:
+    model: 'old-monopod-fixed'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 200
+      central_pivot_height: 75
+      length_boom: 1500
+      hip_offset: 20
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: [20, -20]
+        knee_joint: [20, -20]
+      observation:
+        hip_joint: [6.30, -6.30, .inf, -.inf]
+        knee_joint: [6.30, -6.30, .inf, -.inf]
+        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
+resets:
+  stand:
+    laying_down: False
+    planarizer_pitch_joint: 0.24
+  half_stand:
+    laying_down: False
+    planarizer_pitch_joint: 0.15
+  ground:
+    laying_down: False
+    planarizer_pitch_joint: 0.045
+  lay:
+    laying_down: True
+    planarizer_pitch_joint: -0.005
+  float:
+    laying_down: False
+    planarizer_pitch_joint: 0.5

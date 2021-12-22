@@ -7,7 +7,7 @@ from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
 import warnings
-from gym_bb.config.config import SettingsConfig
+from gym_bb.models.config import SettingsConfig
 from gym_ignition.utils import logger
 from collections import deque
 
@@ -24,7 +24,8 @@ class MonopodTask(task.Task, abc.ABC):
 
     Attributes:
         task_mode (str): The defined monopod task. current default tasks;
-        'free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw'.
+        'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip',
+        'old-fixed'.
         reward_class (:class:`gym_bb.rewards.rewards.RewardBase`): Class
         defining the reward. Must have same functions as RewardBase.
         reset_positions (str): Reset locations of the task. currently supports;
@@ -36,8 +37,9 @@ class MonopodTask(task.Task, abc.ABC):
     """
 
     def __init__(self, agent_rate: float, **kwargs):
-        self.supported_task_modes = ['free_hip',
-                                     'fixed_hip', 'fixed_hip_and_boom_yaw']
+        self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
+                                     'old-free_hip', 'old-fixed_hip',
+                                     'old-fixed']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -229,7 +231,7 @@ class MonopodTask(task.Task, abc.ABC):
             self.action_space.high[i]) for i, joint_name in enumerate(
             self.action_names)]
         ok = ok and model.set_controller_period(
-            1/self.low_level_controller_period)
+            1 / self.low_level_controller_period)
         if not ok:
             raise RuntimeError(
                 "Failed to change the control mode of the Monopod")
