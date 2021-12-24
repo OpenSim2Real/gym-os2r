@@ -119,10 +119,9 @@ class MonopodTask(task.Task, abc.ABC):
             ndarray: observation space.
 
         """
-        # Create the action space
-        self.max_torques = self.spaces_definition['action']
-        # observation_lims = np.array(
-        #     list(self.spaces_definition['observation']['limits'].values()))
+        # Create the max torques. Dict are ordered in >3.6
+        self.max_torques = np.array(
+            list(self.spaces_definition['action'].values()))
 
         obs_list = []
         for joint, info in self.spaces_definition['observation'].items():
@@ -176,13 +175,11 @@ class MonopodTask(task.Task, abc.ABC):
         # Set the force value
         model = self.world.get_model(self.model_name)
 
-        for joint, value in zip(self.action_names, action.tolist()):
-            # Set torque to value given in action
-            value_scaled = self.max_torques[joint] * value
-            if not model.get_joint(
-                    joint).set_generalized_force_target(value_scaled):
-                raise RuntimeError(
-                    "Failed to set the torque for joint: " + joint)
+        data = self.max_torques * action
+        if not model.set_joint_generalized_force_targets(
+                data, self.action_names):
+            raise RuntimeError(
+                "Failed to set the torque for joints: " + self.action_names)
 
     def get_observation(self) -> Observation:
         """
@@ -248,11 +245,12 @@ class MonopodTask(task.Task, abc.ABC):
         model = self.world.get_model(self.model_name)
 
         # Control the monopod in force mode
-
         ok = model.set_joint_control_mode(scenario.JointControlMode_force)
-        ok = ok and [model.get_joint(joint_name).set_max_generalized_force(
-            self.action_space.high[i]) for i, joint_name in enumerate(
-            self.action_names)]
+        # set max generalized force for action joints
+        ok = ok and all([model.get_joint(joint_name).set_max_generalized_force(
+            self.action_space.high[i]*self.max_torques[i]) for i,
+            joint_name in enumerate(self.action_names)])
+        # Set controller period??
         ok = ok and model.set_controller_period(
             1 / self.low_level_controller_period)
         if not ok:

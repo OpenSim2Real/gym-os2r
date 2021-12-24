@@ -14,9 +14,9 @@ task_modes:
         knee_joint: 20
       observation:
         hip_joint:
+          # Periodic position when true ignores position limits
           periodic_pos: False
-          # max/min pos -- max/min vel
-          # Periodic position needs 1/-1 for pos
+          # values are in order max/min pos -- max/min vel
           limits: [6.30, -6.30, .inf, -.inf]
         knee_joint:
           periodic_pos: True

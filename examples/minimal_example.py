@@ -9,8 +9,8 @@ from gym_bb.rewards.rewards import BalancingV2
 
 
 # Set verbosity
-logger.set_level(gym.logger.ERROR)
-# logger.set_level(gym.logger.DEBUG)
+# logger.set_level(gym.logger.ERROR)
+logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
 env_id = "Monopod-stand-v1"
