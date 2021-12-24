@@ -17,7 +17,7 @@ env_id = "Monopod-stand-v1"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'fixed'}
-# kwargs = {'task_mode': 'free_hip'}
+kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
 # kwargs = {'reset_positions': ['float']}
 # kwargs = {'reward_class': BalancingV2}
@@ -45,7 +45,8 @@ for epoch in range(1000):
 
     while not done:
         # Execute a random action
-        action = env.action_space.sample() * 0.1  # make the value smaller
+        # action = env.action_space.sample() * 0.1  # make the value smaller
+        action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
         # time.sleep(0.005)
 

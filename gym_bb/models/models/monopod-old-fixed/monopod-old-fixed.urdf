@@ -290,7 +290,8 @@
   </link>
   <joint
     name="knee_joint"
-    type="revolute">
+    type="continuous">
+    <!-- type="revolute"> -->
     <origin
       xyz="0.03 0 0.2"
       rpy="0 0 0" />
@@ -300,11 +301,11 @@
       link="lower_leg_link" />
     <axis
       xyz="1 0 0" />
-    <limit
+    <!-- <limit
       lower="-6.28"
       upper="6.28"
       effort="50"
-      velocity="3.1416" />
+      velocity="3.1416" /> -->
     <dynamics
       damping="0.01"
       friction="0.001" />

@@ -120,27 +120,42 @@ class MonopodTask(task.Task, abc.ABC):
 
         """
         # Create the action space
-        action_lims = np.array(list(self.spaces_definition['action'].values()))
-        observation_lims = np.array(
-            list(self.spaces_definition['observation'].values()))
+        self.max_torques = self.spaces_definition['action']
+        # observation_lims = np.array(
+        #     list(self.spaces_definition['observation']['limits'].values()))
 
-        # Configure action limits
-        low = np.array(action_lims[:, 1])
-        high = np.array(action_lims[:, 0])
+        obs_list = []
+        for joint, info in self.spaces_definition['observation'].items():
+            obs_list.append(info['limits'])
+        observation_lims = np.array(obs_list)
+
+        # Configure action limits between -1 and 1 which will be scaled by max
+        # torque later
+        low = np.array([-1, -1])
+        high = np.array([1, 1])
         action_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
         # Configure reset limits
         a = observation_lims
         low = np.concatenate((a[:, 1], a[:, 3]))
         high = np.concatenate((a[:, 0], a[:, 2]))
+
+        self.periodic_joints = []
+        for joint, info in self.spaces_definition['observation'].items():
+            if info['periodic_pos']:
+                self.periodic_joints.append(
+                    self.observation_index[joint + '_pos'])
+
+        low[self.periodic_joints] = -1
+        high[self.periodic_joints] = 1
+
         # Configure the reset space - this is used to check if it exists inside
         # the reset space when deciding whether to reset.
         self.reset_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
         # Configure the observation space
-        observation_space = gym.spaces.Box(low=low*1.2, high=high*1.2,
-                                           dtype=np.float64)
+        obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
-        return action_space, observation_space
+        return action_space, obs_space
 
     def set_action(self, action: Action) -> None:
         """
@@ -163,7 +178,9 @@ class MonopodTask(task.Task, abc.ABC):
 
         for joint, value in zip(self.action_names, action.tolist()):
             # Set torque to value given in action
-            if not model.get_joint(joint).set_generalized_force_target(value):
+            value_scaled = self.max_torques[joint] * value
+            if not model.get_joint(
+                    joint).set_generalized_force_target(value_scaled):
                 raise RuntimeError(
                     "Failed to set the torque for joint: " + joint)
 
@@ -183,6 +200,12 @@ class MonopodTask(task.Task, abc.ABC):
         vel = model.joint_velocities(self.joint_names)
         # Create the observation
         observation = Observation(np.array([*pos, *vel]))
+        # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
+        # maps angle --> [-pi, pi)
+        observation[self.periodic_joints] = np.mod(
+            (observation[self.periodic_joints] + np.pi), (2*np.pi)) - np.pi
+        # Scale periodic joints between -1 and 1.
+        observation[self.periodic_joints] /= np.pi
         # Return the observation
         return observation
 
