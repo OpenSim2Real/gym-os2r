@@ -84,7 +84,7 @@ class MonopodTask(task.Task, abc.ABC):
         # Space for resetting the task
         self.reset_space = None
 
-        self.low_level_controller_period = 5000  # hz
+        self.low_level_controller_period = 1000  # hz
 
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]

@@ -17,12 +17,12 @@ env_id = "Monopod-stand-v1"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'fixed'}
-kwargs = {'task_mode': 'free_hip'}
+# kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
 # kwargs = {'reset_positions': ['float']}
 # kwargs = {'reward_class': BalancingV2}
-# kwargs = {'reset_positions': ['lay']}
-kwargs = {}
+kwargs = {'reset_positions': ['lay']}
+# kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 # env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)

@@ -4,8 +4,9 @@ from . import models
 from . import randomizers
 from . import common
 from . import utils
+from . import runtime
 
-__all__ = ['tasks', 'models', 'randomizers', 'common', 'utils']
+__all__ = ['tasks', 'models', 'randomizers', 'common', 'utils', 'runtime']
 
 from gym.envs.registration import register
 from gym_bb.rewards import BalancingV1, StandingV1, WalkingV1
