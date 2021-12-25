@@ -31,31 +31,6 @@ task_modes:
           periodic_pos: False
           limits: [6.30, -6.30, .inf, -.inf]
 
-    # model: 'monopod'
-    # definition:
-    #   upper_leg_length: 200
-    #   lower_leg_length: 190
-    #   central_pivot_height: 80
-    #   length_boom: 2100
-    #   hip_offset: 0
-    #   clipping_adjust: 25
-    # spaces:
-    #   action:
-    #     hip_joint: [20, -20] # max/min torque should usually be the same
-    #     knee_joint: [20, -20]
-    #   observation:
-    #     # Defined the observation space for tasks the values of the array are in
-    #     # the form [max_pos, min_pos, max_vel, min_vel]
-    #     hip_joint: [6.30, -6.30, .inf, -.inf]
-    #     knee_joint: [.inf, -.inf, .inf, -.inf]
-    #     planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
-    #     planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
-    #     boom_connector_joint: [6.30, -6.30, .inf, -.inf]
-    #   periodic_observation: ['knee_joint_pos']
-    #     # Sets if any joint is periodic limits (jointname(_pos/_vel))
-    #     # We will always use a period of 2pi and assume the meassurement is in radians
-    #     # Limits will be ignored for the chosen joint measurement
-
   fixed_hip:
     model: 'monopod-fixed_hip'
     definition:
@@ -67,17 +42,23 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: [20, -20] # max/min torque should usually be the same
-        knee_joint: [20, -20]
+        hip_joint: 20 # max/min torque should usually be the same
+        knee_joint: 20
       observation:
-        hip_joint: [6.30, -6.30, .inf, -.inf]
-        knee_joint: [6.30, -6.30, .inf, -.inf]
-        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
-        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
-      periodic_observation: ['knee_joint_pos']
-        # Sets if any joint is periodic limits (jointname(_pos/_vel))
-        # We will always use a period of 2pi and assume the meassurement is in radians
-        # Limits will be ignored for the chosen joint measurement
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+        planarizer_pitch_joint:
+          periodic_pos: False
+          limits: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
 
   fixed:
     model: 'monopod-fixed'
@@ -90,16 +71,20 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: [20, -20] # max/min torque should usually be the same
-        knee_joint: [20, -20]
+        hip_joint: 20 # max/min torque should usually be the same
+        knee_joint: 20
       observation:
-        hip_joint: [6.30, -6.30, .inf, -.inf]
-        knee_joint: [6.30, -6.30, .inf, -.inf]
-        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
-      periodic_observation: ['knee_joint_pos']
-        # Sets if any joint is periodic limits (jointname(_pos/_vel))
-        # We will always use a period of 2pi and assume the meassurement is in radians
-        # Limits will be ignored for the chosen joint measurement
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+        planarizer_pitch_joint:
+          periodic_pos: False
+          limits: [1.57, -1.57, .inf, -.inf]
 
   old-free_hip:
     model: 'old-monopod'
@@ -112,20 +97,26 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: [20, -20] # max/min torque should usually be the same
-        knee_joint: [20, -20]
+        hip_joint: 20 # max/min torque should usually be the same
+        knee_joint: 20
       observation:
-        # Defined the observation space for tasks the values of the array are in
-        # the form [max_pos, min_pos, max_vel, min_vel]
-        hip_joint: [6.30, -6.30, .inf, -.inf]
-        knee_joint: [6.30, -6.30, .inf, -.inf]
-        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
-        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
-        boom_connector_joint: [6.30, -6.30, .inf, -.inf]
-      periodic_observation: ['knee_joint_pos']
-        # Sets if any joint is periodic limits (jointname(_pos/_vel))
-        # We will always use a period of 2pi and assume the meassurement is in radians
-        # Limits will be ignored for the chosen joint measurement
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+        planarizer_pitch_joint:
+          periodic_pos: False
+          limits: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+        boom_connector_joint:
+          periodic_pos: False
+          limits: [6.30, -6.30, .inf, -.inf]
 
   old-fixed_hip:
     model: 'old-monopod-fixed_hip'
@@ -138,17 +129,23 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: [20, -20] # max/min torque should usually be the same
-        knee_joint: [20, -20]
+        hip_joint: 20 # max/min torque should usually be the same
+        knee_joint: 20
       observation:
-        hip_joint: [6.30, -6.30, .inf, -.inf]
-        knee_joint: [6.30, -6.30, .inf, -.inf]
-        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
-        planarizer_yaw_joint: [.inf, -.inf, .inf, -.inf]
-      periodic_observation: ['knee_joint_pos']
-        # Sets if any joint is periodic limits (jointname(_pos/_vel))
-        # We will always use a period of 2pi and assume the meassurement is in radians
-        # Limits will be ignored for the chosen joint measurement
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+        planarizer_pitch_joint:
+          periodic_pos: False
+          limits: [1.57, -1.57, .inf, -.inf]
+        planarizer_yaw_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
 
   old-fixed:
     model: 'old-monopod-fixed'
@@ -161,16 +158,20 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: [20, -20] # max/min torque should usually be the same
-        knee_joint: [20, -20]
+        hip_joint: 20 # max/min torque should usually be the same
+        knee_joint: 20
       observation:
-        hip_joint: [6.30, -6.30, .inf, -.inf]
-        knee_joint: [6.30, -6.30, .inf, -.inf]
-        planarizer_pitch_joint: [1.57, -1.57, .inf, -.inf]
-      periodic_observation: ['knee_joint_pos']
-        # Sets if any joint is periodic limits (jointname(_pos/_vel))
-        # We will always use a period of 2pi and assume the meassurement is in radians
-        # Limits will be ignored for the chosen joint measurement
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+        planarizer_pitch_joint:
+          periodic_pos: False
+          limits: [1.57, -1.57, .inf, -.inf]
 resets:
   stand:
     laying_down: False
