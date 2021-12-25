@@ -84,7 +84,7 @@ class MonopodTask(task.Task, abc.ABC):
         # Space for resetting the task
         self.reset_space = None
 
-        self.low_level_controller_period = 1000  # hz
+        self.low_level_controller_freq = 1000  # hz
 
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
@@ -124,8 +124,8 @@ class MonopodTask(task.Task, abc.ABC):
             list(self.spaces_definition['action'].values()))
 
         obs_list = []
-        for joint, info in self.spaces_definition['observation'].items():
-            obs_list.append(info['limits'])
+        for joint, joint_info in self.spaces_definition['observation'].items():
+            obs_list.append(joint_info['limits'])
         observation_lims = np.array(obs_list)
 
         # Configure action limits between -1 and 1 which will be scaled by max
@@ -140,8 +140,8 @@ class MonopodTask(task.Task, abc.ABC):
         high = np.concatenate((a[:, 0], a[:, 2]))
 
         self.periodic_joints = []
-        for joint, info in self.spaces_definition['observation'].items():
-            if info['periodic_pos']:
+        for joint, joint_info in self.spaces_definition['observation'].items():
+            if joint_info['periodic_pos']:
                 self.periodic_joints.append(
                     self.observation_index[joint + '_pos'])
 
@@ -235,7 +235,7 @@ class MonopodTask(task.Task, abc.ABC):
         """
         Resets the environment into default state.
         sets the scenario backend into force controller mode
-        Sets the max generalized force for each joint.
+        Sets the max generalized force for eachcontrolled joint.
 
         """
         if self.model_name not in self.world.model_names():
@@ -252,7 +252,7 @@ class MonopodTask(task.Task, abc.ABC):
             joint_name in enumerate(self.action_names)])
         # Set controller period??
         ok = ok and model.set_controller_period(
-            1 / self.low_level_controller_period)
+            1 / self.low_level_controller_freq)
         if not ok:
             raise RuntimeError(
                 "Failed to change the control mode of the Monopod")

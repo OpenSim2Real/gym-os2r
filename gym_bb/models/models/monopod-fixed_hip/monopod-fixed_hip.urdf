@@ -59,12 +59,12 @@
       <origin xyz="0 -1.0 0" rpy="0 0 0" />
     <mass value="0.12458" />
     <inertia
-      ixx="0.023361"
+      ixx="138009.606E-6"
       ixy="0"
-      ixz="4.0264E-18"
-      iyy="3.5039E-06"
-      iyz="-2.189E-18"
-      izz="0.023361" />
+      ixz="0"
+      iyy="61.714E-06"
+      iyz="0"
+      izz="138009.606E-6" />
     </inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
