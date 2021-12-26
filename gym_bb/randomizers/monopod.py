@@ -262,6 +262,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Store the model name in the task
         task.model_name = model.name()
+        task.model = model
 
 
 class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
