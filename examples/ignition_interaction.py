@@ -1,5 +1,5 @@
-import SIMP
 import time
+import gym_bb.models.models as models
 from scenario import gazebo as scenario_gazebo
 
 # Create the simulator
@@ -12,13 +12,13 @@ gazebo.initialize()
 
 # Get the default world and insert the ground plane
 world = gazebo.get_world()
-world.insert_model(SIMP.get_model_file("ground_plane"))
+world.insert_model(models.get_model_file("ground_plane"))
 
 # Select the physics engine
 world.set_physics_engine(scenario_gazebo.PhysicsEngine_dart)
 
 # Insert monopod
-world.insert_model(SIMP.get_model_file("monopod"))
+world.insert_model(models.get_model_file("monopod"))
 
 # Get the monopod model
 
@@ -27,7 +27,7 @@ monopod = world.get_model("monopod")
 gazebo.gui()
 
 # Reset the pole position
-monopod.get_joint("planarizer_02_joint").to_gazebo().reset_position(0.2)
+monopod.get_joint("planarizer_pitch_joint").to_gazebo().reset_position(0.2)
 
 time.sleep(3.5)
 gazebo.run(paused=True)

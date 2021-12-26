@@ -7,7 +7,7 @@ from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
 import warnings
-from gym_bb.config.config import SettingsConfig
+from gym_bb.models.config import SettingsConfig
 from gym_ignition.utils import logger
 from collections import deque
 
@@ -24,7 +24,8 @@ class MonopodTask(task.Task, abc.ABC):
 
     Attributes:
         task_mode (str): The defined monopod task. current default tasks;
-        'free_hip', 'fixed_hip', 'fixed_hip_and_boom_yaw'.
+        'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip',
+        'old-fixed'.
         reward_class (:class:`gym_bb.rewards.rewards.RewardBase`): Class
         defining the reward. Must have same functions as RewardBase.
         reset_positions (str): Reset locations of the task. currently supports;
@@ -36,8 +37,9 @@ class MonopodTask(task.Task, abc.ABC):
     """
 
     def __init__(self, agent_rate: float, **kwargs):
-        self.supported_task_modes = ['free_hip',
-                                     'fixed_hip', 'fixed_hip_and_boom_yaw']
+        self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
+                                     'old-free_hip', 'old-fixed_hip',
+                                     'old-fixed']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -82,7 +84,7 @@ class MonopodTask(task.Task, abc.ABC):
         # Space for resetting the task
         self.reset_space = None
 
-        self.low_level_controller_period = 5000  # hz
+        self.low_level_controller_freq = 1000  # hz
 
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
@@ -117,28 +119,42 @@ class MonopodTask(task.Task, abc.ABC):
             ndarray: observation space.
 
         """
-        # Create the action space
-        action_lims = np.array(list(self.spaces_definition['action'].values()))
-        observation_lims = np.array(
-            list(self.spaces_definition['observation'].values()))
+        # Create the max torques. Dict are ordered in >3.6
+        self.max_torques = np.array(
+            list(self.spaces_definition['action'].values()))
 
-        # Configure action limits
-        low = np.array(action_lims[:, 1])
-        high = np.array(action_lims[:, 0])
+        obs_list = []
+        for joint, joint_info in self.spaces_definition['observation'].items():
+            obs_list.append(joint_info['limits'])
+        observation_lims = np.array(obs_list)
+
+        # Configure action limits between -1 and 1 which will be scaled by max
+        # torque later
+        low = np.array([-1, -1])
+        high = np.array([1, 1])
         action_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
         # Configure reset limits
         a = observation_lims
         low = np.concatenate((a[:, 1], a[:, 3]))
         high = np.concatenate((a[:, 0], a[:, 2]))
+
+        self.periodic_joints = []
+        for joint, joint_info in self.spaces_definition['observation'].items():
+            if joint_info['periodic_pos']:
+                self.periodic_joints.append(
+                    self.observation_index[joint + '_pos'])
+
+        low[self.periodic_joints] = -1
+        high[self.periodic_joints] = 1
+
         # Configure the reset space - this is used to check if it exists inside
         # the reset space when deciding whether to reset.
         self.reset_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
         # Configure the observation space
-        observation_space = gym.spaces.Box(low=low*1.2, high=high*1.2,
-                                           dtype=np.float64)
+        obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
 
-        return action_space, observation_space
+        return action_space, obs_space
 
     def set_action(self, action: Action) -> None:
         """
@@ -159,11 +175,11 @@ class MonopodTask(task.Task, abc.ABC):
         # Set the force value
         model = self.world.get_model(self.model_name)
 
-        for joint, value in zip(self.action_names, action.tolist()):
-            # Set torque to value given in action
-            if not model.get_joint(joint).set_generalized_force_target(value):
-                raise RuntimeError(
-                    "Failed to set the torque for joint: " + joint)
+        data = self.max_torques * action
+        if not model.set_joint_generalized_force_targets(
+                data, self.action_names):
+            raise RuntimeError(
+                "Failed to set the torque for joints: " + self.action_names)
 
     def get_observation(self) -> Observation:
         """
@@ -181,6 +197,12 @@ class MonopodTask(task.Task, abc.ABC):
         vel = model.joint_velocities(self.joint_names)
         # Create the observation
         observation = Observation(np.array([*pos, *vel]))
+        # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
+        # maps angle --> [-pi, pi)
+        observation[self.periodic_joints] = np.mod(
+            (observation[self.periodic_joints] + np.pi), (2*np.pi)) - np.pi
+        # Scale periodic joints between -1 and 1.
+        observation[self.periodic_joints] /= np.pi
         # Return the observation
         return observation
 
@@ -213,7 +235,7 @@ class MonopodTask(task.Task, abc.ABC):
         """
         Resets the environment into default state.
         sets the scenario backend into force controller mode
-        Sets the max generalized force for each joint.
+        Sets the max generalized force for eachcontrolled joint.
 
         """
         if self.model_name not in self.world.model_names():
@@ -223,13 +245,14 @@ class MonopodTask(task.Task, abc.ABC):
         model = self.world.get_model(self.model_name)
 
         # Control the monopod in force mode
-
         ok = model.set_joint_control_mode(scenario.JointControlMode_force)
-        ok = ok and [model.get_joint(joint_name).set_max_generalized_force(
-            self.action_space.high[i]) for i, joint_name in enumerate(
-            self.action_names)]
+        # set max generalized force for action joints
+        ok = ok and all([model.get_joint(joint_name).set_max_generalized_force(
+            self.action_space.high[i]*self.max_torques[i]) for i,
+            joint_name in enumerate(self.action_names)])
+        # Set controller period??
         ok = ok and model.set_controller_period(
-            1/self.low_level_controller_period)
+            1 / self.low_level_controller_freq)
         if not ok:
             raise RuntimeError(
                 "Failed to change the control mode of the Monopod")

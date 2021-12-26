@@ -62,7 +62,7 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
             robot_def = task.cfg.get_config(xpath)
-            robot_def['boom_pitch_joint'] = reset_conf['boom_pitch_joint']
+            robot_def['planarizer_pitch_joint'] = reset_conf['planarizer_pitch_joint']
             joint_angles = leg_joint_angles(robot_def)
         else:
             joint_angles = (1.57,  0)
@@ -73,9 +73,9 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         pos_reset = [0]*len(task.joint_names)
         vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
-            'boom_pitch_joint')] = reset_conf['boom_pitch_joint']
-        pos_reset[task.joint_names.index('upper_leg_joint')] = joint_angles[0]
-        pos_reset[task.joint_names.index('lower_leg_joint')] = joint_angles[1]
+            'planarizer_pitch_joint')] = reset_conf['planarizer_pitch_joint']
+        pos_reset[task.joint_names.index('hip_joint')] = joint_angles[0]
+        pos_reset[task.joint_names.index('knee_joint')] = joint_angles[1]
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)
         ok_vel = model.to_gazebo().reset_joint_velocities(

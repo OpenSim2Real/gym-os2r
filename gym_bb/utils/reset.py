@@ -8,15 +8,15 @@ def leg_joint_angles(robot_def: dict):
 
     Args:
         robot_def (dict): Robot definition dictionary. must contain the
-            following keys. required = ['boom_pitch_joint', 'upper_leg_length',
-            'lower_leg_length', 'central_pivot_height', 'length_boom',
-            'hip_offset', 'clipping_adjust']
+            following keys. required = ['planarizer_pitch_joint',
+            'upper_leg_length','lower_leg_length', 'central_pivot_height',
+            'length_boom', 'hip_offset', 'clipping_adjust']
 
     Returns:
         Tuple: (upper_leg_angle, lower_leg_angle) in radians.
 
     """
-    required = ['boom_pitch_joint', 'upper_leg_length',
+    required = ['planarizer_pitch_joint', 'upper_leg_length',
                 'lower_leg_length', 'central_pivot_height', 'length_boom',
                 'hip_offset', 'clipping_adjust']
     if not set(robot_def.keys()).issubset(set(required)):
@@ -24,7 +24,7 @@ def leg_joint_angles(robot_def: dict):
                            + str(required)
                            + 'were not provided for finding reset positions. ')
     lb = robot_def['length_boom']
-    bp = robot_def['boom_pitch_joint']
+    bp = robot_def['planarizer_pitch_joint']
     cph = robot_def['central_pivot_height']
     lh = (lb*np.sin(bp)+cph)/np.cos(bp)
     ul = robot_def['upper_leg_length']

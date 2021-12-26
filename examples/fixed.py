@@ -13,7 +13,7 @@ logger.set_level(gym.logger.ERROR)
 env_id = "Monopod-balance-v1"
 
 # Create a partial function passing the environment id
-kwargs = {'task_mode': 'fixed_hip_and_boom_yaw'}
+kwargs = {'task_mode': 'fixed'}
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 # Enable the rendering
@@ -43,7 +43,7 @@ for epoch in range(1000):
         # env.render('human')
         if done:
             print('rollout info: ', env.get_state_info(
-                observation), ' Real Reward: ', reward)
+                observation, action), ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward
