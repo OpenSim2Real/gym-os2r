@@ -41,6 +41,7 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
             if not task.world.to_gazebo().remove_model(task.model_name):
                 raise RuntimeError(
                     "Failed to remove the monopod from the world")
+
         # Execute a paused run to process model removal
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
@@ -51,8 +52,9 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         model = monopod.Monopod(world=task.world,
                                 monopod_version=monopod_model)
 
-        # Store the model name in the task
+        # Store the model name and model in the task
         task.model_name = model.name()
+        task.model = model
 
         # RESET the monopod
         reset_position = random.choice(task.reset_positions)

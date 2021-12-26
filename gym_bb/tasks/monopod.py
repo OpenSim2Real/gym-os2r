@@ -81,6 +81,8 @@ class MonopodTask(task.Task, abc.ABC):
         task.Task.__init__(self, agent_rate=agent_rate)
         # Name of the monopod model
         self.model_name = None
+        self.model = None
+
         # Space for resetting the task
         self.reset_space = None
 
@@ -173,10 +175,8 @@ class MonopodTask(task.Task, abc.ABC):
         # Store last actions
         self.action_history.append(action)
         # Set the force value
-        model = self.world.get_model(self.model_name)
-
         data = self.max_torques * action
-        if not model.set_joint_generalized_force_targets(
+        if not self.model.set_joint_generalized_force_targets(
                 data, self.action_names):
             raise RuntimeError(
                 "Failed to set the torque for joints: " + self.action_names)
@@ -189,12 +189,10 @@ class MonopodTask(task.Task, abc.ABC):
             ndarray: Array of joint positions nad velocities.
 
         """
-        # Get the model
-        model = self.world.get_model(self.model_name)
 
         # Get the new joint positions and velocities
-        pos = model.joint_positions(self.joint_names)
-        vel = model.joint_velocities(self.joint_names)
+        pos = self.model.joint_positions(self.joint_names)
+        vel = self.model.joint_velocities(self.joint_names)
         # Create the observation
         observation = Observation(np.array([*pos, *vel]))
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
@@ -238,20 +236,15 @@ class MonopodTask(task.Task, abc.ABC):
         Sets the max generalized force for eachcontrolled joint.
 
         """
-        if self.model_name not in self.world.model_names():
-            raise RuntimeError("Monopod model not found in the world")
-
-        # Get the model
-        model = self.world.get_model(self.model_name)
 
         # Control the monopod in force mode
-        ok = model.set_joint_control_mode(scenario.JointControlMode_force)
+        ok = self.model.set_joint_control_mode(scenario.JointControlMode_force)
         # set max generalized force for action joints
-        ok = ok and all([model.get_joint(joint_name).set_max_generalized_force(
+        ok = ok and all([self.model.get_joint(joint_name).set_max_generalized_force(
             self.action_space.high[i]*self.max_torques[i]) for i,
             joint_name in enumerate(self.action_names)])
         # Set controller period??
-        ok = ok and model.set_controller_period(
+        ok = ok and self.model.set_controller_period(
             1 / self.low_level_controller_freq)
         if not ok:
             raise RuntimeError(
