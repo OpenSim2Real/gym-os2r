@@ -1,4 +1,4 @@
-#  simulated gym environments for the baesian balancing monopod platform.
+#  simulated gym environments for the open Sim2Real monopod platform.
 
 ## Installation for use without git control
 ` pip3 install git+https://github.com/OpenSim2Real/gym-os2r.git `
