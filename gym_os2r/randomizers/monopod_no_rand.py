@@ -1,11 +1,11 @@
 from typing import Union
 import random
-from gym_bb import tasks
-from gym_bb.models import monopod
+from gym_os2r import tasks
+from gym_os2r.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.utils.typing import Observation, Action
-from gym_bb.utils.reset import leg_joint_angles
+from gym_os2r.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod.MonopodTask]
@@ -15,7 +15,7 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
     """
     Dummy environment randomizer for monopod tasks.
 
-    Check :py:class:`gym_bb.randomizers.monopod.MonopodRandomizersMixin`
+    Check :py:class:`gym_os2r.randomizers.monopod.MonopodRandomizersMixin`
     for an example that randomizes the task, the physics, and the model.
     """
 

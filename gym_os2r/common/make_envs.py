@@ -2,8 +2,8 @@ import gym
 import functools
 from typing import Union
 
-from gym_bb.common.vec_env import SubprocVecEnv
-from gym_bb import randomizers
+from gym_os2r.common.vec_env import SubprocVecEnv
+from gym_os2r import randomizers
 
 SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer,
                              randomizers.monopod.MonopodEnvRandomizer]
@@ -20,7 +20,7 @@ def make_env_from_id(env_id: str, **kwargs) -> gym.Env:
 
     """
     import gym
-    import gym_bb
+    import gym_os2r
     return gym.make(env_id, **kwargs)
 
 

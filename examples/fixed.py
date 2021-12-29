@@ -2,8 +2,8 @@ import gym
 import time
 import functools
 from gym_ignition.utils import logger
-from gym_bb import randomizers
-from gym_bb.common.make_envs import make_env_from_id
+from gym_os2r import randomizers
+from gym_os2r.common.make_envs import make_env_from_id
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)

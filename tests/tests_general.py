@@ -1,12 +1,12 @@
 from gym import envs
 import functools
 import numpy as np
-from gym_bb import randomizers
-from gym_bb.common.make_envs import make_mp_envs, make_env_from_id
+from gym_os2r import randomizers
+from gym_os2r.common.make_envs import make_mp_envs, make_env_from_id
 
 from gym.spaces import Box
 from gym.utils.env_checker import check_env
-from gym_bb.rewards.rewards import BalancingV1, StandingV1
+from gym_os2r.rewards.rewards import BalancingV1, StandingV1
 
 
 def check_registered_envs():

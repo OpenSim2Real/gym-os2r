@@ -4,14 +4,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="gym-bb",
+    name="gym-os2r",
     version="1.2.0",
     author="Dawson Horvath",
     author_email="horvath.dawson@gmail.com",
-    description="gym-ignition environments for baesian balacning development",
+    description="gym-ignition environments for open sim2real \
+    development platform",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Baesian-Balancer/gym-bb",
+    url="https://github.com/OpenSim2Real/gym-os2r",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

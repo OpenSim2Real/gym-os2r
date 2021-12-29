@@ -2,8 +2,8 @@ import gym
 import time
 import numpy as np
 from gym_ignition.utils import logger
-from gym_bb import randomizers
-from gym_bb.common.make_envs import make_mp_envs
+from gym_os2r import randomizers
+from gym_os2r.common.make_envs import make_mp_envs
 import multiprocessing
 import sys
 import os

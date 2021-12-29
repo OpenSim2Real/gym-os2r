@@ -7,7 +7,7 @@ from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
 import warnings
-from gym_bb.models.config import SettingsConfig
+from gym_os2r.models.config import SettingsConfig
 from gym_ignition.utils import logger
 from collections import deque
 
@@ -26,7 +26,7 @@ class MonopodTask(task.Task, abc.ABC):
         task_mode (str): The defined monopod task. current default tasks;
         'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip',
         'old-fixed'.
-        reward_class (:class:`gym_bb.rewards.rewards.RewardBase`): Class
+        reward_class (:class:`gym_os2r.rewards.rewards.RewardBase`): Class
         defining the reward. Must have same functions as RewardBase.
         reset_positions (str): Reset locations of the task. currently supports;
         'stand', 'half_stand', 'ground', 'lay', 'float'.

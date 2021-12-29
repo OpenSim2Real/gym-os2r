@@ -1,9 +1,9 @@
 from gym_ignition.utils import logger
 import gym
 import functools
-from gym_bb import randomizers
+from gym_os2r import randomizers
 
-from gym_bb.common.make_envs import make_env_from_id
+from gym_os2r.common.make_envs import make_env_from_id
 
 env_id = "Monopod-balance-v1"
 

@@ -17,9 +17,9 @@ from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformPara
 from gym_ignition.utils.typing import Observation, Action
 from gym_ignition.utils import logger
 
-from gym_bb import tasks
-from gym_bb.models import monopod
-from gym_bb.utils.reset import leg_joint_angles
+from gym_os2r import tasks
+from gym_os2r.models import monopod
+from gym_os2r.utils.reset import leg_joint_angles
 
 # Tasks that are supported by this randomizer. Used for type hinting.
 SupportedTasks = Union[tasks.monopod.MonopodTask]
