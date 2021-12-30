@@ -10,15 +10,12 @@ _DEFAULT_VALUE_AT_MARGIN = 0.1
 def _sigmoids(x, value_at_1, sigmoid):
     """
     Returns 1 when `x` == 0, between 0 and 1 otherwise.
-
     Args:
         x: A scalar or numpy array.
         value_at_1: A float between 0 and 1 specifying the output when `x` == 1.
         sigmoid: String, choice of sigmoid type.
-
     Returns:
         A numpy array with values between 0.0 and 1.0.
-
     Raises:
         ValueError: If not 0 < `value_at_1` < 1, except for `linear`, `cosine` and
           `quadratic` sigmoids which allow `value_at_1` == 0.
