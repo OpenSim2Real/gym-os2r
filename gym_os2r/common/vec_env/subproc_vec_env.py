@@ -67,10 +67,10 @@ class SubprocVecEnv(VecEnv):
         For more information, see the multiprocessing documentation.
 
     Args:
-        env_fns ([callable]): A list of functions that will create the environments
+        env_fns ([callable]): A list of functions that will create the environments \
         `(each callable returns a `Gym.Env` instance when called)`.
-        start_method (str): method used to start the subprocesses.
-        Must be one of the methods returned by `multiprocessing.get_all_start_methods()`.
+        start_method (str): method used to start the subprocesses. \
+        Must be one of the methods returned by `multiprocessing.get_all_start_methods()`. \
         Defaults to 'forkserver' on available platforms, and 'spawn' otherwise.
     """
 
@@ -234,13 +234,13 @@ def _flatten_obs(obs, space):
     Flatten observations, depending on the observation space.
 
     Args:
-        obs (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray): observations.
-        list or tuple of observations, one per environment. Each environment observation
+        obs (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray): observations. \
+        list or tuple of observations, one per environment. Each environment observation \
         may be a NumPy array, or a dict or tuple of NumPy arrays.
 
     Returns:
-        (OrderedDict<ndarray>, tuple<ndarray> or ndarray): flattened observations.
-        A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays.
+        (OrderedDict<ndarray>, tuple<ndarray> or ndarray): flattened observations. \
+        A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays. \
         Each NumPy array has the environment index as its first axis.
     """
     assert isinstance(
