@@ -11,12 +11,3 @@ gym\_os2r.common
    :maxdepth: 4
 
    gym_os2r.common.vec_env
-
-
-gym\_os2r.common.make\_envs
----------------------------
-
-.. automodule:: gym_os2r.common.make_envs
-   :members:
-   :undoc-members:
-   :show-inheritance:
