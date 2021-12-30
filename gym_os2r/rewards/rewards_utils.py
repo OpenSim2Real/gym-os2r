@@ -11,15 +11,15 @@ def _sigmoids(x, value_at_1, sigmoid):
     """
     Returns 1 when `x` == 0, between 0 and 1 otherwise.
     Args:
-        x: A scalar or numpy array.
-        value_at_1: A float between 0 and 1 specifying the output when `x` == 1.
-        sigmoid: String, choice of sigmoid type.
+        x (scalar or numpy array): value_at_1: A float between 0 and 1
+        specifying the output when `x` == 1. sigmoid: String, choice of
+        sigmoid type.
     Returns:
-        A numpy array with values between 0.0 and 1.0.
+        (numpy array): with values between 0.0 and 1.0.
     Raises:
-        ValueError: If not 0 < `value_at_1` < 1, except for `linear`, `cosine` and
-          `quadratic` sigmoids which allow `value_at_1` == 0.
-        ValueError: If `sigmoid` is of an unknown type.
+        (ValueError): If not 0 < `value_at_1` < 1, except for `linear`,
+        `cosine` and `quadratic` sigmoids which allow `value_at_1` == 0.
+        (ValueError): If `sigmoid` is of an unknown type.
     """
     if sigmoid in ('cosine', 'linear', 'quadratic'):
         if not 0 <= value_at_1 < 1:
@@ -80,21 +80,21 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
 
     Args:
         x (A scalar or numpy array):
-        bounds (tuple): A tuple of floats specifying inclusive `(lower, upper)` bounds for
-          the target interval. These can be infinite if the interval is unbounded
-          at one or both ends, or they can be equal to one another if the target
-          value is exact.
-        margin (float) : Parameter that controls how steeply the output decreases as
-          `x` moves out-of-bounds.
-          * If `margin == 0` then the output will be 0 for all values of `x`
-            outside of `bounds`.
-          * If `margin > 0` then the output will decrease sigmoidally with
-            increasing distance from the nearest bound.
-        sigmoid (String) : choice of sigmoid type Valid values are: 'gaussian',
-           'linear', 'hyperbolic', 'long_tail', 'cosine', 'tanh_squared'.
-        value_at_margin (float) : A float between 0 and 1 specifying the output value when
-          the distance from `x` to the nearest bound is equal to `margin`. Ignored
-          if `margin == 0`.
+        bounds (tuple): A tuple of floats specifying inclusive `(lower, upper)`
+        bounds for the target interval. These can be infinite if the interval is
+        unbounded at one or both ends, or they can be equal to one another if
+        the target value is exact.
+        margin (float) : Parameter that controls how steeply the output
+        decreases as `x` moves out-of-bounds.
+          * If `margin == 0` then the output will be 0 for all values of `x` \
+          outside of `bounds`.
+          * If `margin > 0` then the output will decrease sigmoidally with \
+          increasing distance from the nearest bound.
+        sigmoid (String) : choice of sigmoid type Valid values are: \
+        'gaussian', 'linear', 'hyperbolic', 'long_tail', 'cosine', 'tanh_squared'.
+        value_at_margin (float) : A float between 0 and 1 specifying the \
+        output value when the distance from `x` to the nearest bound is equal \
+        to `margin`. Ignored if `margin == 0`.
     Returns:
 
         (float, nparray): A float or numpy array with values between 0.0 and 1.0.
