@@ -36,6 +36,7 @@ class VecEnv(ABC):
     :param observation_space: (Gym Space) the observation space
     :param action_space: (Gym Space) the action space
     """
+
     metadata = {
         'render.modes': ['human', 'rgb_array']
     }
@@ -55,6 +56,7 @@ class VecEnv(ABC):
         until step_async() is invoked again.
         :return: ([int] or [float]) observation
         """
+
         pass
 
     @abstractmethod
@@ -66,6 +68,7 @@ class VecEnv(ABC):
         You should not call this if a step_async run is
         already pending.
         """
+
         pass
 
     @abstractmethod
@@ -74,6 +77,7 @@ class VecEnv(ABC):
         Wait for the step taken with step_async().
         :return: ([int] or [float], [float], [bool], dict) observation, reward, done, information
         """
+
         pass
 
     @abstractmethod
@@ -81,6 +85,7 @@ class VecEnv(ABC):
         """
         Clean up the environment's resources.
         """
+
         pass
 
     @abstractmethod
@@ -91,6 +96,7 @@ class VecEnv(ABC):
         :param indices: (list,int) Indices of envs to get attribute from
         :return: (list) List of values of 'attr_name' in all environments
         """
+
         pass
 
     @abstractmethod
@@ -102,6 +108,7 @@ class VecEnv(ABC):
         :param indices: (list,int) Indices of envs to assign value
         :return: (NoneType)
         """
+
         pass
 
     @abstractmethod
@@ -114,6 +121,7 @@ class VecEnv(ABC):
         :param method_kwargs: (dict) Any keyword arguments to provide in the call
         :return: (list) List of items returned by the environment's method call
         """
+
         pass
 
     @abstractmethod
@@ -125,6 +133,7 @@ class VecEnv(ABC):
         :return: (List[Union[None, int]]) Returns a list containing the seeds for each individual env.
             Note that all list elements may be None, if the env does not return anything when being seeded.
         """
+
         pass
 
     def step(self, actions):
@@ -133,6 +142,7 @@ class VecEnv(ABC):
         :param actions: ([int] or [float]) the action
         :return: ([int] or [float], [float], [bool], dict) observation, reward, done, information
         """
+
         self.step_async(actions)
         return self.step_wait()
 
@@ -140,6 +150,7 @@ class VecEnv(ABC):
         """
         Return RGB images from each environment
         """
+
         raise NotImplementedError
 
     def render(self, mode: str = 'human'):
@@ -147,6 +158,7 @@ class VecEnv(ABC):
         Gym environment rendering
         :param mode: the rendering type
         """
+        
         try:
             imgs = self.get_images()
         except NotImplementedError:

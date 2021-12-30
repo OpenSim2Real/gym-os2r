@@ -1,8 +1,6 @@
 import os
 import multiprocessing
 from collections import OrderedDict
-from typing import Sequence
-
 import gym
 import numpy as np
 from .vec_env import VecEnv, CloudpickleWrapper
@@ -57,7 +55,7 @@ class SubprocVecEnv(VecEnv):
     process, allowing significant speed up when the environment is computationally complex.
     For performance reasons, if your environment is not IO bound, the number of environments should not exceed the
     number of logical cores on your CPU.
-    .. warning::
+    warning::
         Only 'forkserver' and 'spawn' start methods are thread-safe,
         which is important when TensorFlow sessions or other non thread-safe
         libraries are used in the parent (see issue #217). However, compared to
@@ -137,6 +135,7 @@ class SubprocVecEnv(VecEnv):
         :param actions: ([int] or [float]) the state
         :return: ([float], [bool]) reward, done
         """
+
         self.get_state_info_async(states, actions)
         return self.get_state_info_wait()
 
