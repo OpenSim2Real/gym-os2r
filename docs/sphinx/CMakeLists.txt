@@ -11,7 +11,7 @@ add_custom_command(
     --no-toc --module-first --maxdepth 4
     -t ${CMAKE_CURRENT_SOURCE_DIR}/_templates
     -o ${CMAKE_CURRENT_SOURCE_DIR}/apidoc/gym-os2r
-    ${MODULE_PATH}
+    ${MODULE_PATH}/gym_os2r
     COMMENT "Building <gym-os2r> apidoc")
 
 find_package(Sphinx REQUIRED)
