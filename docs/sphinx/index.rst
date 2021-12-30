@@ -8,6 +8,5 @@ Gym Open Sim2Real
    :hidden:
    :maxdepth: 4
    :caption: Python Packages
-   :glob:
 
-   apidoc/gym-os2r/*
+   apidoc/gym-os2r/gym_os2r

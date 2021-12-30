@@ -51,23 +51,27 @@ def _worker(remote, parent_remote, env_fn_wrapper):
 
 class SubprocVecEnv(VecEnv):
     """
-    Creates a multiprocess vectorized wrapper for multiple environments, distributing each environment to its own
-    process, allowing significant speed up when the environment is computationally complex.
-    For performance reasons, if your environment is not IO bound, the number of environments should not exceed the
-    number of logical cores on your CPU.
-    warning::
+    Creates a multiprocess vectorized wrapper for multiple environments,
+    distributing each environment to its own process, allowing significant
+    speed up when the environment is computationally complex. For performance
+    reasons, if your environment is not IO bound, the number of environments
+    should not exceed the number of logical cores on your CPU.
+
+    Warnings:
         Only 'forkserver' and 'spawn' start methods are thread-safe,
         which is important when TensorFlow sessions or other non thread-safe
         libraries are used in the parent (see issue #217). However, compared to
         'fork' they incur a small start-up cost and have restrictions on
         global variables. With those methods, users must wrap the code in an
-        ``if __name__ == "__main__":`` block.
-        For more information, see the multiprocessing documentation.
-    :param env_fns: ([callable]) A list of functions that will create the environments
-        (each callable returns a `Gym.Env` instance when called).
-    :param start_method: (str) method used to start the subprocesses.
-           Must be one of the methods returned by multiprocessing.get_all_start_methods().
-           Defaults to 'forkserver' on available platforms, and 'spawn' otherwise.
+        ``if __name__ == "__main__":`` block. For more information, see the
+        multiprocessing documentation.
+
+    Args:
+        env_fns ([callable]): A list of functions that will create the environments
+            (each callable returns a `Gym.Env` instance when called).
+        start_method (str): method used to start the subprocesses.
+            Must be one of the methods returned by `multiprocessing.get_all_start_methods()`.
+            Defaults to 'forkserver' on available platforms, and 'spawn' otherwise.
     """
 
     def __init__(self, env_fns, start_method=None):
@@ -132,8 +136,12 @@ class SubprocVecEnv(VecEnv):
     def get_state_info(self, states, actions):
         """
         get reward and done of the environments in a given state
-        :param actions: ([int] or [float]) the state
-        :return: ([float], [bool]) reward, done
+
+        Args:
+            actions ([int] or [float]): the state
+        Returns:
+
+            ([float], [bool]): reward, done
         """
 
         self.get_state_info_async(states, actions)
@@ -171,14 +179,23 @@ class SubprocVecEnv(VecEnv):
     #     return imgs
 
     def get_attr(self, attr_name, indices=None):
-        """Return attribute from vectorized environment (see base class)."""
+        """
+        Return attribute from vectorized environment (see base class).
+
+        Returns:
+            (dict): class attribute.
+        """
+
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
             remote.send(('get_attr', attr_name))
         return [remote.recv() for remote in target_remotes]
 
     def set_attr(self, attr_name, value, indices=None):
-        """Set attribute inside vectorized environments (see base class)."""
+        """
+        Set attribute inside vectorized environments (see base class).
+        """
+
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
             remote.send(('set_attr', (attr_name, value)))
@@ -186,7 +203,10 @@ class SubprocVecEnv(VecEnv):
             remote.recv()
 
     def env_method(self, method_name, *method_args, indices=None, **method_kwargs):
-        """Call instance methods of vectorized environments."""
+        """
+        Call instance methods of vectorized environments.
+        """
+
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
             remote.send(
@@ -197,9 +217,14 @@ class SubprocVecEnv(VecEnv):
         """
         Get the connection object needed to communicate with the wanted
         envs that are in subprocesses.
-        :param indices: (None,int,Iterable) refers to indices of envs.
-        :return: ([multiprocessing.Connection]) Connection object to communicate between processes.
+
+        Args:
+            indices (None,int,Iterable): refers to indices of envs.
+
+        Returns:
+            ([multiprocessing.Connection]): Connection object to communicate between processes.
         """
+
         indices = self._get_indices(indices)
         return [self.remotes[i] for i in indices]
 
@@ -207,12 +232,16 @@ class SubprocVecEnv(VecEnv):
 def _flatten_obs(obs, space):
     """
     Flatten observations, depending on the observation space.
-    :param obs: (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray) observations.
-                A list or tuple of observations, one per environment.
-                Each environment observation may be a NumPy array, or a dict or tuple of NumPy arrays.
-    :return (OrderedDict<ndarray>, tuple<ndarray> or ndarray) flattened observations.
-            A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays.
-            Each NumPy array has the environment index as its first axis.
+
+    Args:
+        obs (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray): observations. \
+        list or tuple of observations, one per environment. Each environment observation may be a \
+        NumPy array, or a dict or tuple of NumPy arrays.
+
+    Returns:
+        (OrderedDict<ndarray>, tuple<ndarray> or ndarray): flattened observations. \
+        A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays. \
+        Each NumPy array has the environment index as its first axis.
     """
     assert isinstance(
         obs, (list, tuple)), "expected list or tuple of observations per environment"
