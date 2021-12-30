@@ -2,7 +2,7 @@ import gym
 import functools
 from typing import Union
 
-from .vec_env.subproc_vec_env import SubprocVecEnv
+from .vec_env import SubprocVecEnv
 from gym_os2r import randomizers
 
 SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer,
@@ -39,7 +39,7 @@ def make_mp_envs(env_id,
         randomizer (class, 'SupportedRandomizers'): the env randomizer
         rank (int): index of the subprocess
     Returns:
-        (SubprocVecEnv): multiprocessing vectorized environment made from env_id
+        (:class:`gym_os2r.vec_env.SubprocVecEnv`): multiprocessing vectorized environment made from env_id
 
     """
     def make_env(rank):

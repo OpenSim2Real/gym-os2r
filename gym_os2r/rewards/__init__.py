@@ -36,7 +36,7 @@ class RewardBase():
                             as action space.
 
         Returns:
-            bool: True for done, False otherwise.
+            (bool): True for done, False otherwise.
         """
         pass
 
