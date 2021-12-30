@@ -27,11 +27,11 @@ author = "Dawson Horvath"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
     "sphinx.ext.mathjax",
     "sphinx.ext.githubpages",
-    "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
     "sphinx_multiversion",
