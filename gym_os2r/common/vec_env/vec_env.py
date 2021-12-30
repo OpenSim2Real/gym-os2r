@@ -158,7 +158,7 @@ class VecEnv(ABC):
         Gym environment rendering
         :param mode: the rendering type
         """
-        
+
         try:
             imgs = self.get_images()
         except NotImplementedError:
