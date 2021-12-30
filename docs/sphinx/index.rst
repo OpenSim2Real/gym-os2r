@@ -10,4 +10,4 @@ Gym Open Sim2Real
    :caption: Python Packages
    :glob:
 
-   apidoc/*
+   apidoc/gym-os2r/*
