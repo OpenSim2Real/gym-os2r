@@ -57,7 +57,7 @@ class RewardBase():
         Get list of tasks supported by the reward function
 
         Returns:
-            (list): list of support task modes.
+            (list): list of supported task modes.
         """
         return self.supported_task_modes
 
