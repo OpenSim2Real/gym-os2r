@@ -32,10 +32,13 @@ class NotSteppingError(Exception):
 class VecEnv(ABC):
     """
     An abstract asynchronous, vectorized environment.
-    :param num_envs: (int) the number of environments
-    :param observation_space: (Gym Space) the observation space
-    :param action_space: (Gym Space) the action space
+
+    Args:
+        num_envs (int): the number of environments
+        observation_space (Gym Space): the observation space
+        action_space (Gym Space): the action space
     """
+
     metadata = {
         'render.modes': ['human', 'rgb_array']
     }
@@ -53,8 +56,11 @@ class VecEnv(ABC):
         If step_async is still doing work, that work will
         be cancelled and step_wait() should not be called
         until step_async() is invoked again.
-        :return: ([int] or [float]) observation
+
+        Returns:
+            ([int] or [float]): observation
         """
+
         pass
 
     @abstractmethod
@@ -66,14 +72,18 @@ class VecEnv(ABC):
         You should not call this if a step_async run is
         already pending.
         """
+
         pass
 
     @abstractmethod
     def step_wait(self):
         """
         Wait for the step taken with step_async().
-        :return: ([int] or [float], [float], [bool], dict) observation, reward, done, information
+
+        Returns:
+            ([int] or [float], [float], [bool], dict): observation, reward, done, information
         """
+
         pass
 
     @abstractmethod
@@ -81,39 +91,55 @@ class VecEnv(ABC):
         """
         Clean up the environment's resources.
         """
+
         pass
 
     @abstractmethod
     def get_attr(self, attr_name, indices=None):
         """
         Return attribute from vectorized environment.
-        :param attr_name: (str) The name of the attribute whose value to return
-        :param indices: (list,int) Indices of envs to get attribute from
-        :return: (list) List of values of 'attr_name' in all environments
+
+        Args:
+            attr_name (str): The name of the attribute whose value to return
+            indices (list,int): Indices of envs to get attribute from
+
+        Returns:
+            (list): List of values of 'attr_name' in all environments
         """
+
         pass
 
     @abstractmethod
     def set_attr(self, attr_name, value, indices=None):
         """
         Set attribute inside vectorized environments.
-        :param attr_name: (str) The name of attribute to assign new value
-        :param value: (obj) Value to assign to `attr_name`
-        :param indices: (list,int) Indices of envs to assign value
-        :return: (NoneType)
+
+        Args:
+            attr_name (str): The name of attribute to assign new value
+            value (obj): Value to assign to `attr_name`
+            indices (list,int): Indices of envs to assign value
+
+        Returns:
+            (NoneType)
         """
+
         pass
 
     @abstractmethod
     def env_method(self, method_name, *method_args, indices=None, **method_kwargs):
         """
         Call instance methods of vectorized environments.
-        :param method_name: (str) The name of the environment method to invoke.
-        :param indices: (list,int) Indices of envs whose method to call
-        :param method_args: (tuple) Any positional arguments to provide in the call
-        :param method_kwargs: (dict) Any keyword arguments to provide in the call
-        :return: (list) List of items returned by the environment's method call
+
+        Args:
+            method_name (str): The name of the environment method to invoke.
+            indices (list,int): Indices of envs whose method to call
+            method_args (tuple): Any positional arguments to provide in the call
+            method_kwargs (dict): Any keyword arguments to provide in the call
+
+        Returns:
+            (list): List of items returned by the environment's method call
         """
+
         pass
 
     @abstractmethod
@@ -121,18 +147,29 @@ class VecEnv(ABC):
         """
         Sets the random seeds for all environments, based on a given seed.
         Each individual environment will still get its own seed, by incrementing the given seed.
-        :param seed: (Optional[int]) The random seed. May be None for completely random seeding.
-        :return: (List[Union[None, int]]) Returns a list containing the seeds for each individual env.
-            Note that all list elements may be None, if the env does not return anything when being seeded.
+
+        Args:
+            seed: (Optional[int]): The random seed. May be None for completely random seeding.
+
+        Returns:
+            (List[Union[None, int]]): Returns a list containing the seeds for
+                each individual env. Note that all list elements may be None,
+                if the env does not return anything when being seeded.
         """
+
         pass
 
     def step(self, actions):
         """
         Step the environments with the given action
-        :param actions: ([int] or [float]) the action
-        :return: ([int] or [float], [float], [bool], dict) observation, reward, done, information
+
+        Args:
+            actions ([int] or [float]): the action
+
+        Returns:
+            ([int] or [float], [float], [bool], dict): observation, reward, done, information
         """
+
         self.step_async(actions)
         return self.step_wait()
 
@@ -140,13 +177,17 @@ class VecEnv(ABC):
         """
         Return RGB images from each environment
         """
+
         raise NotImplementedError
 
     def render(self, mode: str = 'human'):
         """
         Gym environment rendering
-        :param mode: the rendering type
+
+        Args:
+            mode (str): the rendering type
         """
+
         try:
             imgs = self.get_images()
         except NotImplementedError:
@@ -172,10 +213,15 @@ class VecEnv(ABC):
             return self
 
     def getattr_depth_check(self, name, already_found):
-        """Check if an attribute reference is being hidden in a recursive call to __getattr__
-        :param name: (str) name of attribute to check for
-        :param already_found: (bool) whether this attribute has already been found in a wrapper
-        :return: (str or None) name of module whose attribute is being shadowed, if any.
+        """
+        Check if an attribute reference is being hidden in a recursive call to __getattr__
+
+        Args:
+            name (str): name of attribute to check for
+            already_found (bool): whether this attribute has already been found in a wrapper
+
+        Returns:
+            (str or None): name of module whose attribute is being shadowed, if any.
         """
         if hasattr(self, name) and already_found:
             return "{0}.{1}".format(type(self).__module__, type(self).__name__)
@@ -185,8 +231,12 @@ class VecEnv(ABC):
     def _get_indices(self, indices):
         """
         Convert a flexibly-typed reference to environment indices to an implied list of indices.
-        :param indices: (None,int,Iterable) refers to indices of envs.
-        :return: (list) the implied list of indices.
+
+        Args:
+            indices (None,int,Iterable): refers to indices of envs.
+
+        Returns:
+            (list): the implied list of indices.
         """
         if indices is None:
             indices = range(self.num_envs)
@@ -198,9 +248,10 @@ class VecEnv(ABC):
 class VecEnvWrapper(VecEnv):
     """
     Vectorized environment base class
-    :param venv: (VecEnv) the vectorized environment to wrap
-    :param observation_space: (Gym Space) the observation space (can be None to load from venv)
-    :param action_space: (Gym Space) the action space (can be None to load from venv)
+    Args:
+        venv (VecEnv): the vectorized environment to wrap
+        observation_space (Gym Space): the observation space (can be None to load from venv)
+        action_space (Gym Space): the action space (can be None to load from venv)
     """
 
     def __init__(self, venv, observation_space=None, action_space=None):
@@ -242,7 +293,8 @@ class VecEnvWrapper(VecEnv):
         return self.venv.env_method(method_name, *method_args, indices=indices, **method_kwargs)
 
     def __getattr__(self, name):
-        """Find attribute from wrapped venv(s) if this wrapper does not have it.
+        """
+        Find attribute from wrapped venv(s) if this wrapper does not have it.
         Useful for accessing attributes from venvs which are wrapped with multiple wrappers
         which have unique attributes of interest.
         """
@@ -259,16 +311,23 @@ class VecEnvWrapper(VecEnv):
 
     def _get_all_attributes(self):
         """Get all (inherited) instance and class attributes
-        :return: (dict<str, object>) all_attributes
+
+        Returns:
+            (dict<str, object>): all_attributes
         """
         all_attributes = self.__dict__.copy()
         all_attributes.update(self.class_attributes)
         return all_attributes
 
     def getattr_recursive(self, name):
-        """Recursively check wrappers to find attribute.
-        :param name (str) name of attribute to look for
-        :return: (object) attribute
+        """
+        Recursively check wrappers to find attribute.
+
+        Args:
+            name (str): name of attribute to look for
+
+        Returns:
+            (object): attribute
         """
         all_attributes = self._get_all_attributes()
         if name in all_attributes:  # attribute is present in this wrapper
@@ -284,7 +343,9 @@ class VecEnvWrapper(VecEnv):
 
     def getattr_depth_check(self, name, already_found):
         """See base class.
-        :return: (str or None) name of module whose attribute is being shadowed, if any.
+
+        Returns:
+            (str or None): name of module whose attribute is being shadowed, if any.
         """
         all_attributes = self._get_all_attributes()
         if name in all_attributes and already_found:
@@ -306,7 +367,9 @@ class CloudpickleWrapper(object):
     def __init__(self, var):
         """
         Uses cloudpickle to serialize contents (otherwise multiprocessing tries to use pickle)
-        :param var: (Any) the variable you wish to wrap for pickling with cloudpickle
+        
+        Args:
+            var (Any): the variable you wish to wrap for pickling with cloudpickle
         """
         self.var = var
 
