@@ -114,11 +114,11 @@ class MonopodTask(task.Task, abc.ABC):
     def create_spaces(self) -> Tuple[ActionSpace, ObservationSpace]:
         """
         Constructs observtion and action spaces for monopod task. Spaces
-        definition is defined in ../config/default/settings.yaml ...
+        definition is defined in `../config/default/settings.yaml ...`
 
         Returns:
-            ndarray: action space.
-            ndarray: observation space.
+            (ndarray): action space.
+            (ndarray): observation space.
 
         """
         # Create the max torques. Dict are ordered in >3.6
@@ -166,7 +166,7 @@ class MonopodTask(task.Task, abc.ABC):
             action (ndrray): Generalized force target for each
                              controlled joint.
         Raise:
-            RuntimeError: Failed to set joints torque target.
+            (RuntimeError): Failed to set joints torque target.
 
         """
         if not self.action_space.contains(action):
@@ -186,7 +186,7 @@ class MonopodTask(task.Task, abc.ABC):
         Returns the current observation state of the monopod.
 
         Returns:
-            ndarray: Array of joint positions nad velocities.
+            (ndarray): Array of joint positions and velocities.
 
         """
 
@@ -210,7 +210,7 @@ class MonopodTask(task.Task, abc.ABC):
         logs the reason for the reset as a debug message.
 
         Returns:
-            bool: True for done, False otherwise.
+            (bool): True for done, False otherwise.
 
         """
         # Get the observation
@@ -255,7 +255,7 @@ class MonopodTask(task.Task, abc.ABC):
         Returns the reward for the current monopod state.
 
         Returns:
-            bool: True for done, False otherwise.
+            (bool): True for done, False otherwise.
 
         """
         obs = self.get_observation()
@@ -273,7 +273,7 @@ class MonopodTask(task.Task, abc.ABC):
                             as action space.
 
         Returns:
-            bool: True for done, False otherwise.
+            (bool): True for done, False otherwise.
         """
         return self.reward.calculate_reward(obs, action)
 
@@ -288,8 +288,8 @@ class MonopodTask(task.Task, abc.ABC):
                             as action space.
 
         Returns:
-            Reward: Rewrd given the state.
-            bool: True for done, False otherwise.
+            (Reward): Rewrd given the state.
+            (bool): True for done, False otherwise.
 
         """
         reward = self.calculate_reward(obs, action)
