@@ -19,7 +19,7 @@ set(SPHINX_BUILD ${CMAKE_BINARY_DIR}/html)
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Extend the Python path including before generating the website
-set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}" &&)
+set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}:$ENV{PYTHONPATH}" &&)
 
 # Sphinx build command
 message(STATUS "SPHNIX MV EXEC: ${SPHINX_MULTIVERSION_EXECUTABLE}")
