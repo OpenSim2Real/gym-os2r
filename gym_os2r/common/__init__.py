@@ -2,7 +2,7 @@ import gym
 import functools
 from typing import Union
 
-from gym_os2r.common.vec_env import SubprocVecEnv
+from .vec_env import SubprocVecEnv
 from gym_os2r import randomizers
 
 SupportedRandomizers = Union[randomizers.monopod_no_rand.MonopodEnvNoRandomizer,
