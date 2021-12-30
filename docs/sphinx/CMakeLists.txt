@@ -1,5 +1,5 @@
 # The folder containing the bindings Python modules
-set(MODULE_PATH "${CMAKE_SOURCE_DIR}/")
+set(MODULE_PATH "${CMAKE_SOURCE_DIR}")
 
 find_package(SphinxApidoc REQUIRED)
 add_custom_target(apidoc)
