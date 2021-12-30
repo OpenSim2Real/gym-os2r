@@ -237,12 +237,13 @@ def _flatten_obs(obs, space):
 
     Args:
         obs (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray): observations. \
-            list or tuple of observations, one per environment. Each environment observation may be a NumPy array, or a dict or tuple of NumPy arrays.
+        list or tuple of observations, one per environment. Each environment observation may be a \
+        NumPy array, or a dict or tuple of NumPy arrays.
 
     Returns:
         (OrderedDict<ndarray>, tuple<ndarray> or ndarray): flattened observations. \
-            A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays. \
-            Each NumPy array has the environment index as its first axis.
+        A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays. \
+        Each NumPy array has the environment index as its first axis.
     """
     assert isinstance(
         obs, (list, tuple)), "expected list or tuple of observations per environment"
