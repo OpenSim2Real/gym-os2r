@@ -16,13 +16,12 @@ class MonopodTask(task.Task, abc.ABC):
 
     """
     Monopod task defines the main task functionality for the monopod
-    environment. Task requires the kwargs; 'task_mode', 'reward_class',
-    'reset_positions'.
-
-    Task must be wrapped in a runtime or randomizer class to use with igntion
-    or the real robot.
+    environment. Task must be wrapped in a runtime or randomizer class to use
+    with igntion or the real robot.
 
     Attributes:
+        Required *kwargs (dict): Task requires the kwargs; 'task_mode', \
+        'reward_class', 'reset_positions'.
         task_mode (str): The defined monopod task. current default tasks, \
         'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip', \
         'old-fixed'.
