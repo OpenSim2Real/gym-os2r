@@ -8,6 +8,7 @@ from gym_ignition.utils.typing import ActionSpace, ObservationSpace
 from scenario import core as scenario
 import warnings
 from gym_os2r.models.config import SettingsConfig
+from gym_os2r.rewards import RewardBase
 from gym_ignition.utils import logger
 from collections import deque
 
