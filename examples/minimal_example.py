@@ -4,8 +4,8 @@ import functools
 from gym_ignition.utils import logger
 
 from gym_os2r import randomizers
-from gym_os2r.common.make_envs import make_env_from_id
-from gym_os2r.rewards.rewards import BalancingV2
+from gym_os2r.common import make_env_from_id
+from gym_os2r.rewards import BalancingV2
 
 
 # Set verbosity
