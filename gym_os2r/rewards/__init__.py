@@ -1,9 +1,7 @@
-from . import rewards_utils
 from gym_ignition.utils.typing import Reward, Observation, Action
 from abc import abstractmethod
 from .rewards_utils import tolerance
 
-__all__ = ['rewards_utils']
 
 """
 Base Class
