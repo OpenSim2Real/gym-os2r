@@ -68,12 +68,10 @@ class SubprocVecEnv(VecEnv):
 
     Args:
         env_fns ([callable]): A list of functions that will create the environments
-                             `(each callable returns a `Gym.Env` instance when called)`.
+            (each callable returns a `Gym.Env` instance when called).
         start_method (str): method used to start the subprocesses.
-                            Must be one of the methods returned by
-                            `multiprocessing.get_all_start_methods()`.
-                            Defaults to 'forkserver' on available platforms,
-                            and 'spawn' otherwise.
+            Must be one of the methods returned by `multiprocessing.get_all_start_methods()`.
+            Defaults to 'forkserver' on available platforms, and 'spawn' otherwise.
     """
 
     def __init__(self, env_fns, start_method=None):
