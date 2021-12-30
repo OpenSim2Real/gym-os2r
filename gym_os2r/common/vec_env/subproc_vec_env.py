@@ -63,15 +63,17 @@ class SubprocVecEnv(VecEnv):
         libraries are used in the parent (see issue #217). However, compared to
         'fork' they incur a small start-up cost and have restrictions on
         global variables. With those methods, users must wrap the code in an
-        ``if __name__ == "__main__":`` block.
-        For more information, see the multiprocessing documentation.
+        ``if __name__ == "__main__":`` block. For more information, see the
+        multiprocessing documentation.
 
     Args:
-        env_fns ([callable]): A list of functions that will create the environments \
-        `(each callable returns a `Gym.Env` instance when called)`.
-        start_method (str): method used to start the subprocesses. \
-        Must be one of the methods returned by `multiprocessing.get_all_start_methods()`. \
-        Defaults to 'forkserver' on available platforms, and 'spawn' otherwise.
+        env_fns ([callable]): A list of functions that will create the environments
+                             `(each callable returns a `Gym.Env` instance when called)`.
+        start_method (str): method used to start the subprocesses.
+                            Must be one of the methods returned by
+                            `multiprocessing.get_all_start_methods()`.
+                            Defaults to 'forkserver' on available platforms,
+                            and 'spawn' otherwise.
     """
 
     def __init__(self, env_fns, start_method=None):
@@ -235,13 +237,12 @@ def _flatten_obs(obs, space):
 
     Args:
         obs (list<X> or tuple<X> where X is dict<ndarray>, tuple<ndarray> or ndarray): observations. \
-        list or tuple of observations, one per environment. Each environment observation \
-        may be a NumPy array, or a dict or tuple of NumPy arrays.
+            list or tuple of observations, one per environment. Each environment observation may be a NumPy array, or a dict or tuple of NumPy arrays.
 
     Returns:
         (OrderedDict<ndarray>, tuple<ndarray> or ndarray): flattened observations. \
-        A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays. \
-        Each NumPy array has the environment index as its first axis.
+            A flattened NumPy array or an OrderedDict or tuple of flattened numpy arrays. \
+            Each NumPy array has the environment index as its first axis.
     """
     assert isinstance(
         obs, (list, tuple)), "expected list or tuple of observations per environment"
