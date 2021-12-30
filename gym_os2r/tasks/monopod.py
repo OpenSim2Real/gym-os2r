@@ -20,18 +20,18 @@ class MonopodTask(task.Task, abc.ABC):
     with igntion or the real robot.
 
     Attributes:
-        Required *kwargs (dict): Task requires the kwargs; 'task_mode', \
-        'reward_class', 'reset_positions'.
-        task_mode (str): The defined monopod task. current default tasks, \
-        'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip', \
-        'old-fixed'.
-        reward_class (:class:`gym_os2r.rewards.rewards.RewardBase`): Class \
-        defining the reward. Must have same functions as RewardBase.
-        reset_positions (str): Reset locations of the task. currently \
-        supports, 'stand', 'half_stand', 'ground', 'lay', 'float'.
-        observation_index (dict): dictionry with the joint_name_pos and \
-        joint_name_vel as keys with values corresponding to its index in the \
-        observation space.
+        Required *kwargs (dict): Task requires the kwargs; 'task_mode',
+            'reward_class', 'reset_positions'.
+        task_mode (str): The defined monopod task. current default tasks,
+            'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip',
+            'old-fixed'.
+        reward_class (RewardBase): Class defining the reward. Must have same
+            functions as RewardBase.
+        reset_positions (str): Reset locations of the task. currently supports,
+            'stand', 'half_stand', 'ground', 'lay', 'float'.
+        observation_index (dict): dictionry with the joint_name_pos and
+            joint_name_vel as keys with values corresponding to its index in
+            the observation space.
 
     """
 
