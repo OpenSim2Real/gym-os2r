@@ -1,5 +1,5 @@
 # The folder containing the bindings Python modules
-set(MODULE_PATH "${PROJECT_SOURCE_DIR}/gym_os2r")
+set(MODULE_PATH "${PROJECT_SOURCE_DIR}")
 
 find_package(SphinxApidoc REQUIRED)
 add_custom_target(apidoc)
@@ -21,7 +21,7 @@ set(SPHINX_BUILD ${CMAKE_BINARY_DIR}/html)
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Extend the Python path including before generating the website
-set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}" &&)
+set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}/gym_os2r" &&)
 
 # Sphinx build command
 message(STATUS "SPHNIX MV EXEC: ${SPHINX_MULTIVERSION_EXECUTABLE}")
