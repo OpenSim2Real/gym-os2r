@@ -9,3 +9,5 @@ Gym Open Sim2Real
    :maxdepth: 4
    :caption: Python Packages
    :glob:
+
+   apidoc/*

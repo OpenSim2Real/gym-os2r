@@ -2,10 +2,8 @@
 set(MODULE_PATH "${CMAKE_SOURCE_DIR}")
 
 find_package(SphinxApidoc REQUIRED)
-add_custom_target(apidoc)
 
-add_custom_command(
-    TARGET apidoc POST_BUILD
+add_custom_target( apidoc ALL
     COMMAND
     ${SPHINX_APIDOC_EXECUTABLE} --force
     --no-toc --module-first --maxdepth 4

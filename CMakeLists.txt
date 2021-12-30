@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(gym-os2r VERSION 1.3.1)
+project(gym-os2r VERSION 1.0.0)
 
 # Add custom functions / macros
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
