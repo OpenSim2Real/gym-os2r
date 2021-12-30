@@ -77,7 +77,6 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
               value_at_margin=_DEFAULT_VALUE_AT_MARGIN):
     """
     Returns 1 when `x` falls inside the bounds, between 0 and 1 otherwise.
-
     Args:
         x: A scalar or numpy array.
         bounds: A tuple of floats specifying inclusive `(lower, upper)` bounds for
@@ -95,10 +94,8 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
         value_at_margin: A float between 0 and 1 specifying the output value when
           the distance from `x` to the nearest bound is equal to `margin`. Ignored
           if `margin == 0`.
-
     Returns:
         A float or numpy array with values between 0.0 and 1.0.
-
     Raises:
         ValueError: If `bounds[0] > bounds[1]`.
         ValueError: If `margin` is negative.
