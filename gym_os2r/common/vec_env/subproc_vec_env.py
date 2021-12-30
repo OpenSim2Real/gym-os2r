@@ -171,14 +171,20 @@ class SubprocVecEnv(VecEnv):
     #     return imgs
 
     def get_attr(self, attr_name, indices=None):
-        """Return attribute from vectorized environment (see base class)."""
+        """
+        Return attribute from vectorized environment (see base class).
+        """
+
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
             remote.send(('get_attr', attr_name))
         return [remote.recv() for remote in target_remotes]
 
     def set_attr(self, attr_name, value, indices=None):
-        """Set attribute inside vectorized environments (see base class)."""
+        """
+        Set attribute inside vectorized environments (see base class).
+        """
+
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
             remote.send(('set_attr', (attr_name, value)))
@@ -186,7 +192,10 @@ class SubprocVecEnv(VecEnv):
             remote.recv()
 
     def env_method(self, method_name, *method_args, indices=None, **method_kwargs):
-        """Call instance methods of vectorized environments."""
+        """
+        Call instance methods of vectorized environments.
+        """
+
         target_remotes = self._get_target_remotes(indices)
         for remote in target_remotes:
             remote.send(
@@ -200,6 +209,7 @@ class SubprocVecEnv(VecEnv):
         :param indices: (None,int,Iterable) refers to indices of envs.
         :return: ([multiprocessing.Connection]) Connection object to communicate between processes.
         """
+
         indices = self._get_indices(indices)
         return [self.remotes[i] for i in indices]
 

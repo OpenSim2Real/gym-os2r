@@ -8,7 +8,8 @@ _DEFAULT_VALUE_AT_MARGIN = 0.1
 
 
 def _sigmoids(x, value_at_1, sigmoid):
-    """Returns 1 when `x` == 0, between 0 and 1 otherwise.
+    """
+    Returns 1 when `x` == 0, between 0 and 1 otherwise.
 
     Args:
         x: A scalar or numpy array.
