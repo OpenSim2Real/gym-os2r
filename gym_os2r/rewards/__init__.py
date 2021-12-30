@@ -41,9 +41,24 @@ class RewardBase():
         pass
 
     def is_task_supported(self, task_mode: str):
+        """
+        Check if the 'task_mode' is supported by the reward function.
+
+        Args:
+            task_mode (str): name of task mode.
+
+        Returns:
+            (bool): True for supported, False otherwise.
+        """
         return task_mode in self.supported_task_modes
 
     def get_supported_task_modes(self):
+        """
+        Get list of tasks supported by the reward function
+
+        Returns:
+            (list): list of support task modes.
+        """
         return self.supported_task_modes
 
 
