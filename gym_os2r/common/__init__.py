@@ -39,7 +39,7 @@ def make_mp_envs(env_id,
         randomizer (class, 'SupportedRandomizers'): the env randomizer
         rank (int): index of the subprocess
     Returns:
-        SubprocVecEnv: multiprocessing vectorized environment made from env_id
+        (SubprocVecEnv): multiprocessing vectorized environment made from env_id
 
     """
     def make_env(rank):
