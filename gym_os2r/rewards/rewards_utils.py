@@ -84,8 +84,7 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
             bounds for the target interval. These can be infinite if the interval is
             unbounded at one or both ends, or they can be equal to one another if
             the target value is exact.
-        margin (float) : Parameter that controls how steeply the output decreases as `x`
-            moves out-of-bounds.
+        margin (float) : Parameter that controls how steeply the output decreases as `x` moves out-of-bounds.
                 * If `margin == 0` then the output will be 0 for all values of `x` outside of `bounds`.
                 * If `margin > 0` then the output will decrease sigmoidally with increasing distance from the nearest bound.
         sigmoid (String) : choice of sigmoid type Valid values are:
