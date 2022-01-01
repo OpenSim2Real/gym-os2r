@@ -15,9 +15,23 @@ add_custom_target( apidoc ALL
 find_package(Sphinx REQUIRED)
 find_package(SphinxMultiVersion REQUIRED)
 
+# =============
+# Create built package for overlord webpage in /html
+# =============
 set(SPHINX_BUILD ${CMAKE_BINARY_DIR}/html)
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Copy over the python bindings docs
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+"${SPHINX_SOURCE}/apidoc" "${SPHINX_BUILD}/sphinx_build/apidoc")
+
+# Copy over the python bindings docs
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy
+"${SPHINX_SOURCE}/index.rst" "${SPHINX_BUILD}/sphinx_build/index.rst")
+
+# =============
+# Compile Docs for Repo.
+# =============
 # Extend the Python path including before generating the website
 set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}:$ENV{PYTHONPATH}" &&)
 
