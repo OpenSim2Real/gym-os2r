@@ -1,19 +1,19 @@
-#  simulated gym environments for the baesian balancing monopod platform.
+#  simulated gym environments for the open Sim2Real monopod platform.
 
 ## Installation for use without git control
-` pip3 install git+https://github.com/Baesian-Balancer/gym-bb.git `
+` pip3 install git+https://github.com/OpenSim2Real/gym-os2r.git `
 
 ## Install as a developer with git control
 
 `cd location/you/want/repo`
 
-`git clone git@github.com:Baesian-Balancer/gym-bb.git`
+`git clone git@github.com:OpenSim2Real/gym-os2r.git`
 
-`cd gym-bb`
+`cd gym-os2r`
 
 `pip install -e .`
 
-Now you can import gym_bb in python globally while developing and making changes to the environments in the repo
+Now you can import gym_os2r in python globally while developing and making changes to the environments in the repo
 
 Many examples of how to use this package can be found in the examples folder.
 

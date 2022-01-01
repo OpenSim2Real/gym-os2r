@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com)
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="monopod-old-fixed_hip">
+  <link name="world" />
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0 0.0375 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.046875" />
+      <inertia
+        ixx="2.44140625E-05"
+        ixy="0"
+        ixz="1.46936793852786E-38"
+        iyy="4.8828125E-06"
+        iyz="0"
+        izz="2.44140625E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="world_to_base_link" type="fixed">
+      <origin
+        xyz="0 0 0.075"
+        rpy="0 3.14 0" />
+     <parent link="world"/>
+     <child link="base_link"/>
+  </joint>
+  <link name="universal_link">
+    <inertial>
+      <mass value="0.025" />
+      <inertia ixx="5.8083e-4" ixy="0" ixz="0" iyy="3.0833e-5" iyz="0" izz="5.9083e-4" />
+    </inertial>
+  </link>
+  <joint
+    name="planarizer_yaw_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="universal_link" />
+    <axis
+      xyz="0 0 1" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+  <link
+    name="boom_link">
+    <inertial>
+      <origin
+        xyz="2.1901E-17 3.9031E-17 0.75"
+        rpy="0 0 0" />
+      <mass
+        value="0.12458" />
+      <inertia
+        ixx="0.023361"
+        ixy="0"
+        ixz="4.0264E-18"
+        iyy="0.023361"
+        iyz="-2.189E-18"
+        izz="3.5039E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/boom_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/boom_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="planarizer_pitch_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 1.57 0"/>
+    <parent
+      link="universal_link" />
+    <child
+      link="boom_link" />
+    <axis
+      xyz="0 1 0" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+  <link
+    name="hip_link">
+    <inertial>
+      <origin
+        xyz="6.48786580015326E-16 -6.26994116348367E-16 -0.0282190333475854"
+        rpy="0 0 0" />
+      <mass
+        value="0.2" />
+      <inertia
+        ixx="0.000117083333333333"
+        ixy="3.3881317890172E-20"
+        ixz="-1.31771856813167E-18"
+        iyy="0.000177083333333333"
+        iyz="-5.8971856538498E-19"
+        izz="0.000273333333333333" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/hip_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/hip_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="boom_connector_joint_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 1.4843"
+      rpy="3.14159 0 -1.57" />
+    <parent
+      link="boom_link" />
+    <child
+      link="hip_link" />
+    <axis
+      xyz="0 0 1" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+  <link
+    name="upper_leg_link">
+    <inertial>
+      <origin
+        xyz="-0.054108 5.5511E-17 0.1"
+        rpy="0 0 0" />
+      <mass
+        value="0.23078" />
+      <inertia
+        ixx="0.000861624"
+        ixy="1.2E-08"
+        ixz="-6.787542E-05"
+        iyy="0.00086717057"
+        iyz="-1.55E-07"
+        izz="4.830605E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/upper_leg_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/upper_leg_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.03 0.02 -0.115"
+      rpy="-1.5708 1.5708 0" />
+    <parent
+      link="hip_link" />
+    <child
+      link="upper_leg_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="50"
+      velocity="3.1416" />
+    <dynamics
+      damping="0.01"
+      friction="0.001" />
+  </joint>
+  <link
+    name="lower_leg_link">
+    <inertial>
+      <origin
+        xyz="-0.050227 2.2204E-16 0.094926"
+        rpy="0 0 0" />
+      <mass
+        value="0.054" />
+      <inertia
+        ixx="0.00024273711"
+        ixy="1.3E-10"
+        ixz="4.3246E-06"
+        iyy="0.00024212654"
+        iyz="9.87E-09"
+        izz="3.27039E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/lower_leg_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://monopod-old-fixed_hip/meshes/lower_leg_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee_joint"
+    type="continuous">
+    <!-- type="revolute"> -->
+    <origin
+      xyz="0.03 0 0.2"
+      rpy="0 0 0" />
+    <parent
+      link="upper_leg_link" />
+    <child
+      link="lower_leg_link" />
+    <axis
+      xyz="1 0 0" />
+    <!-- <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="50"
+      velocity="3.1416" /> -->
+    <dynamics
+      damping="0.01"
+      friction="0.001" />
+  </joint>
+</robot>

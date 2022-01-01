@@ -2,8 +2,8 @@ import gym
 import time
 import functools
 from gym_ignition.utils import logger
-from gym_bb import randomizers
-from gym_bb.common.make_envs import make_env_from_id
+from gym_os2r import randomizers
+from gym_os2r.common import make_env_from_id
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
@@ -17,7 +17,7 @@ kwargs = {'task_mode': 'fixed_hip'}
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 # Enable the rendering
-# env.render('human')
+env.render('human')
 
 # Initialize the seed
 env.seed(42)
@@ -42,8 +42,8 @@ for epoch in range(1000):
         # It is not required to call this in the loop if physics is not randomized.
         # env.render('human')
         if done:
-            print('rollout info: ', env.get_state_info(
-                observation, action), ' Real Reward: ', reward)
+            print('rollout info: ', env.get_state_info(observation, action),
+                  ' Real Reward: ', reward)
 
         # Accumulate the reward
         totalReward += reward
