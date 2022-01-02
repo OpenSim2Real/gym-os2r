@@ -1,14 +1,16 @@
 # The folder containing the bindings Python modules
-set(MODULE_PATH "${CMAKE_SOURCE_DIR}")
+set(MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(SphinxApidoc REQUIRED)
+set(SPHINX_BUILD ${CMAKE_BINARY_DIR}/html)
+set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_custom_target( apidoc ALL
     COMMAND
     ${SPHINX_APIDOC_EXECUTABLE} --force
     --no-toc --module-first --maxdepth 4
     -t ${CMAKE_CURRENT_SOURCE_DIR}/_templates
-    -o ${CMAKE_CURRENT_SOURCE_DIR}/apidoc/gym-os2r
+    -o ${SPHINX_SOURCE}/gym-os2r_docs/apidoc/gym-os2r
     ${MODULE_PATH}/gym_os2r
     COMMENT "Building <gym-os2r> apidoc")
 
@@ -18,16 +20,19 @@ find_package(SphinxMultiVersion REQUIRED)
 # =============
 # Create built package for overlord webpage in /html
 # =============
-set(SPHINX_BUILD ${CMAKE_BINARY_DIR}/html)
-set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Copy over the python bindings docs
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
-"${SPHINX_SOURCE}/apidoc" "${SPHINX_BUILD}/sphinx_build/apidoc")
 
-# Copy over the python bindings docs
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy
-"${SPHINX_SOURCE}/index.rst" "${SPHINX_BUILD}/sphinx_build/index.rst")
+add_custom_target(source_rst_copy ALL
+    DEPENDS apidoc
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${SPHINX_SOURCE}/gym-os2r_docs" "${SPHINX_BUILD}/sphinx_build/gym-os2r_docs"
+    COMMENT "copy source doc build files."
+  )
+
+add_custom_target(index_copy ALL
+    DEPENDS apidoc
+    COMMAND ${CMAKE_COMMAND} -E copy "${SPHINX_SOURCE}/index.rst" "${SPHINX_BUILD}/sphinx_build/gym-os2r_index.rst"
+    COMMENT "copy index rst."
+  )
 
 # =============
 # Compile Docs for Repo.
