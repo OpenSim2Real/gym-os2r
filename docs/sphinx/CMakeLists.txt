@@ -38,7 +38,7 @@ add_custom_target(index_copy ALL
 # Compile Docs for Repo.
 # =============
 # Extend the Python path including before generating the website
-set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}:$ENV{PYTHONPATH}" &&)
+set(SPHINX_CMD export PYTHONPATH="${MODULE_PATH}/gym_os2r:${PYTHON_INSTALL_PREFIX}:$ENV{PYTHONPATH}" &&)
 
 # Sphinx build command
 message(STATUS "SPHNIX MV EXEC: ${SPHINX_MULTIVERSION_EXECUTABLE}")
