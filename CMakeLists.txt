@@ -19,5 +19,5 @@ set(PYTHON_INSTALL_PREFIX "${PYTHON_INSTALL_PREFIX}" CACHE STRING "Set the pytho
 mark_as_advanced(PYTHON_INSTALL_PREFIX)
 
 
-install(DIRECTORY "./gym_os2r" DESTINATION "${PYTHON_INSTALL_PREFIX}/gym_os2r")
+install(DIRECTORY "./gym_os2r" DESTINATION "${PYTHON_INSTALL_PREFIX}")
 add_subdirectory(docs)
