@@ -10,7 +10,7 @@ add_custom_target( apidoc ALL
     ${SPHINX_APIDOC_EXECUTABLE} --force
     --no-toc --module-first --maxdepth 4
     -t ${CMAKE_CURRENT_SOURCE_DIR}/_templates
-    -o ${SPHINX_SOURCE}/gym-os2r_docs/apidoc/gym-os2r
+    -o ${SPHINX_SOURCE}/gym-os2r_docs/python/gym-os2r
     ${MODULE_PATH}/gym_os2r
     COMMENT "Building <gym-os2r> apidoc")
 
