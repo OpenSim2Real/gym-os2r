@@ -36,8 +36,7 @@ add_custom_target(index_copy ALL
 # Compile Docs for Repo.
 # =============
 # Extend the Python path including before generating the website
-# set(SPHINX_CMD export PYTHONPATH="$ENV{PYTHONPATH}:${MODULE_PATH}:${PYTHON_INSTALL_PREFIX}" &&)
-message(STATUS "${PYTHONPATHS}")
+message(STATUS "Python paths for gym-os2r build: ${PYTHONPATHS}")
 set(SPHINX_CMD ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHONPATHS}")
 
 # Sphinx build command
