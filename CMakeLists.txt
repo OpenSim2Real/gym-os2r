@@ -11,13 +11,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+
 if(NOT PYTHON_INSTALL_PREFIX)
     set(PYTHON_INSTALL_PREFIX ${Python3_SITELIB})
+    set(PYTHONPATHS "$ENV{PYTHONPATH}:${PROJECT_SOURCE_DIR}")
+else()
+    set(PYTHONPATHS "$ENV{PYTHONPATH}:${PROJECT_SOURCE_DIR}:${PYTHON_INSTALL_PREFIX}")
 endif()
 
 set(PYTHON_INSTALL_PREFIX "${PYTHON_INSTALL_PREFIX}" CACHE STRING "Set the python install prefix to empty string. Only install if it is set as a cmake arg.")
 mark_as_advanced(PYTHON_INSTALL_PREFIX)
 
 
-install(DIRECTORY "./gym_os2r" DESTINATION "${PYTHON_INSTALL_PREFIX}/gym_os2r")
+install(DIRECTORY "./gym_os2r" DESTINATION "${PYTHON_INSTALL_PREFIX}")
 add_subdirectory(docs)
