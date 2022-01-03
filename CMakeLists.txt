@@ -9,11 +9,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+
 if(NOT PYTHON_INSTALL_PREFIX)
-    set(PYTHON_INSTALL_PREFIX "")
+    set(PYTHON_INSTALL_PREFIX ${Python3_SITELIB})
+    SET(PYTHONPATHS "$ENV{PYTHONPATH}:${PROJECT_SOURCE_DIR}")
+else()
+    SET(PYTHONPATHS "$ENV{PYTHONPATH}:${PROJECT_SOURCE_DIR}:${PYTHON_INSTALL_PREFIX}")
 endif()
 
-set(PYTHON_INSTALL_PREFIX ${PYTHON_INSTALL_PREFIX} CACHE STRING "Set the python install prefix to empty string. Only install if it is set as a cmake arg.")
+set(PYTHON_INSTALL_PREFIX "${PYTHON_INSTALL_PREFIX}" CACHE STRING "Set the python install prefix to empty string. Only install if it is set as a cmake arg.")
 mark_as_advanced(PYTHON_INSTALL_PREFIX)
 
 

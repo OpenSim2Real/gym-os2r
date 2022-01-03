@@ -37,8 +37,8 @@ add_custom_target(index_copy ALL
 # =============
 # Extend the Python path including before generating the website
 # set(SPHINX_CMD export PYTHONPATH="$ENV{PYTHONPATH}:${MODULE_PATH}:${PYTHON_INSTALL_PREFIX}" &&)
-message(STATUS "$ENV{PYTHONPATH}:${MODULE_PATH}:${PYTHON_INSTALL_PREFIX}")
-set(SPHINX_CMD ${CMAKE_COMMAND} -E env PYTHONPATH="$ENV{PYTHONPATH}:${MODULE_PATH}:${PYTHON_INSTALL_PREFIX}")
+message(STATUS "${PYTHONPATHS}")
+set(SPHINX_CMD ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHONPATHS}")
 
 # Sphinx build command
 message(STATUS "SPHNIX MV EXEC: ${SPHINX_MULTIVERSION_EXECUTABLE}")
