@@ -102,11 +102,11 @@ breathe_default_project = "gym-os2r"
 
 # From: https://holzhaus.github.io/sphinx-multiversion
 smv_prefer_remote_refs = False
-smv_remote_whitelist = None
-# smv_remote_whitelist = r"^(origin|upstream)$"
+# smv_remote_whitelist = None
+smv_remote_whitelist = r"^(origin|upstream)$"
 smv_tag_whitelist = r"^dummy"
-smv_branch_whitelist = r"^(docs)$"
-# smv_branch_whitelist = r"^(main|devel|docs)$"
+# smv_branch_whitelist = r"^(docs)$"
+smv_branch_whitelist = r"^(main|devel|docs)$"
 smv_released_pattern = r"^tags/.*$"
 smv_outputdir_format = "{ref.name}"
 
