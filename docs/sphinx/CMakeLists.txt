@@ -35,31 +35,34 @@ add_custom_target(index_copy ALL
 # =============
 # Compile Docs for Repo.
 # =============
-# Extend the Python path including before generating the website
-message(STATUS "Python paths for gym-os2r build: ${PYTHONPATHS}")
-set(SPHINX_CMD ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHONPATHS}")
 
-# Sphinx build command
-message(STATUS "SPHNIX MV EXEC: ${SPHINX_MULTIVERSION_EXECUTABLE}")
-list(APPEND SPHINX_CMD ${SPHINX_MULTIVERSION_EXECUTABLE} ${SPHINX_SOURCE} ${SPHINX_BUILD})
+IF(NOT BUILD_DOCS_SUPERBUILD)
+    # Extend the Python path including before generating the website
+    message(STATUS "Python paths for gym-os2r build: ${PYTHONPATHS}")
+    set(SPHINX_CMD ${CMAKE_COMMAND} -E env PYTHONPATH="${PYTHONPATHS}")
 
-# Generate the website
-add_custom_target(sphinx ALL
-    COMMAND ${SPHINX_CMD}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Generating documentation with Sphinx"
-  )
+    # Sphinx build command
+    message(STATUS "SPHNIX MV EXEC: ${SPHINX_MULTIVERSION_EXECUTABLE}")
+    list(APPEND SPHINX_CMD ${SPHINX_MULTIVERSION_EXECUTABLE} ${SPHINX_SOURCE} ${SPHINX_BUILD})
 
-# Disable GitHub pages autogeneration
-add_custom_command(
-    TARGET sphinx POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E touch "${SPHINX_BUILD}/.nojekyll"
-    COMMENT "Disabling Jekyll in html folder"
-  )
+    # Generate the website
+    add_custom_target(sphinx ALL
+      COMMAND ${SPHINX_CMD}
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      COMMENT "Generating documentation with Sphinx"
+    )
 
-# Handle redirect
-add_custom_command(
-    TARGET sphinx POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/index.html" "${SPHINX_BUILD}"
-    COMMENT "Copying html redirect to html folder"
-  )
+    # Disable GitHub pages autogeneration
+    add_custom_command(
+      TARGET sphinx POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E touch "${SPHINX_BUILD}/.nojekyll"
+      COMMENT "Disabling Jekyll in html folder"
+    )
+
+    # Handle redirect
+    add_custom_command(
+      TARGET sphinx POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/index.html" "${SPHINX_BUILD}"
+      COMMENT "Copying html redirect to html folder"
+    )
+ENDIF()
