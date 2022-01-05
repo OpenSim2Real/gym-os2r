@@ -22,6 +22,12 @@ endif()
 set(PYTHON_INSTALL_PREFIX "${PYTHON_INSTALL_PREFIX}" CACHE STRING "Set the python install prefix to empty string. Only install if it is set as a cmake arg.")
 mark_as_advanced(PYTHON_INSTALL_PREFIX)
 
-
 install(DIRECTORY "./gym_os2r" DESTINATION "${PYTHON_INSTALL_PREFIX}")
-add_subdirectory(docs)
+
+option(BUILD_DOCS "Enable the configuration and building of the documentation." FALSE)
+option(BUILD_DOCS_SUPERBUILD "Build the docs with the purpose of using in the superbuild doc compilation. \
+This will make it so the docs are not built only configured." FALSE)
+
+IF(BUILD_DOCS)
+    add_subdirectory(docs)
+ENDIF()
