@@ -175,16 +175,16 @@ task_modes:
 resets:
   stand:
     laying_down: False
-    planarizer_pitch_joint: 0.24
+    planarizer_pitch_joint: 0.15
   half_stand:
     laying_down: False
-    planarizer_pitch_joint: 0.15
+    planarizer_pitch_joint: 0.08
   ground:
     laying_down: False
-    planarizer_pitch_joint: 0.045
+    planarizer_pitch_joint: -0.005
   lay:
     laying_down: True
-    planarizer_pitch_joint: -0.005
+    planarizer_pitch_joint: -0.035
   float:
     laying_down: False
-    planarizer_pitch_joint: 0.5
+    planarizer_pitch_joint: 0.35
