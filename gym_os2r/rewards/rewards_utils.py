@@ -80,13 +80,17 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
 
     Args:
         x (A scalar or numpy array) : value to apply tolerance to.
+
         bounds (tuple): A tuple of floats specifying inclusive `(lower, upper)`
             bounds for the target interval. These can be infinite if the interval is
             unbounded at one or both ends, or they can be equal to one another if
             the target value is exact.
+
         margin (float) : Parameter that controls how steeply the output decreases as `x` moves out-of-bounds.
+
             * If `margin == 0` then the output will be 0 for all values of `x` outside of `bounds`.
             * If `margin > 0` then the output will decrease sigmoidally with increasing distance from the nearest bound.
+
         sigmoid (String) : choice of sigmoid type Valid values are:
             'gaussian', 'linear', 'hyperbolic', 'long_tail', 'cosine', 'tanh_squared'.
             value_at_margin (float) : A float between 0 and 1 specifying the
