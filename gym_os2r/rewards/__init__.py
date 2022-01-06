@@ -62,14 +62,12 @@ class RewardBase():
         return self.supported_task_modes
 
 
-"""
-Balancing tasks. Start from standing and stay standing.
-"""
+# Balancing tasks
 
 
 class BalancingV1(RewardBase):
     """
-    Standing reward. Start from standing and stay standing.
+    Balancing reward. Start from standing positions and stay standing.
     """
 
     def __init__(self, observation_index: dict):
@@ -85,7 +83,8 @@ class BalancingV1(RewardBase):
 
 class BalancingV2(RewardBase):
     """
-    Standing reward. Start from standing and stay standing.
+    Balancing reward. Start from standing positions and stay standing. Smaller
+    control signals are favoured.
     """
 
     def __init__(self, observation_index: dict):
@@ -103,10 +102,7 @@ class BalancingV2(RewardBase):
         return balancing * small_control
 
 
-"""
-Standing tasks. Start from ground and stand up.
-"""
-
+# Standing tasks
 
 class StandingV1(RewardBase):
     """
@@ -123,15 +119,13 @@ class StandingV1(RewardBase):
         standing = tolerance(bp, (_STAND_HEIGHT, 0.4))
         return standing
 
-
-"""
-Walking tasks. Start from ground and stand up.
-"""
+# Walking tasks
 
 
 class WalkingV1(RewardBase):
     """
-    Standing reward. Start from ground and stand up.
+    Walking reward. Start from standing position and attempt to move
+    forward while maintaining the standing height and position.
     """
 
     def __init__(self, observation_index: dict):
@@ -153,6 +147,4 @@ class WalkingV1(RewardBase):
         return standing * hopping
 
 
-"""
-Hopping tasks. Start either standing or from ground. favour circular movement.
-"""
+# Hopping task

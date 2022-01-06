@@ -9,8 +9,8 @@ from gym_os2r.rewards import BalancingV2
 
 
 # Set verbosity
-# logger.set_level(gym.logger.ERROR)
-logger.set_level(gym.logger.DEBUG)
+logger.set_level(gym.logger.ERROR)
+# logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
 env_id = "Monopod-stand-v1"
@@ -19,17 +19,19 @@ env_id = "Monopod-stand-v1"
 # kwargs = {'task_mode': 'fixed'}
 # kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
-# kwargs = {'reset_positions': ['float']}
 # kwargs = {'reward_class': BalancingV2}
-kwargs = {'reset_positions': ['lay']}
+# kwargs = {'reset_positions': ['float']}
+kwargs = {'reset_positions': ['float']}
+
 # kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
-# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+
+# env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
 env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+
 # Enable the rendering
 env.render('human')
-
 # Initialize the seed
 env.seed(42)
 
@@ -38,6 +40,7 @@ for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
+    time.sleep(6)
 
     # Initialize returned values
     done = False
