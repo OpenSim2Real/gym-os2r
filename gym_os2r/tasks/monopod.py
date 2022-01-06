@@ -25,9 +25,9 @@ class MonopodTask(task.Task, abc.ABC):
         task_mode (str): The defined monopod task. current default tasks,
             'free_hip', 'fixed_hip', 'fixed', 'old-free_hip', 'old-fixed_hip',
             'old-fixed'.
-        reward_class (:class:`gym_os2r.rewards.RewardBase`): Class defining the reward. Must have same 
+        reward_class (:class:`gym_os2r.rewards.RewardBase`): Class defining the reward. Must have same
             functions as RewardBase.
-        reset_positions (str): Reset locations of the task. currently supports,
+        reset_positions ([str]): Reset locations of the task. currently supports,
             'stand', 'half_stand', 'ground', 'lay', 'float'.
         observation_index (dict): dictionry with the joint_name_pos and
             joint_name_vel as keys with values corresponding to its index in
