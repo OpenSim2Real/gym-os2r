@@ -31,7 +31,7 @@ make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
 
 # Enable the rendering
-env.render('human')
+# env.render('human')
 # Initialize the seed
 env.seed(42)
 
@@ -40,7 +40,7 @@ for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
-    time.sleep(6)
+    time.sleep(1)
 
     # Initialize returned values
     done = False
@@ -51,7 +51,8 @@ for epoch in range(1000):
         # action = env.action_space.sample() * 0.1  # make the value smaller
         action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
-        # time.sleep(0.005)
+        print(observation)
+        time.sleep(0.005)
 
 env.close()
 time.sleep(5)

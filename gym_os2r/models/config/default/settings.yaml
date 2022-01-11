@@ -7,7 +7,7 @@ task_modes:
       central_pivot_height: 80
       length_boom: 2100
       hip_offset: 0
-      clipping_adjust: 25
+      clipping_adjust: 7.5
     spaces:
       action:
         hip_joint: 20
