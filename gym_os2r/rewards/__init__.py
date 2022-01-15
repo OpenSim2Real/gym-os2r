@@ -75,9 +75,9 @@ class BalancingV1(RewardBase):
         self.supported_task_modes = self._all_task_modes
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
-        _BALANCE_HEIGHT = 0.2
+        _BALANCE_HEIGHT = 0.1
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
-        balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
+        balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.15))
         return balancing
 
 
