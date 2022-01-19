@@ -1,6 +1,7 @@
 from gym_ignition.utils.typing import Reward, Observation, Action
 from abc import abstractmethod
 from .rewards_utils import tolerance
+import numpy as np
 
 
 """
@@ -119,6 +120,22 @@ class StandingV1(RewardBase):
         standing = tolerance(bp, (_STAND_HEIGHT, 0.4))
         return standing
 
+class StandingV2(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        _STAND_HEIGHT = 0.1
+        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]*10
+        #standing = tolerance(bp, (_STAND_HEIGHT, 0.15))
+        #TODO Fix hardcoded normalized action
+        action_cost = 0.1 * np.square(action/20).sum()
+        return bp-action_cost + 1
 # Walking tasks
 
 

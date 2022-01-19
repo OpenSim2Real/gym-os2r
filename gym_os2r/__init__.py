@@ -9,7 +9,7 @@ from . import runtime
 __all__ = ['tasks', 'models', 'randomizers', 'common', 'utils', 'runtime']
 
 from gym.envs.registration import register
-from gym_os2r.rewards import BalancingV1, StandingV1, WalkingV1
+from gym_os2r.rewards import BalancingV1, StandingV1,StandingV2, WalkingV1
 
 max_float = float(numpy.finfo(numpy.float32).max)
 
@@ -22,7 +22,7 @@ register(
             'physics_rate': 5000,
             'real_time_factor': max_float,
             'task_mode': 'free_hip',
-            'reward_class': StandingV1,
+            'reward_class': StandingV2,
             'reset_positions': ['ground']
             })
 register(
