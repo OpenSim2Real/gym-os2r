@@ -131,7 +131,7 @@ class StandingV2(RewardBase):
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.1
-        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]*10
+        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]*50
         #standing = tolerance(bp, (_STAND_HEIGHT, 0.15))
         #TODO Fix hardcoded normalized action
         action_cost = 0.1 * np.square(action/20).sum()
