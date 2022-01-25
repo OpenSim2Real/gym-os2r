@@ -192,18 +192,18 @@
 
   <joint
     name="hip_joint"
-    type="revolute">
+    type="continous">
     <origin
       xyz="0.035 0 0"
       rpy="1.57 0 0" />
     <parent link="hip_link" />
     <child link="upper_leg_link" />
     <axis xyz="1 0 0" />
-    <limit
+    <!-- <limit
       lower="-6.28"
       upper="6.28"
       effort="50"
-      velocity="3.1415926535916" />
+      velocity="3.1415926535916" /> -->
     <dynamics
       damping="0.01"
       friction="0.001" />
