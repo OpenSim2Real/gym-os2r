@@ -192,7 +192,7 @@
 
   <joint
     name="hip_joint"
-    type="continous">
+    type="continuous">
     <origin
       xyz="0.035 0 0"
       rpy="1.57 0 0" />

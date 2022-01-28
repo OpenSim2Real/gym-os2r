@@ -159,12 +159,6 @@ class StandingV3(RewardBase):
 
         horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
         dont_move = tolerance(horizontal_velocity, margin=2)
-        # print("sm")
-        # print(small_control)
-        # print("stand")
-        # print(stand_reward)
-        # print("dont")
-        # print(dont_move)
         return round(small_control * stand_reward * dont_move,3)
 
 # Walking tasks
