@@ -148,14 +148,17 @@ class StandingV3(RewardBase):
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.1
-        _IDEAL_ANGLE = 0.53
+        _IDEAL_ANGLE = 1.57
 
         standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
                                  bounds=(_STAND_HEIGHT, float('inf')),
                                  margin=_STAND_HEIGHT/4)
+        # knee_reward = tolerance(obs[self.observation_index['knee_joint_pos']],
+        #                          bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE),
+        #                          margin=_IDEAL_ANGLE/4)
         knee_reward = tolerance(obs[self.observation_index['knee_joint_pos']],
                                  bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE),
-                                 margin=_IDEAL_ANGLE/4)
+                                 margin=0)
 
 
         stand_reward = standing 
