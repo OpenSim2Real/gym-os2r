@@ -148,7 +148,7 @@ class StandingV3(RewardBase):
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.1
-        _IDEAL_ANGLE = 1.57
+        _IDEAL_ANGLE = 0.5
         _ANGLE_LIMIT = 6.3
 
         standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
