@@ -17,7 +17,7 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, .inf, -.inf]
+          limits: [.inf, -.inf, .inf, -.inf]
         knee_joint:
           periodic_pos: True
           limits: [1, -1, .inf, -.inf]
@@ -29,7 +29,7 @@ task_modes:
           limits: [1, -1, .inf, -.inf]
         boom_connector_joint:
           periodic_pos: False
-          limits: [6.30, -6.30, .inf, -.inf]
+          limits: [.inf, -.inf, .inf, -.inf]
 
   fixed_hip:
     model: 'monopod-fixed_hip'

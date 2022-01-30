@@ -149,6 +149,7 @@ class StandingV3(RewardBase):
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.1
         _IDEAL_ANGLE = 1.57
+        _ANGLE_LIMIT = 6.3
 
         standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
                                  bounds=(_STAND_HEIGHT, float('inf')),
@@ -160,6 +161,15 @@ class StandingV3(RewardBase):
                                  bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE),
                                  margin=0)
 
+        hip_within_limit = tolerance(obs[self.observation_index['hip_joint_pos']],
+                                 bounds=(-_ANGLE_LIMIT, _ANGLE_LIMIT),
+                                 margin=0)
+
+        boom_connector_within_limit = tolerance(obs[self.observation_index['boom_connector_joint_pos']],
+                                 bounds=(-_ANGLE_LIMIT, _ANGLE_LIMIT),
+                                 margin=0)
+
+        boundaries_reward = hip_within_limit*boom_connector_within_limit
 
         stand_reward = standing 
         small_control = tolerance(action/20, margin=1,
@@ -169,7 +179,7 @@ class StandingV3(RewardBase):
 
         horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
         dont_move = tolerance(horizontal_velocity, margin=2)
-        return round(small_control * stand_reward * dont_move*knee_reward,3)
+        return round(boundaries_reward*small_control * stand_reward * dont_move*knee_reward,3)
 
 # Walking tasks
 
