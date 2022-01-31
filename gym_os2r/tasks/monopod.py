@@ -215,7 +215,14 @@ class MonopodTask(task.Task, abc.ABC):
         # Get the observation
         observation = self.get_observation()
 
+        # print(observation[self.observation_index['planarizer_pitch_joint_pos']])
         # The environment is done if the observation is outside its space
+        # or the bp is below 0.075
+        # _RESET_HEIGHT = 0.001
+        # done = False
+        # if ((observation[self.observation_index['planarizer_pitch_joint_pos']] < _RESET_HEIGHT)
+        #     or (not self.reset_space.contains(observation))):
+        #     done = True
         done = not self.reset_space.contains(observation)
         if done:
             reason = ~np.logical_and((observation >= self.reset_space.low), (

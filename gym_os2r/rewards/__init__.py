@@ -102,6 +102,26 @@ class BalancingV2(RewardBase):
         small_control = (small_control + 4) / 5
         return balancing * small_control
 
+class BalancingV3(RewardBase):
+    """
+    Balancing reward. Start from standing positions and stay standing. Smaller
+    control signals are favoured.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        _BALANCE_HEIGHT = 0.1
+        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+        # print(bp)
+        balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, float("inf"))) 
+        # print(f"BALANCE IS {balancing_reward} \n")
+        action_cost = abs(action).sum() / 40
+        # print(action)
+        # print(f"ACTION COST IS {action_cost}\n")
+        return (1 - action_cost) * balancing_reward
 
 # Standing tasks
 
