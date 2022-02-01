@@ -181,6 +181,38 @@ class StandingV3(RewardBase):
         dont_move = tolerance(horizontal_velocity, margin=2)
         return round(boundaries_reward*small_control * stand_reward * dont_move*knee_reward,3)
 
+class HoppingV1(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        _STAND_HEIGHT = 0.1
+        _HOP_SPEED = 0.1
+
+        standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
+                                 bounds=(_STAND_HEIGHT, float('inf')),
+                                 margin=_STAND_HEIGHT/4)
+
+        stand_reward = standing 
+        small_control = tolerance(action/20, margin=1,
+                                      value_at_margin=0,
+                                      sigmoid='quadratic').mean()
+        small_control = (4 + small_control) / 5
+
+        horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
+        move = tolerance(horizontal_velocity,
+                        bounds=(_HOP_SPEED, float('inf')),
+                        margin=_HOP_SPEED, value_at_margin=0,
+                        sigmoid='linear')
+        move = (5*move + 1) / 6
+        return round(small_control * stand_reward * move,3)
+
+
 # Walking tasks
 
 
