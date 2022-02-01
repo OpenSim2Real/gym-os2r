@@ -193,18 +193,26 @@ class HoppingV1(RewardBase):
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.1
         _HOP_SPEED = 0.1
+        _IDEAL_ANGLE = 0.5
 
         standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
                                  bounds=(_STAND_HEIGHT, float('inf')),
                                  margin=_STAND_HEIGHT/4)
 
-        stand_reward = standing 
+        upright = tolerance(obs[self.observation_index['knee_joint_pos']],
+                                    bounds=(_IDEAL_ANGLE, _IDEAL_ANGLE), sigmoid='linear',
+                                    margin=1.0, value_at_margin=0)
+
+        stand_reward = standing*upright
         small_control = tolerance(action/20, margin=1,
                                       value_at_margin=0,
                                       sigmoid='quadratic').mean()
         small_control = (4 + small_control) / 5
 
         horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
+        
+        # print("KNEE POSITION")
+        # print(obs[self.observation_index['knee_joint_pos']])
         move = tolerance(horizontal_velocity,
                         bounds=(_HOP_SPEED, float('inf')),
                         margin=_HOP_SPEED, value_at_margin=0,
