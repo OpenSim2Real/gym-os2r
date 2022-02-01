@@ -194,6 +194,7 @@ class HoppingV1(RewardBase):
         _STAND_HEIGHT = 0.1
         _HOP_SPEED = 0.1
         _IDEAL_ANGLE = 0.5
+        _MAX_VERTICAL_SPEED = 0.3
 
         standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
                                  bounds=(_STAND_HEIGHT, float('inf')),
@@ -204,13 +205,20 @@ class HoppingV1(RewardBase):
                                     margin=1.0, value_at_margin=0)
 
         stand_reward = standing*upright
-        small_control = tolerance(action/20, margin=1,
-                                      value_at_margin=0,
-                                      sigmoid='quadratic').mean()
-        small_control = (4 + small_control) / 5
+        # small_control = tolerance(action/20, margin=1,
+        #                               value_at_margin=0,
+        #                               sigmoid='quadratic').mean()
+        # small_control = (4 + small_control) / 5
+
+        impact_cost = tolerance(obs[self.observation_index['planarizer_pitch_joint_vel']],
+                            bounds=(-_MAX_VERTICAL_SPEED, _MAX_VERTICAL_SPEED),
+                            margin=1, value_at_margin=0, sigmoid='quadratic')
+
 
         horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
         
+        # print("Upward Velocity")
+        # print(obs[self.observation_index['planarizer_pitch_joint_vel']])
         # print("KNEE POSITION")
         # print(obs[self.observation_index['knee_joint_pos']])
         move = tolerance(horizontal_velocity,
@@ -218,7 +226,7 @@ class HoppingV1(RewardBase):
                         margin=_HOP_SPEED, value_at_margin=0,
                         sigmoid='linear')
         move = (5*move + 1) / 6
-        return round(small_control * stand_reward * move,3)
+        return round( impact_cost*stand_reward * move,3)
 
 
 # Walking tasks
