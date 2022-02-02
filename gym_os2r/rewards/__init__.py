@@ -201,7 +201,7 @@ class HoppingV1(RewardBase):
                                  margin=_STAND_HEIGHT/4)
 
         upright = tolerance(obs[self.observation_index['knee_joint_pos']],
-                                    bounds=(_IDEAL_ANGLE, _IDEAL_ANGLE), sigmoid='linear',
+                                    bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE), sigmoid='linear',
                                     margin=1.0, value_at_margin=0)
 
         stand_reward = standing*upright
@@ -216,7 +216,8 @@ class HoppingV1(RewardBase):
 
 
         horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
-        
+        #print("Upward Position")
+        #print(obs[self.observation_index['planarizer_pitch_joint_pos']])        
         # print("Upward Velocity")
         # print(obs[self.observation_index['planarizer_pitch_joint_vel']])
         # print("KNEE POSITION")
