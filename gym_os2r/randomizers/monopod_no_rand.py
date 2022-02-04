@@ -78,7 +78,8 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
             pos_reset[task.joint_names.index(
                 'planarizer_pitch_joint')] = reset_conf['planarizer_pitch_joint']
         else:
-            joint_angles = (random.random(),random.random())
+            joint_angles = task.observation_space.sample()[[task.observation_index['hip_joint_pos'],task.observation_index['knee_joint_pos']]]
+            print(joint_angles)
         pos_reset[task.joint_names.index('hip_joint')] = joint_angles[0]
         pos_reset[task.joint_names.index('knee_joint')] = joint_angles[1]
         ok_pos = model.to_gazebo().reset_joint_positions(
