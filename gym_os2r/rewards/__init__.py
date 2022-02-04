@@ -229,6 +229,31 @@ class HoppingV1(RewardBase):
         move = (5*move + 1) / 6
         return round( impact_cost*stand_reward * move,3)
 
+class StraightV1(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = ['simple']#self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+
+        small_control = tolerance(action/20, margin=1,
+                                      value_at_margin=0,
+                                      sigmoid='quadratic').mean()
+        small_control = (4 + small_control) / 5
+
+        hip = obs[self.observation_index['hip_joint_pos']]
+        knee = obs[self.observation_index['knee_joint_pos']]
+
+        hip_reward = tolerance(hip, bounds=(0, 0), margin=1,sigmoid='linear')
+
+        knee_reward = tolerance(knee, bounds=(0, 0), margin=1,sigmoid='linear')
+
+        return hip_reward*knee_reward*small_control
+
 
 # Walking tasks
 

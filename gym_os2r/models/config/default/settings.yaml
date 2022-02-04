@@ -86,6 +86,29 @@ task_modes:
           periodic_pos: False
           limits: [1.57, -1.57, .inf, -.inf]
 
+  simple:
+    model: 'monopod-simple'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 190
+      central_pivot_height: 80
+      length_boom: 2100
+      hip_offset: 0
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: 20 # max/min torque should usually be the same
+        knee_joint: 20
+      observation:
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+
   old-free_hip:
     model: 'old-monopod'
     definition:
