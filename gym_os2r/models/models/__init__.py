@@ -101,7 +101,7 @@ def setup_environment() -> None:
     # Workaround for https://github.com/osrf/sdformat/issues/227
     models_with_mesh = ["monopod", "monopod-fixed_hip", "monopod-fixed",
                         "monopod-old", "monopod-old-fixed_hip",
-                        "monopod-old-fixed"]
+                        "monopod-old-fixed","monopod-simple"]
 
     # Setup the environment to find the mesh files
     for model in models_with_mesh:

@@ -2,7 +2,7 @@
 <!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com)
      Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
-<robot name="monopod-fixed_hip">
+<robot name="monopod-simple">
   <link name="world" />
 
 <!-- Central pivot link -->
@@ -28,7 +28,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://monopod-fixed_hip/meshes/central_pivot.STL" />
+          filename="package://monopod-simple/meshes/central_pivot.STL" />
       </geometry>
       <material
         name="">
@@ -40,7 +40,7 @@
 
 <!-- Connect link to world. rotates in yaw -->
 
-  <joint name="planarizer_yaw_joint" type="continuous">
+  <joint name="planarizer_yaw_joint" type="fixed">
       <origin
         xyz="0 0 0.11"
         rpy="0 3.14159265359 0" />
@@ -69,7 +69,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://monopod-fixed_hip/meshes/boom.STL" />
+        <mesh filename="package://monopod-simple/meshes/boom.STL" />
       </geometry>
       <material name="">
         <color rgba="1 1 1 1" />
@@ -78,15 +78,15 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://monopod-fixed_hip/meshes/boom.STL" />
+        <mesh filename="package://monopod-simple/meshes/boom.STL" />
       </geometry>
     </collision>
   </link>
 
 <!-- Boom pitch joint -->
 
-  <joint name="planarizer_pitch_joint" type="continuous">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+  <joint name="planarizer_pitch_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="1.57 0 0"/>
     <parent link="central_pivot_link" />
     <child link="boom_link" />
     <axis xyz="1 0 0" />
@@ -112,7 +112,7 @@
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://monopod-fixed_hip/meshes/hip.STL" />
+          filename="package://monopod-simple/meshes/hip.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -121,7 +121,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://monopod-fixed_hip/meshes/hip.STL" />
+        <mesh filename="package://monopod-simple/meshes/hip.STL" />
       </geometry>
     </collision>
   </link>
@@ -169,7 +169,7 @@
         xyz="0 0 0"
         rpy="0 0 0" /> -->
       <geometry>
-        <mesh filename="package://monopod-fixed_hip/meshes/upper_leg.STL" />
+        <mesh filename="package://monopod-simple/meshes/upper_leg.STL" />
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1" />
@@ -183,7 +183,7 @@
         xyz="0 0 0"
         rpy="0 0 0" /> -->
       <geometry>
-        <mesh filename="package://monopod-fixed_hip/meshes/upper_leg.STL" />
+        <mesh filename="package://monopod-simple/meshes/upper_leg.STL" />
       </geometry>
     </collision>
   </link>
@@ -231,7 +231,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://monopod-fixed_hip/meshes/lower_leg.STL" />
+          filename="package://monopod-simple/meshes/lower_leg.STL" />
       </geometry>
       <material
         name="">
@@ -244,7 +244,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://monopod-fixed_hip/meshes/lower_leg.STL" />
+          filename="package://monopod-simple/meshes/lower_leg.STL" />
       </geometry>
     </collision>
   </link>
