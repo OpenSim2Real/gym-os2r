@@ -37,7 +37,7 @@ class MonopodTask(task.Task, abc.ABC):
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
                                      'old-free_hip', 'old-fixed_hip',
-                                     'old-fixed']
+                                     'old-fixed','simple']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -106,6 +106,7 @@ class MonopodTask(task.Task, abc.ABC):
                                + str(self.reward) + ' reward class.')
 
         self.action_history = deque(maxlen=100)
+        self.action_history.append(0)
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
@@ -170,10 +171,10 @@ class MonopodTask(task.Task, abc.ABC):
         if not self.action_space.contains(action):
             raise RuntimeError(
                 "Action Space does not contain the provided action")
-        # Store last actions
-        self.action_history.append(action)
         # Set the force value
         data = self.max_torques * action
+        # Store last actions
+        self.action_history.append(data)
         if not self.model.set_joint_generalized_force_targets(
                 data, self.action_names):
             raise RuntimeError(

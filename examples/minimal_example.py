@@ -13,7 +13,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-stand-v1"
+env_id = "Monopod-simple-v1"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'fixed'}
@@ -21,9 +21,9 @@ env_id = "Monopod-stand-v1"
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
 # kwargs = {'reward_class': BalancingV2}
 # kwargs = {'reset_positions': ['float']}
-kwargs = {'reset_positions': ['float']}
+# kwargs = {'reset_positions': ['float']}
 
-# kwargs = {}
+kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 
@@ -40,7 +40,7 @@ for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
-    time.sleep(6)
+    time.sleep(5)
 
     # Initialize returned values
     done = False
@@ -51,7 +51,8 @@ for epoch in range(1000):
         # action = env.action_space.sample() * 0.1  # make the value smaller
         action = env.action_space.sample()
         observation, reward, done, _ = env.step(action)
-        # time.sleep(0.005)
+        print(observation)
+        time.sleep(0.005)
 
 env.close()
 time.sleep(5)
