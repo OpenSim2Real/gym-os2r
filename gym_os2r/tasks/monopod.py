@@ -37,7 +37,7 @@ class MonopodTask(task.Task, abc.ABC):
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
                                      'old-free_hip', 'old-fixed_hip',
-                                     'old-fixed','simple']
+                                     'old-fixed', 'simple']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -65,8 +65,8 @@ class MonopodTask(task.Task, abc.ABC):
                                + str(supported_reset_pos))
         if self.task_mode not in self.supported_task_modes:
             raise RuntimeError(
-             'task mode ' + self.task_mode + ' not supported in '
-             'monopod environment.')
+                'task mode ' + self.task_mode + ' not supported in '
+                'monopod environment.')
         try:
             xpath = 'task_modes/' + self.task_mode + '/spaces'
             self.spaces_definition = self.cfg.get_config(xpath)
@@ -157,7 +157,7 @@ class MonopodTask(task.Task, abc.ABC):
 
         return action_space, obs_space
 
-    def set_action(self, action: Action) -> None:
+    def set_action(self, action: Action) -> bool:
         """
         Set generalized force target for each controlled joint.
 
@@ -168,17 +168,21 @@ class MonopodTask(task.Task, abc.ABC):
             (RuntimeError): Failed to set joints torque target.
 
         """
-        if not self.action_space.contains(action):
-            raise RuntimeError(
-                "Action Space does not contain the provided action")
+
+        assert self.action_space.contains(action), "%r (%s) invalid" % (
+            action,
+            type(action),
+        )
         # Set the force value
         data = self.max_torques * action
         # Store last actions
         self.action_history.append(data)
-        if not self.model.set_joint_generalized_force_targets(
-                data, self.action_names):
-            raise RuntimeError(
-                "Failed to set the torque for joints: " + self.action_names)
+
+        assert self.model.set_joint_generalized_force_targets(data, self.action_names), "Failed to set the torque target for joint (%s)" % (
+            self.action_names
+        )
+
+        return True
 
     def get_observation(self) -> Observation:
         """
@@ -197,7 +201,7 @@ class MonopodTask(task.Task, abc.ABC):
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(
-            (observation[self.periodic_joints] + np.pi), (2*np.pi)) - np.pi
+            (observation[self.periodic_joints] + np.pi), (2 * np.pi)) - np.pi
         # Scale periodic joints between -1 and 1.
         observation[self.periodic_joints] /= np.pi
         # Return the observation
@@ -237,17 +241,15 @@ class MonopodTask(task.Task, abc.ABC):
         """
 
         # Control the monopod in force mode
-        ok = self.model.set_joint_control_mode(scenario.JointControlMode_force)
+        ok = self.model.set_joint_control_mode(scenario.JointControlMode_force,
+                                               self.action_names)
+
         # set max generalized force for action joints
-        ok = ok and all([self.model.get_joint(joint_name).set_max_generalized_force(
-            self.action_space.high[i]*self.max_torques[i]) for i,
+        ok = ok and all([self.model.get_joint(joint_name).set_joint_max_generalized_force(
+            [self.action_space.high[i] * self.max_torques[i]]) for i,
             joint_name in enumerate(self.action_names)])
-        # Set controller period??
-        ok = ok and self.model.set_controller_period(
-            1 / self.low_level_controller_freq)
-        if not ok:
-            raise RuntimeError(
-                "Failed to change the control mode of the Monopod")
+
+        assert ok, "Failed to change the control mode of the Monopod Model."
 
     def get_reward(self) -> Reward:
         """
