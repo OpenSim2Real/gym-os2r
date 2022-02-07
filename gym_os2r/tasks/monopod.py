@@ -164,6 +164,8 @@ class MonopodTask(task.Task, abc.ABC):
         Args:
             action (ndrray): Generalized force target for each
                              controlled joint.
+        Return:
+            (bool): True if success otherwise false.
         Raise:
             (RuntimeError): Failed to set joints torque target.
 
@@ -230,6 +232,7 @@ class MonopodTask(task.Task, abc.ABC):
             for joint, value in zip(obs_name[reason], observation[reason]):
                 msg += joint + " caused reset at %.6f, \t " % value
             logger.debug(msg)
+
         return done
 
     def reset_task(self) -> None:
