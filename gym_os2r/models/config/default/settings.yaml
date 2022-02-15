@@ -10,8 +10,8 @@ task_modes:
       clipping_adjust: 7.5
     spaces:
       action:
-        hip_joint: 20
-        knee_joint: 20
+        hip_joint: 1.1
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -42,8 +42,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 1.1 # max/min torque should usually be the same
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -71,8 +71,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 1.1 # max/min torque should usually be the same
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -97,8 +97,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 1.1 # max/min torque should usually be the same
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -116,12 +116,12 @@ task_modes:
       lower_leg_length: 200
       central_pivot_height: 75
       length_boom: 1500
-      hip_offset: 20
+      hip_offset: 1.1
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 1.1 # max/min torque should usually be the same
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -148,12 +148,12 @@ task_modes:
       lower_leg_length: 200
       central_pivot_height: 75
       length_boom: 1500
-      hip_offset: 20
+      hip_offset: 1.1
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 1.1 # max/min torque should usually be the same
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -177,12 +177,12 @@ task_modes:
       lower_leg_length: 200
       central_pivot_height: 75
       length_boom: 1500
-      hip_offset: 20
+      hip_offset: 1.1
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 1.1 # max/min torque should usually be the same
+        knee_joint: 1.1
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -211,3 +211,6 @@ resets:
   float:
     laying_down: False
     planarizer_pitch_joint: 0.35
+  real:
+    laying_down: True
+    planarizer_pitch_joint: Nan
