@@ -191,7 +191,7 @@ class HoppingV1(RewardBase):
         self.supported_task_modes = self._all_task_modes
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
-        _STAND_HEIGHT = 0.15
+        _STAND_HEIGHT = 0.12
         _HOP_SPEED = 0.1
         _IDEAL_ANGLE = 0.4
         _MAX_VERTICAL_SPEED = 0.8
