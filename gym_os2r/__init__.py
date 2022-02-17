@@ -15,7 +15,7 @@ max_float = float(numpy.finfo(numpy.float32).max)
 register(
     id='Monopod-stand-v1',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=100000,
+    max_episode_steps=10000,
     kwargs={'task_cls': tasks.monopod.MonopodTask,
             'agent_rate': 1000,
             'physics_rate': 10000,
@@ -27,7 +27,7 @@ register(
 register(
     id='Monopod-balance-v1',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=100000,
+    max_episode_steps=10000,
     kwargs={'task_cls': tasks.monopod.MonopodTask,
             'agent_rate': 1000,
             'physics_rate': 10000,
@@ -40,7 +40,7 @@ register(
 register(
     id='Monopod-walk-v1',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=100000,
+    max_episode_steps=10000,
     kwargs={'task_cls': tasks.monopod.MonopodTask,
             'agent_rate': 1000,
             'physics_rate': 10000,
@@ -53,7 +53,7 @@ register(
 register(
     id='Monopod-hop-v1',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=100000,
+    max_episode_steps=10000,
     kwargs={'task_cls': tasks.monopod.MonopodTask,
             'agent_rate': 1000,
             'physics_rate': 10000,
@@ -66,7 +66,7 @@ register(
 register(
     id='Monopod-simple-v1',
     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=100000,
+    max_episode_steps=10000,
     kwargs={'task_cls': tasks.monopod.MonopodTask,
             'agent_rate': 1000,
             'physics_rate': 10000,
