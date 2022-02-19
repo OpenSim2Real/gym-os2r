@@ -60,7 +60,7 @@ register(
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip',
             'reward_class': HoppingV1,
-            'reset_positions': ['ground']
+            'reset_positions': ['stand']
             })
 
 register(
