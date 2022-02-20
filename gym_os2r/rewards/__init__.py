@@ -115,13 +115,13 @@ class BalancingV3(RewardBase):
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _BALANCE_HEIGHT = 0.1
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
-        # print(bp)
-        balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, float("inf"))) 
-        # print(f"BALANCE IS {balancing_reward} \n")
-        action_cost = abs(action).sum() / 40
-        # print(action)
-        # print(f"ACTION COST IS {action_cost}\n")
-        return (1 - action_cost) * balancing_reward
+        by = obs[self.observation_index['planarizer_yaw_joint_pos']]
+        print(f"bp: {bp} \n action: {action} \n")
+        # print(obs[self.observation_index['planarizer_yaw_joint_vel']])
+        balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, float("inf"))) # 0 or 1
+        action_cost = abs(action).sum() / 40 # Divide by 40 to be in [0,1]
+        offset_cost = abs(by) 
+        return (1 - action_cost) * balancing_reward * (1 - offset_cost)
 
 # Standing tasks
 
