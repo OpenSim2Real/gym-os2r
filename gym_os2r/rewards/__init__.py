@@ -156,6 +156,125 @@ class StandingV2(RewardBase):
         #TODO Fix hardcoded normalized action
         action_cost = 0.1 * np.square(action/20).sum()
         return bp-action_cost + 1
+
+class StandingV3(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        _STAND_HEIGHT = 0.1
+        _IDEAL_ANGLE = 0.5
+        _ANGLE_LIMIT = 6.3
+
+        standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
+                                 bounds=(_STAND_HEIGHT, float('inf')),
+                                 margin=_STAND_HEIGHT/4)
+        # knee_reward = tolerance(obs[self.observation_index['knee_joint_pos']],
+        #                          bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE),
+        #                          margin=_IDEAL_ANGLE/4)
+        knee_reward = tolerance(obs[self.observation_index['knee_joint_pos']],
+                                 bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE),
+                                 margin=0)
+
+        hip_within_limit = tolerance(obs[self.observation_index['hip_joint_pos']],
+                                 bounds=(-_ANGLE_LIMIT, _ANGLE_LIMIT),
+                                 margin=0)
+
+        boom_connector_within_limit = tolerance(obs[self.observation_index['boom_connector_joint_pos']],
+                                 bounds=(-_ANGLE_LIMIT, _ANGLE_LIMIT),
+                                 margin=0)
+
+        boundaries_reward = hip_within_limit*boom_connector_within_limit
+
+        stand_reward = standing 
+        small_control = tolerance(action/20, margin=1,
+                                      value_at_margin=0,
+                                      sigmoid='quadratic').mean()
+        small_control = (4 + small_control) / 5
+
+        horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
+        dont_move = tolerance(horizontal_velocity, margin=2)
+        return round(boundaries_reward*small_control * stand_reward * dont_move*knee_reward,3)
+
+class HoppingV1(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        _STAND_HEIGHT = 0.15
+        _HOP_SPEED = 0.1
+        _IDEAL_ANGLE = 0.4
+        _MAX_VERTICAL_SPEED = 0.8
+
+        standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
+                                 bounds=(_STAND_HEIGHT, float('inf')),
+                                 margin=_STAND_HEIGHT/4)
+
+        upright = tolerance(obs[self.observation_index['knee_joint_pos']],
+                                    bounds=(-_IDEAL_ANGLE, _IDEAL_ANGLE), sigmoid='linear',
+                                    margin=0.8, value_at_margin=0)
+
+        stand_reward = standing*upright
+        # small_control = tolerance(action/20, margin=1,
+        #                               value_at_margin=0,
+        #                               sigmoid='quadratic').mean()
+        # small_control = (4 + small_control) / 5
+
+        impact_cost = tolerance(obs[self.observation_index['planarizer_pitch_joint_vel']],
+                            bounds=(-_MAX_VERTICAL_SPEED, _MAX_VERTICAL_SPEED),
+                            margin=1, value_at_margin=0, sigmoid='quadratic')
+
+
+        horizontal_velocity = obs[self.observation_index['planarizer_yaw_joint_vel']]
+        #print("Upward Position")
+        #print(obs[self.observation_index['planarizer_pitch_joint_pos']])        
+        # print("Upward Velocity")
+        # print(obs[self.observation_index['planarizer_pitch_joint_vel']])
+        # print("KNEE POSITION")
+        # print(obs[self.observation_index['knee_joint_pos']])
+        move = tolerance(horizontal_velocity,
+                        bounds=(_HOP_SPEED, float('inf')),
+                        margin=_HOP_SPEED, value_at_margin=0,
+                        sigmoid='linear')
+        move = (5*move + 1) / 6
+        return round( impact_cost*stand_reward * move,3)
+
+class StraightV1(RewardBase):
+    """
+    Standing reward. Start from ground and stand up.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = ['simple']#self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+
+        small_control = tolerance(action/20, margin=1,
+                                      value_at_margin=0,
+                                      sigmoid='quadratic').mean()
+        small_control = (4 + small_control) / 5
+
+        hip = obs[self.observation_index['hip_joint_pos']]
+        knee = obs[self.observation_index['knee_joint_pos']]
+
+        hip_reward = tolerance(hip, bounds=(0, 0), margin=1,sigmoid='linear')
+
+        knee_reward = tolerance(knee, bounds=(0, 0), margin=1,sigmoid='linear')
+
+        return hip_reward*knee_reward*small_control
+
+
 # Walking tasks
 
 
