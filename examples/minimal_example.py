@@ -13,7 +13,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-simple-v1"
+env_id = "Monopod-hop-v1"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'fixed'}
@@ -36,7 +36,7 @@ env.render('human')
 env.seed(42)
 
 beg_time = time.time()
-for epoch in range(1000):
+for epoch in range(10):
 
     # Reset the environment
     observation = env.reset()
@@ -50,6 +50,7 @@ for epoch in range(1000):
         # Execute a random action
         # action = env.action_space.sample() * 0.1  # make the value smaller
         action = env.action_space.sample()
+        # action = [0.0, 0.2]
         observation, reward, done, _ = env.step(action)
         print(observation)
         time.sleep(0.005)
