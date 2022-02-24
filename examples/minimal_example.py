@@ -13,7 +13,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-stand-v1"
+env_id = "Monopod-hop-v1"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'fixed'}
@@ -21,9 +21,9 @@ env_id = "Monopod-stand-v1"
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
 # kwargs = {'reward_class': BalancingV2}
 # kwargs = {'reset_positions': ['float']}
-kwargs = {'reset_positions': ['float']}
+# kwargs = {'reset_positions': ['float']}
 
-# kwargs = {}
+kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 
@@ -31,16 +31,16 @@ make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
 
 # Enable the rendering
-# env.render('human')
+env.render('human')
 # Initialize the seed
 env.seed(42)
 
 beg_time = time.time()
-for epoch in range(1000):
+for epoch in range(10):
 
     # Reset the environment
     observation = env.reset()
-    time.sleep(1)
+    time.sleep(5)
 
     # Initialize returned values
     done = False
@@ -50,6 +50,7 @@ for epoch in range(1000):
         # Execute a random action
         # action = env.action_space.sample() * 0.1  # make the value smaller
         action = env.action_space.sample()
+        # action = [0.0, 0.2]
         observation, reward, done, _ = env.step(action)
         print(observation)
         time.sleep(0.005)

@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 **/__pycache__
 
+.cache
+
 *.tags
 *.tags1
 
@@ -52,3 +54,5 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+.ccls-cache

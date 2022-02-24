@@ -10,14 +10,14 @@ task_modes:
       clipping_adjust: 7.5
     spaces:
       action:
-        hip_joint: 20
-        knee_joint: 20
+        hip_joint: 2.5
+        knee_joint: 2.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, .inf, -.inf]
+          limits: [.inf, -.inf, .inf, -.inf]
         knee_joint:
           periodic_pos: True
           limits: [1, -1, .inf, -.inf]
@@ -29,7 +29,7 @@ task_modes:
           limits: [1, -1, .inf, -.inf]
         boom_connector_joint:
           periodic_pos: False
-          limits: [6.30, -6.30, .inf, -.inf]
+          limits: [.inf, -.inf, .inf, -.inf]
 
   fixed_hip:
     model: 'monopod-fixed_hip'
@@ -42,8 +42,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -71,8 +71,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -86,6 +86,29 @@ task_modes:
           periodic_pos: False
           limits: [1.57, -1.57, .inf, -.inf]
 
+  simple:
+    model: 'monopod-simple'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 190
+      central_pivot_height: 80
+      length_boom: 2100
+      hip_offset: 0
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
+      observation:
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.30, -6.30, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [1, -1, .inf, -.inf]
+
   old-free_hip:
     model: 'old-monopod'
     definition:
@@ -93,12 +116,12 @@ task_modes:
       lower_leg_length: 200
       central_pivot_height: 75
       length_boom: 1500
-      hip_offset: 20
+      hip_offset: 1.1
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -125,12 +148,12 @@ task_modes:
       lower_leg_length: 200
       central_pivot_height: 75
       length_boom: 1500
-      hip_offset: 20
+      hip_offset: 1.1
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -154,12 +177,12 @@ task_modes:
       lower_leg_length: 200
       central_pivot_height: 75
       length_boom: 1500
-      hip_offset: 20
+      hip_offset: 1.1
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 20 # max/min torque should usually be the same
-        knee_joint: 20
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -187,4 +210,7 @@ resets:
     planarizer_pitch_joint: -0.035
   float:
     laying_down: False
-    planarizer_pitch_joint: 0.35
+    planarizer_pitch_joint: 2.55
+  real:
+    laying_down: True
+    planarizer_pitch_joint: Nan

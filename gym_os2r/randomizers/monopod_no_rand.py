@@ -61,21 +61,25 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         xpath = 'resets/' + reset_position
         reset_conf = task.cfg.get_config(xpath)
         joint_angles = (0, 0)
-        if not reset_conf['laying_down']:
-            xpath = 'task_modes/' + task.task_mode + '/definition'
-            robot_def = task.cfg.get_config(xpath)
-            robot_def['planarizer_pitch_joint'] = reset_conf['planarizer_pitch_joint']
-            joint_angles = leg_joint_angles(robot_def)
-        else:
-            joint_angles = (1.57,  0)
-
-        # Get the model
-        model = task.world.get_model(task.model_name)
-
         pos_reset = [0]*len(task.joint_names)
         vel_reset = [0]*len(task.joint_names)
-        pos_reset[task.joint_names.index(
-            'planarizer_pitch_joint')] = reset_conf['planarizer_pitch_joint']
+        if task.task_mode is not 'simple':
+            if not reset_conf['laying_down']:
+                xpath = 'task_modes/' + task.task_mode + '/definition'
+                robot_def = task.cfg.get_config(xpath)
+                robot_def['planarizer_pitch_joint'] = reset_conf['planarizer_pitch_joint']
+                joint_angles = leg_joint_angles(robot_def)
+            else:
+                joint_angles = (1.57,  0)
+
+            # Get the model
+            model = task.world.get_model(task.model_name)
+
+            pos_reset[task.joint_names.index(
+                'planarizer_pitch_joint')] = reset_conf['planarizer_pitch_joint']
+        else:
+            joint_angles = task.observation_space.sample()[[task.observation_index['hip_joint_pos'],task.observation_index['knee_joint_pos']]]
+            print(joint_angles)
         pos_reset[task.joint_names.index('hip_joint')] = joint_angles[0]
         pos_reset[task.joint_names.index('knee_joint')] = joint_angles[1]
         ok_pos = model.to_gazebo().reset_joint_positions(
