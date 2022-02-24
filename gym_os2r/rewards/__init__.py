@@ -192,9 +192,9 @@ class HoppingV1(RewardBase):
 
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.12
-        _HOP_SPEED = 0.1
-        _IDEAL_ANGLE = 0.4
-        _MAX_VERTICAL_SPEED = 0.8
+        _HOP_SPEED = 0.01
+        _IDEAL_ANGLE = 0.45
+        _MAX_VERTICAL_SPEED = 0.08
 
         standing = tolerance(obs[self.observation_index['planarizer_pitch_joint_pos']],
                                  bounds=(_STAND_HEIGHT, float('inf')),

@@ -42,8 +42,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 2.5 # max/min torque should usually be the same
-        knee_joint: 2.5
+        hip_joint: 6.5 # max/min torque should usually be the same
+        knee_joint: 6.5
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
