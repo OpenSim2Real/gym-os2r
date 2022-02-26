@@ -116,7 +116,7 @@ class BalancingV3(RewardBase):
         _BALANCE_HEIGHT = 0.1
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
         by = obs[self.observation_index['planarizer_yaw_joint_pos']]
-        print(f"bp: {bp} \n action: {action} \n")
+        # print(f"bp: {bp} \n action: {action} \n")
         # print(obs[self.observation_index['planarizer_yaw_joint_vel']])
         balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, float("inf"))) # 0 or 1
         action_cost = abs(action).sum() / 40 # Divide by 40 to be in [0,1]
@@ -304,3 +304,35 @@ class WalkingV1(RewardBase):
 
 
 # Hopping task
+class HoppingV1(RewardBase):
+    """
+    Hopping vertically. Pogo stick-ing
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = self._all_task_modes
+
+    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+        _STAND_HEIGHT = 0.15
+        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+        by = obs[self.observation_index['planarizer_yaw_joint_pos']]
+        # # hip_pos = abs(obs[self.observation_index['hip_joint_pos']])
+        # # knee_pos = abs(obs[self.observation_index['knee_joint_pos']])
+
+        hopping_reward = tolerance(bp, (_STAND_HEIGHT, np.inf)) # 0 or 1
+        hopping_reward *= (bp - _STAND_HEIGHT) / (1.57 - _STAND_HEIGHT)
+
+        # if hopping_reward > 0:
+        #     hopping_reward = (bp - _STAND_HEIGHT) / (1.57 - _STAND_HEIGHT) # in [0,1]
+
+        # # # Favour leg being vertical using average distance 
+        # # upright_cost = (hip_pos / 6.30 + knee_pos) / 2
+
+        hopping_reward = tolerance(bp, (_STAND_HEIGHT, np.inf)) # 0 or 1
+        hopping_reward *= bp / 1.57 # 0 or in [1,2]
+        action_cost = abs(action).sum() / 40 # in [0,1]
+        offset_cost = abs(by) 
+        return hopping_reward * (1 - action_cost) * (1 - offset_cost) # in [0,2]
+
+ 

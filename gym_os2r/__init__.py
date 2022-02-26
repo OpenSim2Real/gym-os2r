@@ -78,6 +78,20 @@ register(
             })
 
 
+register(
+    id='Monopod-hop-v1',
+    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=10000,
+    kwargs={'task_cls': tasks.monopod.MonopodTask,
+            'agent_rate': 1000,
+            'physics_rate': 5000,
+            'real_time_factor': max_float,
+            'task_mode': 'fixed_hip',
+            'reward_class': HoppingV1,
+            'reset_positions': ['stand']
+            })
+#
+
 # register(
 #     id='Monopod-v1',
 #     entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
