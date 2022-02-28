@@ -118,10 +118,11 @@ class BalancingV3(RewardBase):
         small_control = tolerance(action,
                                   margin = 1, value_at_margin = 0.4,
                                   sigmoid = 'quadratic')
-        small_delta_control = tolerance(action-action_old,
-                                  margin = 1, value_at_margin = 0,
-                                  sigmoid = 'quadratic')
-        return balancing * np.prod(small_control) * np.prod(small_delta_control)
+        # small_delta_control = tolerance(action-action_old,
+        #                           margin = 1, value_at_margin = 0,
+        #                           sigmoid = 'quadratic')
+        # return balancing * np.prod(small_control) * np.prod(small_delta_control)
+        return balancing * np.prod(small_control)
 
 # Standing tasks
 

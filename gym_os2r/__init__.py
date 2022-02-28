@@ -47,7 +47,8 @@ register(
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip',
             'reward_class': BalancingV3,
-            'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
+            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
+            'reset_positions': ['float']
             })
 
 register(
