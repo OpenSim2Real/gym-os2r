@@ -1,7 +1,7 @@
 import abc
 import gym
 import numpy as np
-from typing import Tuple
+from typing import Tuple, List
 from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
@@ -263,9 +263,9 @@ class MonopodTask(task.Task, abc.ABC):
 
         """
         obs = self.get_observation()
-        return self.calculate_reward(obs, self.action_history[-1])
+        return self.calculate_reward(obs, [self.action_history[-1]])
 
-    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: List[Action]) -> Reward:
         """
         Calculates the reward given observation and action. The reward is
         calculated in a provided reward class defined in the tasks kwargs.
@@ -273,7 +273,8 @@ class MonopodTask(task.Task, abc.ABC):
         Args:
             obs (np.array): numpy array with the same size task dimensions as
                             observation space.
-            action (np.array): numpy array with the same size task dimensions
+            actions List[np.array]: List of actions taken by the environment
+                            numpy array with the same size task dimensions
                             as action space.
 
         Returns:
@@ -281,14 +282,15 @@ class MonopodTask(task.Task, abc.ABC):
         """
         return self.reward.calculate_reward(obs, action)
 
-    def get_state_info(self, obs: Observation, action: Action) -> Tuple[Reward, bool]:
+    def get_state_info(self, obs: Observation, actions: List[Action]) -> Tuple[Reward, bool]:
         """
         Returns the reward and is_done for some observation and action space.
 
         Args:
             obs (np.array): numpy array with the same size task dimensions as
                             observation space.
-            action (np.array): numpy array with the same size task dimensions
+            actions List[np.array]: List of actions taken by the environment
+                            numpy array with the same size task dimensions
                             as action space.
 
         Returns:

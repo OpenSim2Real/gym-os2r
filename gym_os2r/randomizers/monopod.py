@@ -285,5 +285,5 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
                                                            physics_randomizer=self,
                                                            **kwargs)
 
-    def get_state_info(self, state: Observation, action: Action):
-        return self.env.unwrapped.task.get_state_info(state, action)
+    def get_state_info(self, state: Observation, actions: List[Action]):
+        return self.env.unwrapped.task.get_state_info(state, actions)
