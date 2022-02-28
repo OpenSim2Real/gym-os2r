@@ -104,6 +104,7 @@ class MonopodTask(task.Task, abc.ABC):
                                     maxlen=history_len)
 
         self.observing_measured_torque = self.spaces_definition['observing_measured_torque']
+        self.observation_name_mask = self.spaces_definition['observation_mask']
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
@@ -149,9 +150,28 @@ class MonopodTask(task.Task, abc.ABC):
             for i, joint in enumerate(self.action_names):
                 self.observation_index[joint + '_torque'] = i + 2*len(self.joint_names)
 
+        # Mask the observation space.
+        self.observaton_mask = []
+        index_itr = 0;
+        new_low = []
+        new_high = []
+        new_obs_index = {}
+        for obs_name, index in sorted(self.observation_index.items(), key=lambda item: item[1]):
+            if obs_name not in self.observation_name_mask:
+                new_obs_index[obs_name] = index_itr
+                new_low.append(low[index])
+                new_high.append(high[index])
+                index_itr = index_itr + 1
+                self.observaton_mask.append(index)
+
+        self.observation_index = new_obs_index
+        low = np.array(new_low)
+        high = np.array(new_high)
+
+        # Set period joints to be periodic
         self.periodic_joints = []
         for joint, joint_info in self.spaces_definition['observation'].items():
-            if joint_info['periodic_pos']:
+            if joint_info['periodic_pos'] and joint + '_pos' in self.observation_index:
                 self.periodic_joints.append(
                     self.observation_index[joint + '_pos'])
 
@@ -200,7 +220,6 @@ class MonopodTask(task.Task, abc.ABC):
             self.action_history.appendleft(
                 np.array(self.model.joint_generalized_force_targets(
                 self.action_names))/self.max_torques)
-            print(self.action_history[1])
         return True
 
     def get_observation(self) -> Observation:
@@ -222,7 +241,7 @@ class MonopodTask(task.Task, abc.ABC):
             obs_list = [*obs_list, *self.action_history[1]]
 
         # Create the observation
-        observation = Observation(np.array(obs_list))
+        observation = Observation(np.array(obs_list)[self.observaton_mask])
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(
