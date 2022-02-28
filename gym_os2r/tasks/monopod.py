@@ -36,8 +36,7 @@ class MonopodTask(task.Task, abc.ABC):
 
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
-                                     'old-free_hip', 'old-fixed_hip',
-                                     'old-fixed', 'simple']
+                                     'fixed_hip_torque', 'simple']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -90,10 +89,6 @@ class MonopodTask(task.Task, abc.ABC):
 
         # Create dict of index in obs for obs type
         self.observation_index = {}
-        for i, joint in enumerate(self.joint_names):
-            self.observation_index[joint + '_pos'] = i
-            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
-        kwargs['observation_index'] = self.observation_index
 
         # Initialize Reward Class from Kwarg passed in.
         self.reward = self.reward_class(self.observation_index)
@@ -107,6 +102,8 @@ class MonopodTask(task.Task, abc.ABC):
 
         self.action_history = deque([np.zeros(len(self.action_names)) for i in range(history_len)],
                                     maxlen=history_len)
+
+        self.observing_measured_torque = self.spaces_definition['observing_measured_torque']
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
@@ -131,14 +128,26 @@ class MonopodTask(task.Task, abc.ABC):
 
         # Configure action limits between -1 and 1 which will be scaled by max
         # torque later
-        low = np.array([-1, -1])
-        high = np.array([1, 1])
-        action_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
+        low_act = np.array([-1, -1])
+        high_act = np.array([1, 1])
+        action_space = gym.spaces.Box(low=low_act, high=high_act, dtype=np.float64)
 
         # Configure reset limits
         a = observation_lims
         low = np.concatenate((a[:, 1], a[:, 3]))
         high = np.concatenate((a[:, 0], a[:, 2]))
+
+        # Create obs index
+        for i, joint in enumerate(self.joint_names):
+            self.observation_index[joint + '_pos'] = i
+            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
+
+        # If observing_measured_torque then add that to end of obs space
+        if self.observing_measured_torque:
+            low = np.array([*low, *low_act])
+            high = np.array([*high, *high_act])
+            for i, joint in enumerate(self.action_names):
+                self.observation_index[joint + '_torque'] = i + 2*len(self.joint_names)
 
         self.periodic_joints = []
         for joint, joint_info in self.spaces_definition['observation'].items():
@@ -179,9 +188,6 @@ class MonopodTask(task.Task, abc.ABC):
         )
         # Set the force value
         data = self.max_torques * action
-        # Store last actions
-        if store_action:
-            self.action_history.appendleft(action)
 
         assert self.model.set_joint_generalized_force_targets(
                data, self.action_names
@@ -189,6 +195,12 @@ class MonopodTask(task.Task, abc.ABC):
             self.action_names
         )
 
+        # Store last actions
+        if store_action:
+            self.action_history.appendleft(
+                np.array(self.model.joint_generalized_force_targets(
+                self.action_names))/self.max_torques)
+            print(self.action_history[1])
         return True
 
     def get_observation(self) -> Observation:
@@ -203,8 +215,14 @@ class MonopodTask(task.Task, abc.ABC):
         # Get the new joint positions and velocities
         pos = self.model.joint_positions(self.joint_names)
         vel = self.model.joint_velocities(self.joint_names)
+
+        obs_list = [*pos, *vel]
+
+        if self.observing_measured_torque:
+            obs_list = [*obs_list, *self.action_history[1]]
+
         # Create the observation
-        observation = Observation(np.array([*pos, *vel]))
+        observation = Observation(np.array(obs_list))
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(

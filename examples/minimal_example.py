@@ -54,7 +54,8 @@ for epoch in range(10):
         # action = [0.0, 0.2]
         observation, reward, done, _ = env.step(action)
         print('observations: ', observation)
-        # time.sleep(0.5)
+        # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
+        time.sleep(0.5)
 
 env.close()
 time.sleep(5)
