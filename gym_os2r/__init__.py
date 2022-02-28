@@ -8,7 +8,7 @@ from . import utils
 __all__ = ['tasks', 'models', 'randomizers', 'common', 'utils']
 
 from gym.envs.registration import register
-from gym_os2r.rewards import BalancingV1, StandingV1,StandingV2,StandingV3, WalkingV1, HoppingV1, StraightV1
+from gym_os2r.rewards import BalancingV1, StandingV1,StandingV2,StandingV3, WalkingV1, HoppingV1, StraightV1, BalancingV3
 
 max_float = float(numpy.finfo(numpy.float32).max)
 
@@ -35,6 +35,19 @@ register(
             'task_mode': 'free_hip',
             'reward_class': BalancingV1,
             'reset_positions': ['stand']
+            })
+
+register(
+    id='Monopod-balance-v3',
+    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=10_000,
+    kwargs={'task_cls': tasks.monopod.MonopodTask,
+            'agent_rate': 1000,
+            'physics_rate': 10000,
+            'real_time_factor': max_float,
+            'task_mode': 'fixed_hip',
+            'reward_class': BalancingV3,
+            'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
             })
 
 register(

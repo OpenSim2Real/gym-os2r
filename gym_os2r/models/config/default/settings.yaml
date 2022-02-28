@@ -210,7 +210,7 @@ resets:
     planarizer_pitch_joint: -0.035
   float:
     laying_down: False
-    planarizer_pitch_joint: 2.55
+    planarizer_pitch_joint: 0.2
   real:
     laying_down: True
     planarizer_pitch_joint: Nan
