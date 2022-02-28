@@ -120,3 +120,9 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
             d, value_at_margin, sigmoid))
 
     return float(value) if np.isscalar(x) else value
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    x = np.linspace(-2, 2, 1000)
+    plt.plot(x, tolerance(x, margin=1, value_at_margin=0.1, sigmoid='quadratic'))
+    plt.show()

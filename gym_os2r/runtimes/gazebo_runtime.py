@@ -69,7 +69,8 @@ class GazeboRuntime(gym_ignition.runtimes.gazebo_runtime.GazeboRuntime):
 
         for sub_step in range(self.num_of_steps_per_run):
             # Set the action
-            self.task.set_action(action)
+            self.task.set_action(action, store_action=(
+                                 sub_step == self.num_of_steps_per_run - 1))
 
             # Step the simulator
             ok_gazebo = self.gazebo.run()

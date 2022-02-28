@@ -1,7 +1,7 @@
 import abc
 import gym
 import numpy as np
-from typing import Tuple, List
+from typing import Tuple, Deque
 from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
@@ -84,8 +84,6 @@ class MonopodTask(task.Task, abc.ABC):
         # Space for resetting the task
         self.reset_space = None
 
-        self.low_level_controller_freq = 1000  # hz
-
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
         self.joint_names = [*self.spaces_definition['observation']]
@@ -105,8 +103,10 @@ class MonopodTask(task.Task, abc.ABC):
                                + ' task mode not supported by '
                                + str(self.reward) + ' reward class.')
 
-        self.action_history = deque(maxlen=100)
-        self.action_history.append(0)
+        history_len = 10
+
+        self.action_history = deque([np.zeros(len(self.action_names)) for i in range(history_len)],
+                                    maxlen=history_len)
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
@@ -157,13 +157,15 @@ class MonopodTask(task.Task, abc.ABC):
 
         return action_space, obs_space
 
-    def set_action(self, action: Action) -> bool:
+    def set_action(self, action: Action, store_action : bool = True) -> bool:
         """
         Set generalized force target for each controlled joint.
 
         Args:
             action (ndrray): Generalized force target for each
                              controlled joint.
+            store_action (bool): True to store action taken in action history
+                             otherwise false to ignore.
         Return:
             (bool): True if success otherwise false.
         Raise:
@@ -178,9 +180,12 @@ class MonopodTask(task.Task, abc.ABC):
         # Set the force value
         data = self.max_torques * action
         # Store last actions
-        self.action_history.append(data)
+        if store_action:
+            self.action_history.appendleft(action)
 
-        assert self.model.set_joint_generalized_force_targets(data, self.action_names), "Failed to set the torque target for joint (%s)" % (
+        assert self.model.set_joint_generalized_force_targets(
+               data, self.action_names
+               ), "Failed to set the torque target for joint (%s)" % (
             self.action_names
         )
 
@@ -248,7 +253,8 @@ class MonopodTask(task.Task, abc.ABC):
                                                self.action_names)
 
         # set max generalized force for action joints
-        ok = ok and all([self.model.get_joint(joint_name).set_joint_max_generalized_force(
+        ok = ok and all([self.model.get_joint(
+            joint_name).set_joint_max_generalized_force(
             [self.action_space.high[i] * self.max_torques[i]]) for i,
             joint_name in enumerate(self.action_names)])
 
@@ -263,9 +269,9 @@ class MonopodTask(task.Task, abc.ABC):
 
         """
         obs = self.get_observation()
-        return self.calculate_reward(obs, [self.action_history[-1]])
+        return self.calculate_reward(obs, self.action_history)
 
-    def calculate_reward(self, obs: Observation, action: List[Action]) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Deque[Action]) -> Reward:
         """
         Calculates the reward given observation and action. The reward is
         calculated in a provided reward class defined in the tasks kwargs.
@@ -273,7 +279,7 @@ class MonopodTask(task.Task, abc.ABC):
         Args:
             obs (np.array): numpy array with the same size task dimensions as
                             observation space.
-            actions List[np.array]: List of actions taken by the environment
+            actions Deque[np.array]: Deque of actions taken by the environment
                             numpy array with the same size task dimensions
                             as action space.
 
@@ -282,14 +288,14 @@ class MonopodTask(task.Task, abc.ABC):
         """
         return self.reward.calculate_reward(obs, action)
 
-    def get_state_info(self, obs: Observation, actions: List[Action]) -> Tuple[Reward, bool]:
+    def get_state_info(self, obs: Observation, actions: Deque[Action]) -> Tuple[Reward, bool]:
         """
         Returns the reward and is_done for some observation and action space.
 
         Args:
             obs (np.array): numpy array with the same size task dimensions as
                             observation space.
-            actions List[np.array]: List of actions taken by the environment
+            actions Deque[np.array]: Deque of actions taken by the environment
                             numpy array with the same size task dimensions
                             as action space.
 
