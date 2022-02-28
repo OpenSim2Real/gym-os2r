@@ -112,16 +112,15 @@ class BalancingV3(RewardBase):
     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
         action = actions[0]
         action_old = actions[1]
-        _BALANCE_HEIGHT = 0.12
+        _BALANCE_HEIGHT = 0.1
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
         balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
         small_control = tolerance(action,
-                                  margin=1, value_at_margin=0,
-                                  sigmoid='quadratic')
-        small_control = (small_control + 4) / 5
+                                  margin = 1, value_at_margin = 0.4,
+                                  sigmoid = 'quadratic')
         small_delta_control = tolerance(action-action_old,
-                                  margin=1, value_at_margin=0,
-                                  sigmoid='quadratic')
+                                  margin = 1, value_at_margin = 0,
+                                  sigmoid = 'quadratic')
         return balancing * np.prod(small_control) * np.prod(small_delta_control)
 
 # Standing tasks
