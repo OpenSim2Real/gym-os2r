@@ -78,7 +78,7 @@ task_modes:
       action:
         hip_joint: 2.5 # max/min torque should usually be the same
         knee_joint: 2.5
-      observing_measured_torque: True
+      observing_measured_torque: False
       observation_mask: ['planarizer_yaw_joint_pos'] # example would be 'knee_joint_pos' or 'knee_joint_vel' then it would be ignore 
       observation:
         hip_joint:
