@@ -87,21 +87,23 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         self._populate_world(task=task, monopod_model=random_model,
                              ground_model=random_ground)
 
-        reset_position = random.choice(task.reset_positions)
-        xpath = 'resets/' + reset_position
+        reset_orientation = random.choice(task.reset_positions)
+        xpath = 'resets/' + reset_orientation
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
         reset_conf['planarizer_pitch_joint'] *= random.uniform(0.8, 1.2)
-        joint_angles = (0, 0)
+        leg_angles = (0, 0)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
             robot_def = task.cfg.get_config(xpath)
             robot_def['planarizer_pitch_joint'] = reset_conf['planarizer_pitch_joint']
-            joint_angles = leg_joint_angles(robot_def)
+            leg_angles = leg_joint_angles(robot_def)
         else:
-            joint_angles = (1.57,  0)
+            leg_angles = random.choice([(1.57,  0), (-1.57,  0)])
         random_dir = random.choice([-1, 1])
-        joint_angles = [angle * random_dir for angle in joint_angles]
+        leg_angles = [angle * random_dir for angle in leg_angles]
+        yaw_position = random.uniform(-1, 1)
+
         # Get the model
         model = task.world.get_model(task.model_name)
 
@@ -109,8 +111,9 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         vel_reset = [0]*len(task.joint_names)
         pos_reset[task.joint_names.index(
             'planarizer_pitch_joint')] = reset_conf['planarizer_pitch_joint']
-        pos_reset[task.joint_names.index('hip_joint')] = joint_angles[0]
-        pos_reset[task.joint_names.index('knee_joint')] = joint_angles[1]
+        pos_reset[task.joint_names.index('planarizer_yaw_joint')] = yaw_position
+        pos_reset[task.joint_names.index('hip_joint')] = leg_angles[0]
+        pos_reset[task.joint_names.index('knee_joint')] = leg_angles[1]
 
         ok_pos = model.to_gazebo().reset_joint_positions(
             pos_reset, task.joint_names)
@@ -159,7 +162,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Convert the URDF to SDF
         sdf_model_string = scenario.urdffile_to_sdfstring(urdf_model_file)
-
         # Write the SDF string to a temp file
         sdf_model = utils.misc.string_to_file(sdf_model_string)
 
@@ -172,7 +174,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         randomization_config = {
             "*/link/inertial/mass": {
-                # mass + U(-0.5, 0.5)
                 'method': Method.Coefficient,
                 'distribution': Distribution.Uniform,
                 'params': UniformParams(low=0.8, high=1.2),
@@ -224,8 +225,8 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
                     if path_split[1] in ['collision']:
                         child.set("name", path_split[1])
-
-                    changed.append(element)
+                    if '/' not in path_split[1]:
+                        changed.append(element)
                     logger.debug('Added the child ' + str(path_split[1])
                                  + ' to the sdf element ' + str(path_split[0]))
             changed = [element.findall(path_split[1]) for element in changed]
@@ -235,16 +236,12 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             return new, changed
 
         # This class will make an element in the model xpath that didnt exist prior.
-        def recursive_element_init(path, randomizer, default_value=0):
-            elements, changed = recursive_element_helper(path, randomizer)
-            # for element in changed:
-            #     logger.debug('The leaf element added with the tag: '
-            #                  + str(element.tag) + ' got set to the value 0')
-            #     element.text = str(0)
-            if changed:
-                element = changed[-1]
-                logger.debug(f'The leaf element added with the tag: {element.tag} ' +
-                             f'got set to the value {default_value}')
+        def recursive_element_init(path, randomizer, default_value = 0):
+            elements, changed_leaf = recursive_element_helper(path, randomizer)
+            for element in changed_leaf:
+                logger.debug('The leaf element added with the tag: '
+                             + str(element.tag) + ' got set to the value 0')
+                # element.text = str(0)
                 element.text = str(default_value)
 
         for xpath, config in randomization_config.items():
