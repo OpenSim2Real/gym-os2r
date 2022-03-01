@@ -11,7 +11,7 @@
                 <surface>
                     <friction>
                         <ode>
-                            <mu>100</mu>
+                            <mu>0.33</mu>
                         </ode>
                     </friction>
                     <bounce>
