@@ -102,7 +102,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             leg_angles = random.choice([(1.57,  0), (-1.57,  0)])
         random_dir = random.choice([-1, 1])
         leg_angles = [angle * random_dir for angle in leg_angles]
-        yaw_position = random.uniform(-1, 1)
+        yaw_position = random.uniform(-0.02, 0.02)
 
         # Get the model
         model = task.world.get_model(task.model_name)
