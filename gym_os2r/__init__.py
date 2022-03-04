@@ -80,6 +80,20 @@ register(
             })
 
 register(
+    id='Monopod-balance-v6',
+    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=10_000,
+    kwargs={'task_cls': tasks.monopod.MonopodTask,
+            'agent_rate': 1000,
+            'physics_rate': 10000,
+            'real_time_factor': max_float,
+            'task_mode': 'fixed_hip_torque',
+            'reward_class': BalancingV6,
+            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
+            'reset_positions': ['ground', 'half_stand']
+            })
+
+register(
     id='Monopod-walk-v1',
     entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
     max_episode_steps=100_000,
