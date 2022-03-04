@@ -165,7 +165,8 @@ class BalancingV6(RewardBase):
         action_old = actions[1]
         _BALANCE_HEIGHT = 0.1
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
-        balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4), margin=0.01, sigmoid='long_tail')
+        # balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4), margin=0.01, sigmoid='long_tail')
+        balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
         small_control = tolerance(action,
                                   margin = 1, value_at_margin = 0.1,
                                   sigmoid = 'quadratic')
