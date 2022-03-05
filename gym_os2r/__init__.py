@@ -90,7 +90,7 @@ register(
             'task_mode': 'fixed_hip_torque',
             'reward_class': BalancingV6,
             # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['ground', 'half_stand']
+            'reset_positions': ['ground', 'half_stand', 'stand', 'float']
             })
 
 register(
