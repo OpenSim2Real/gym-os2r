@@ -8,7 +8,7 @@ from . import utils
 __all__ = ['tasks', 'models', 'randomizers', 'common', 'utils']
 
 from gym.envs.registration import register
-from gym_os2r.rewards import BalancingV1, StandingV1,StandingV2,StandingV3, WalkingV1, HoppingV1, StraightV1, BalancingV4
+from gym_os2r.rewards import BalancingV1, StandingV1,StandingV2,StandingV3, WalkingV1, HoppingV1, StraightV1, BalancingV3
 
 max_float = float(numpy.finfo(numpy.float32).max)
 
@@ -46,9 +46,9 @@ register(
             'physics_rate': 10000,
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip',
-            'reward_class': BalancingV4,
+            'reward_class': BalancingV3,
             # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['stand']
+            'reset_positions': ['float']
             })
 
 register(
