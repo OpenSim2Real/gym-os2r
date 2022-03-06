@@ -172,11 +172,39 @@ class BalancingV6(RewardBase):
                                   sigmoid = 'quadratic')
 
         small_delta_control = tolerance(action-action_old,
-                                  margin = 0.1, value_at_margin = 0,
-                                  sigmoid = 'quadratic')
+                                  margin = 0.2, value_at_margin = 0.1,
+                                  sigmoid = 'gaussian')
 
         # return balancing * np.prod(small_delta_control)
         return balancing * np.prod(small_delta_control) * np.prod(small_control)
+
+
+class BalancingV7(RewardBase):
+    """
+    Balancing reward. Start from standing positions and stay standing. Smaller
+    control signals are favoured.
+    """
+
+    def __init__(self, observation_index: dict):
+    super().__init__(observation_index)
+    self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed']
+
+    def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
+    action = actions[0]
+    action_old = actions[1]
+    _BALANCE_HEIGHT = 0.11
+    bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+    by = obs[self.observation_index['planarizer_yaw_joint_vel']]
+    # balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4), margin=0.01, sigmoid='long_tail')
+    balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
+    
+    move = tolerance(by, margin = 0.1, value_at_margin = 0.1, sigmoid = 'gaussian')
+
+    small_delta_control = tolerance(action-action_old,
+                              margin = 0.2, value_at_margin = 0.1,
+                              sigmoid = 'gaussian')
+
+    return balancing * np.prod(small_delta_control) * move
 
 # Standing tasks
 
