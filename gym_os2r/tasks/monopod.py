@@ -1,7 +1,7 @@
 import abc
 import gym
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Deque
 from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
@@ -36,8 +36,7 @@ class MonopodTask(task.Task, abc.ABC):
 
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
-                                     'old-free_hip', 'old-fixed_hip',
-                                     'old-fixed', 'simple']
+                                     'fixed_hip_torque', 'simple']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -84,18 +83,12 @@ class MonopodTask(task.Task, abc.ABC):
         # Space for resetting the task
         self.reset_space = None
 
-        self.low_level_controller_freq = 1000  # hz
-
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
         self.joint_names = [*self.spaces_definition['observation']]
 
         # Create dict of index in obs for obs type
         self.observation_index = {}
-        for i, joint in enumerate(self.joint_names):
-            self.observation_index[joint + '_pos'] = i
-            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
-        kwargs['observation_index'] = self.observation_index
 
         # Initialize Reward Class from Kwarg passed in.
         self.reward = self.reward_class(self.observation_index)
@@ -105,8 +98,13 @@ class MonopodTask(task.Task, abc.ABC):
                                + ' task mode not supported by '
                                + str(self.reward) + ' reward class.')
 
-        self.action_history = deque(maxlen=100)
-        self.action_history.append(0)
+        history_len = 10
+
+        self.action_history = deque([np.zeros(len(self.action_names)) for i in range(history_len)],
+                                    maxlen=history_len)
+
+        self.observing_measured_torque = self.spaces_definition['observing_measured_torque']
+        self.observation_name_mask = self.spaces_definition['observation_mask']
         # Optionally overwrite the above using **kwargs
         self.__dict__.update(kwargs)
 
@@ -131,18 +129,49 @@ class MonopodTask(task.Task, abc.ABC):
 
         # Configure action limits between -1 and 1 which will be scaled by max
         # torque later
-        low = np.array([-1, -1])
-        high = np.array([1, 1])
-        action_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
+        low_act = np.array([-1, -1])
+        high_act = np.array([1, 1])
+        action_space = gym.spaces.Box(low=low_act, high=high_act, dtype=np.float64)
 
         # Configure reset limits
         a = observation_lims
         low = np.concatenate((a[:, 1], a[:, 3]))
         high = np.concatenate((a[:, 0], a[:, 2]))
 
+        # Create obs index
+        for i, joint in enumerate(self.joint_names):
+            self.observation_index[joint + '_pos'] = i
+            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
+
+        # If observing_measured_torque then add that to end of obs space
+        if self.observing_measured_torque:
+            low = np.array([*low, *low_act])
+            high = np.array([*high, *high_act])
+            for i, joint in enumerate(self.action_names):
+                self.observation_index[joint + '_torque'] = i + 2*len(self.joint_names)
+
+        # Mask the observation space.
+        self.observaton_mask = []
+        index_itr = 0;
+        new_low = []
+        new_high = []
+        new_obs_index = {}
+        for obs_name, index in sorted(self.observation_index.items(), key=lambda item: item[1]):
+            if obs_name not in self.observation_name_mask:
+                new_obs_index[obs_name] = index_itr
+                new_low.append(low[index])
+                new_high.append(high[index])
+                index_itr = index_itr + 1
+                self.observaton_mask.append(index)
+
+        self.observation_index = new_obs_index
+        low = np.array(new_low)
+        high = np.array(new_high)
+
+        # Set period joints to be periodic
         self.periodic_joints = []
         for joint, joint_info in self.spaces_definition['observation'].items():
-            if joint_info['periodic_pos']:
+            if joint_info['periodic_pos'] and joint + '_pos' in self.observation_index:
                 self.periodic_joints.append(
                     self.observation_index[joint + '_pos'])
 
@@ -157,13 +186,15 @@ class MonopodTask(task.Task, abc.ABC):
 
         return action_space, obs_space
 
-    def set_action(self, action: Action) -> bool:
+    def set_action(self, action: Action, store_action : bool = True) -> bool:
         """
         Set generalized force target for each controlled joint.
 
         Args:
             action (ndrray): Generalized force target for each
                              controlled joint.
+            store_action (bool): True to store action taken in action history
+                             otherwise false to ignore.
         Return:
             (bool): True if success otherwise false.
         Raise:
@@ -177,13 +208,18 @@ class MonopodTask(task.Task, abc.ABC):
         )
         # Set the force value
         data = self.max_torques * action
-        # Store last actions
-        self.action_history.append(data)
 
-        assert self.model.set_joint_generalized_force_targets(data, self.action_names), "Failed to set the torque target for joint (%s)" % (
+        assert self.model.set_joint_generalized_force_targets(
+               data, self.action_names
+               ), "Failed to set the torque target for joint (%s)" % (
             self.action_names
         )
 
+        # Store last actions
+        if store_action:
+            self.action_history.appendleft(
+                np.array(self.model.joint_generalized_force_targets(
+                self.action_names))/self.max_torques)
         return True
 
     def get_observation(self) -> Observation:
@@ -198,8 +234,14 @@ class MonopodTask(task.Task, abc.ABC):
         # Get the new joint positions and velocities
         pos = self.model.joint_positions(self.joint_names)
         vel = self.model.joint_velocities(self.joint_names)
+
+        obs_list = [*pos, *vel]
+
+        if self.observing_measured_torque:
+            obs_list = [*obs_list, *self.action_history[1]]
+
         # Create the observation
-        observation = Observation(np.array([*pos, *vel]))
+        observation = Observation(np.array(obs_list)[self.observaton_mask])
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(
@@ -255,7 +297,8 @@ class MonopodTask(task.Task, abc.ABC):
                                                self.action_names)
 
         # set max generalized force for action joints
-        ok = ok and all([self.model.get_joint(joint_name).set_joint_max_generalized_force(
+        ok = ok and all([self.model.get_joint(
+            joint_name).set_joint_max_generalized_force(
             [self.action_space.high[i] * self.max_torques[i]]) for i,
             joint_name in enumerate(self.action_names)])
 
@@ -270,9 +313,9 @@ class MonopodTask(task.Task, abc.ABC):
 
         """
         obs = self.get_observation()
-        return self.calculate_reward(obs, self.action_history[-1])
+        return self.calculate_reward(obs, self.action_history)
 
-    def calculate_reward(self, obs: Observation, action: Action) -> Reward:
+    def calculate_reward(self, obs: Observation, action: Deque[Action]) -> Reward:
         """
         Calculates the reward given observation and action. The reward is
         calculated in a provided reward class defined in the tasks kwargs.
@@ -280,7 +323,8 @@ class MonopodTask(task.Task, abc.ABC):
         Args:
             obs (np.array): numpy array with the same size task dimensions as
                             observation space.
-            action (np.array): numpy array with the same size task dimensions
+            actions Deque[np.array]: Deque of actions taken by the environment
+                            numpy array with the same size task dimensions
                             as action space.
 
         Returns:
@@ -288,14 +332,15 @@ class MonopodTask(task.Task, abc.ABC):
         """
         return self.reward.calculate_reward(obs, action)
 
-    def get_state_info(self, obs: Observation, action: Action) -> Tuple[Reward, bool]:
+    def get_state_info(self, obs: Observation, actions: Deque[Action]) -> Tuple[Reward, bool]:
         """
         Returns the reward and is_done for some observation and action space.
 
         Args:
             obs (np.array): numpy array with the same size task dimensions as
                             observation space.
-            action (np.array): numpy array with the same size task dimensions
+            actions Deque[np.array]: Deque of actions taken by the environment
+                            numpy array with the same size task dimensions
                             as action space.
 
         Returns:

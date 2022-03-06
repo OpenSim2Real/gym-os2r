@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Deque
 import random
 from gym_os2r import tasks
 from gym_os2r.models import monopod
@@ -94,5 +94,5 @@ class MonopodEnvNoRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer):
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
 
-    def get_state_info(self, state: Observation, action: Action):
-        return self.env.unwrapped.task.get_state_info(state, action)
+    def get_state_info(self, state: Observation, actions: Deque[Action]):
+        return self.env.unwrapped.task.get_state_info(state, actions)
