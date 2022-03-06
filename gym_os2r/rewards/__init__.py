@@ -172,7 +172,7 @@ class BalancingV6(RewardBase):
                                   sigmoid = 'quadratic')
 
         small_delta_control = tolerance(action-action_old,
-                                  margin = 0.1, value_at_margin = 0,
+                                  margin = 0.2, value_at_margin = 0,
                                   sigmoid = 'quadratic')
 
         # return balancing * np.prod(small_delta_control)

@@ -127,7 +127,9 @@ if __name__ == "__main__":
     # plt.plot(x, tolerance(x, margin=0.1, value_at_margin=0, sigmoid='quadratic'))
     # plt.plot(x,tolerance(x,margin=1, value_at_margin=0.4,sigmoid='quadratic'))
     # plt.plot(x,tolerance(x, (0.1, 0.15), margin=0.01, sigmoid='long_tail'))
-    plt.plot(x, tolerance(x,bounds=(0.25, 0.3),
-                            margin=0.15, value_at_margin=0.1,
-                            sigmoid='tanh_squared'))
+    # plt.plot(x, tolerance(x,bounds=(0.25, 0.3), margin=0.15, value_at_margin=0.1,sigmoid='tanh_squared'))
+    plt.grid(True)
+    # plt.plot(x, tolerance(x, margin = 1, value_at_margin = 0.25, sigmoid = 'hyperbolic'))
+    # plt.plot(x, tolerance(x, margin = 1, value_at_margin = 0.25, sigmoid = 'quadratic'))
+    # plt.plot(x, tolerance(x, margin = 1, value_at_margin = 0.25, sigmoid = 'gaussian'))
     plt.show()
