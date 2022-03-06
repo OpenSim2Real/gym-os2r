@@ -316,6 +316,7 @@ class HoppingV1(RewardBase):
     def calculate_reward(self, obs: Observation, action: Action) -> Reward:
         _STAND_HEIGHT = 0.15
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+        print(bp, action)
         by = obs[self.observation_index['planarizer_yaw_joint_pos']]
         # # hip_pos = abs(obs[self.observation_index['hip_joint_pos']])
         # # knee_pos = abs(obs[self.observation_index['knee_joint_pos']])

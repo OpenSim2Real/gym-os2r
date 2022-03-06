@@ -42,8 +42,8 @@ task_modes:
       clipping_adjust: 25
     spaces:
       action:
-        hip_joint: 2.5 # max/min torque should usually be the same
-        knee_joint: 2.5
+        hip_joint: 10 # max/min torque should usually be the same
+        knee_joint: 10
       observation:
         hip_joint:
           # Periodic position when true ignores position limits
@@ -210,7 +210,7 @@ resets:
     planarizer_pitch_joint: -0.035
   float:
     laying_down: False
-    planarizer_pitch_joint: 2.55
+    planarizer_pitch_joint: 0.2
   real:
     laying_down: True
     planarizer_pitch_joint: Nan
