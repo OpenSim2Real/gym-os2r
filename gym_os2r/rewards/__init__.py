@@ -75,6 +75,7 @@ class BalancingV1(RewardBase):
         action = actions[0]
         _BALANCE_HEIGHT = 0.11
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+        # print(bp)
         balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
         return balancing
 
@@ -90,7 +91,7 @@ class BalancingV2(RewardBase):
 
     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
         action = actions[0]
-        _BALANCE_HEIGHT = 0.2
+        _BALANCE_HEIGHT = 0.21
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
         balancing = tolerance(bp, (_BALANCE_HEIGHT, 0.4))
         small_control = tolerance(action,

@@ -91,14 +91,6 @@ class MonopodTask(task.Task, abc.ABC):
         # Create dict of index in obs for obs type
         self.observation_index = {}
 
-        # Initialize Reward Class from Kwarg passed in.
-        self.reward = self.reward_class(self.observation_index)
-        # Verify that the taskmode is compatible with the reward.
-        if not self.reward.is_task_supported(self.task_mode):
-            raise RuntimeError(self.task_mode
-                               + ' task mode not supported by '
-                               + str(self.reward) + ' reward class.')
-
         history_len = 10
 
         self.action_history = deque([np.zeros(len(self.action_names)) for i in range(history_len)],
@@ -166,6 +158,15 @@ class MonopodTask(task.Task, abc.ABC):
                 self.observaton_mask.append(index)
 
         self.observation_index = new_obs_index
+
+        # Initialize Reward Class from Kwarg passed in.
+        self.reward = self.reward_class(self.observation_index)
+        # Verify that the taskmode is compatible with the reward.
+        if not self.reward.is_task_supported(self.task_mode):
+            raise RuntimeError(self.task_mode
+                               + ' task mode not supported by '
+                               + str(self.reward) + ' reward class.')
+
         low = np.array(new_low)
         high = np.array(new_high)
 
