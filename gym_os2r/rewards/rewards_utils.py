@@ -131,6 +131,6 @@ if __name__ == "__main__":
     plt.grid(True)
     # plt.plot(x, tolerance(x, margin = 1, value_at_margin = 0.25, sigmoid = 'hyperbolic'))
     # plt.plot(x, tolerance(x, margin = 1, value_at_margin = 0.25, sigmoid = 'quadratic'))
-    # plt.plot(x, tolerance(x, margin = 1, value_at_margin = 0.25, sigmoid = 'gaussian'))
-    plt.plot(x, tolerance(x,margin = 0.2, value_at_margin = 0.1, sigmoid = 'reciprocal'))
+    plt.plot(x, tolerance(x, margin = 0.1, value_at_margin = 0.1, sigmoid = 'gaussian'))
+    # plt.plot(x, tolerance(x,margin = 0.2, value_at_margin = 0.1, sigmoid = 'reciprocal'))
     plt.show()
