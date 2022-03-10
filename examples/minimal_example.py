@@ -13,7 +13,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-balance-v3"
+env_id = "Monopod-balance-v2"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
@@ -55,7 +55,8 @@ for epoch in range(1000):
         observation, reward, done, _ = env.step(action)
         # print('observations: ', observation)
         # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
-        time.sleep(0.001)
+        time.sleep(3)
+        done = True
 
 env.close()
 time.sleep(5)
