@@ -180,6 +180,11 @@ class MonopodTask(task.Task, abc.ABC):
         low[self.periodic_joints] = -1
         high[self.periodic_joints] = 1
 
+        self.obs_limits = {'high': high.copy(), 'low': low.copy()}
+
+        low[:] = -1
+        high[:] = 1
+
         # Configure the reset space - this is used to check if it exists inside
         # the reset space when deciding whether to reset.
         self.reset_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
@@ -250,6 +255,8 @@ class MonopodTask(task.Task, abc.ABC):
             (observation[self.periodic_joints] + np.pi), (2 * np.pi)) - np.pi
         # Scale periodic joints between -1 and 1.
         observation[self.periodic_joints] /= np.pi
+        # Normalize observations
+        observation = 2*(observation - self.obs_limits['low'])/(self.obs_limits['high'] - self.obs_limits['low'])-1
         # Return the observation
         return observation
 
