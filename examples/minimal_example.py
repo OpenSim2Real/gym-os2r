@@ -10,7 +10,7 @@ from gym_os2r.rewards import BalancingV3
 
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
-# logger.set_level(gym.logger.DEBUG)
+logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
 env_id = "Monopod-balance-v2"
@@ -55,8 +55,10 @@ for epoch in range(1000):
         observation, reward, done, _ = env.step(action)
         # print('observations: ', observation)
         # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
-        time.sleep(3)
-        done = True
+        # time.sleep(3)
+        # done = True
+        # print(observation)
+        time.sleep(0.1)
 
 env.close()
 time.sleep(5)

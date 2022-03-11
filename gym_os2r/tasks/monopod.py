@@ -180,7 +180,7 @@ class MonopodTask(task.Task, abc.ABC):
         low[self.periodic_joints] = -1
         high[self.periodic_joints] = 1
 
-        self.obs_limits = {'high': high, 'low': low}
+        self.obs_limits = {'high': high.copy(), 'low': low.copy()}
 
         low[:] = -1
         high[:] = 1
