@@ -32,7 +32,7 @@ task_modes:
           limits: [1, -1, 5.0, -5.0]
         boom_connector_joint:
           periodic_pos: False
-          limits: [6.30, -6.30, 5.0, -5.0]
+          limits: [6.30, -6.30, 50.0, -50.0]
 
   fixed_hip:
     model: 'monopod-fixed_hip'
@@ -212,7 +212,7 @@ task_modes:
           limits: [1, -1, 5.0, -5.0]
         boom_connector_joint:
           periodic_pos: False
-          limits: [6.30, -6.30, 5.0, -5.0]
+          limits: [6.30, -6.30, 50.0, -50.0]
 
   old-fixed_hip:
     model: 'old-monopod-fixed_hip'
