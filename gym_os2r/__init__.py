@@ -45,7 +45,7 @@ register(
             'physics_rate': 10000,
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip_simple',
-            'reward_class': BalancingV1,
+            'reward_class': BalancingV2,
             'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
             })
 
