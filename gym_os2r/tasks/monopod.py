@@ -131,17 +131,18 @@ class MonopodTask(task.Task, abc.ABC):
         low = np.concatenate((a[:, 1], a[:, 3]))
         high = np.concatenate((a[:, 0], a[:, 2]))
 
+        obs_index = {}
         # Create obs index
         for i, joint in enumerate(self.joint_names):
-            self.observation_index[joint + '_pos'] = i
-            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
+            obs_index[joint + '_pos'] = i
+            obs_index[joint + '_vel'] = i + len(self.joint_names)
 
         # If observing_measured_torque then add that to end of obs space
         if self.observing_measured_torque:
             low = np.array([*low, *low_act])
             high = np.array([*high, *high_act])
             for i, joint in enumerate(self.action_names):
-                self.observation_index[joint + '_torque'] = i + 2*len(self.joint_names)
+                obs_index[joint + '_torque'] = i + 2*len(self.joint_names)
 
         # Mask the observation space.
         self.observaton_mask = []
@@ -149,7 +150,7 @@ class MonopodTask(task.Task, abc.ABC):
         new_low = []
         new_high = []
         new_obs_index = {}
-        for obs_name, index in sorted(self.observation_index.items(), key=lambda item: item[1]):
+        for obs_name, index in sorted(obs_index.items(), key=lambda item: item[1]):
             if obs_name not in self.observation_name_mask:
                 new_obs_index[obs_name] = index_itr
                 new_low.append(low[index])
@@ -256,7 +257,12 @@ class MonopodTask(task.Task, abc.ABC):
         # Scale periodic joints between -1 and 1.
         observation[self.periodic_joints] /= np.pi
         # Normalize observations
-        observation = 2*(observation - self.obs_limits['low'])/(self.obs_limits['high'] - self.obs_limits['low'])-1
+        high = self.obs_limits['high']
+        low = self.obs_limits['low']
+        # print('Pre scale: ', observation)
+        observation = 2*(observation - low)/(high - low)-1
+        # print('Post scale: ', observation)
+        # print('obs index: ', self.observation_index)
         # Return the observation
         return observation
 

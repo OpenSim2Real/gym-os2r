@@ -20,10 +20,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -54,10 +54,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -85,10 +85,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -116,10 +116,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -147,10 +147,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -175,10 +175,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
 
   old-free_hip:
     model: 'old-monopod'
@@ -200,10 +200,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -234,10 +234,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]
@@ -265,10 +265,10 @@ task_modes:
           # Periodic position when true ignores position limits
           periodic_pos: False
           # values are in order max/min pos -- max/min vel
-          limits: [6.30, -6.30, 25.0, -25.0]
+          limits: [6.30, -6.30, 150.0, -150.0]
         knee_joint:
           periodic_pos: True
-          limits: [1, -1, 25.0, -25.0]
+          limits: [1, -1, 150.0, -150.0]
         planarizer_pitch_joint:
           periodic_pos: False
           limits: [1.57, -1.57, 5.0, -5.0]

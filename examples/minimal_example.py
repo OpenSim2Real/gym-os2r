@@ -1,13 +1,12 @@
 import gym
 import time
 import functools
-from gym_ignition.utils import logger
 
 from gym_os2r import randomizers
 from gym_os2r.common import make_env_from_id
 from gym_os2r.rewards import BalancingV3
 
-
+from gym_ignition.utils import logger
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
 logger.set_level(gym.logger.DEBUG)
