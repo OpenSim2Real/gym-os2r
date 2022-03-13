@@ -6,6 +6,7 @@ import os
 from lxml import etree
 from operator import add
 from functools import reduce
+import numpy as np
 
 from scenario import gazebo as scenario
 from gym_ignition import utils
@@ -92,17 +93,20 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
         reset_conf['planarizer_pitch_joint'] *= random.uniform(0.8, 1.2)
-        leg_angles = (0, 0)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
             robot_def = task.cfg.get_config(xpath)
             robot_def['planarizer_pitch_joint'] = reset_conf['planarizer_pitch_joint']
             leg_angles = leg_joint_angles(robot_def)
+            random_angles = np.random.normal((0,0), 0.2)
+            # choose randomally hip or knee to randomize first.
+            leg_angles[0] =  leg_angles[0] + (leg_angles[0]>0 - leg_angles[0]<0)*max(random_angles)
+            leg_angles[1] =  leg_angles[1] - (leg_angles[1]>0 - leg_angles[1]<0)*min(random_angles)
         else:
-            leg_angles = random.choice([(1.57,  0), (-1.57,  0)])
+            leg_angles = np.random.normal((1.57,  0), 0.05)
         random_dir = random.choice([-1, 1])
         leg_angles = [angle * random_dir for angle in leg_angles]
-        yaw_position = random.uniform(-0.02, 0.02)
+        yaw_position = random.uniform(-0.2, 0.2)
 
         # Get the model
         model = task.world.get_model(task.model_name)

@@ -1,19 +1,18 @@
 import gym
 import time
 import functools
-from gym_ignition.utils import logger
 
 from gym_os2r import randomizers
 from gym_os2r.common import make_env_from_id
 from gym_os2r.rewards import BalancingV3
 
-
+from gym_ignition.utils import logger
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
-# logger.set_level(gym.logger.DEBUG)
+logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-balance-v3"
+env_id = "Monopod-balance-v2"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
@@ -55,7 +54,10 @@ for epoch in range(1000):
         observation, reward, done, _ = env.step(action)
         # print('observations: ', observation)
         # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
-        time.sleep(0.001)
+        # time.sleep(3)
+        # done = True
+        # print(observation)
+        time.sleep(0.1)
 
 env.close()
 time.sleep(5)

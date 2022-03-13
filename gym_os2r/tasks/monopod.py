@@ -36,7 +36,8 @@ class MonopodTask(task.Task, abc.ABC):
 
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
-                                     'fixed_hip_torque', 'simple']
+                                     'fixed_hip_torque', 'simple',
+                                     'fixed_hip_simple']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -90,14 +91,6 @@ class MonopodTask(task.Task, abc.ABC):
         # Create dict of index in obs for obs type
         self.observation_index = {}
 
-        # Initialize Reward Class from Kwarg passed in.
-        self.reward = self.reward_class(self.observation_index)
-        # Verify that the taskmode is compatible with the reward.
-        if not self.reward.is_task_supported(self.task_mode):
-            raise RuntimeError(self.task_mode
-                               + ' task mode not supported by '
-                               + str(self.reward) + ' reward class.')
-
         history_len = 10
 
         self.action_history = deque([np.zeros(len(self.action_names)) for i in range(history_len)],
@@ -138,17 +131,18 @@ class MonopodTask(task.Task, abc.ABC):
         low = np.concatenate((a[:, 1], a[:, 3]))
         high = np.concatenate((a[:, 0], a[:, 2]))
 
+        obs_index = {}
         # Create obs index
         for i, joint in enumerate(self.joint_names):
-            self.observation_index[joint + '_pos'] = i
-            self.observation_index[joint + '_vel'] = i + len(self.joint_names)
+            obs_index[joint + '_pos'] = i
+            obs_index[joint + '_vel'] = i + len(self.joint_names)
 
         # If observing_measured_torque then add that to end of obs space
         if self.observing_measured_torque:
             low = np.array([*low, *low_act])
             high = np.array([*high, *high_act])
             for i, joint in enumerate(self.action_names):
-                self.observation_index[joint + '_torque'] = i + 2*len(self.joint_names)
+                obs_index[joint + '_torque'] = i + 2*len(self.joint_names)
 
         # Mask the observation space.
         self.observaton_mask = []
@@ -156,7 +150,7 @@ class MonopodTask(task.Task, abc.ABC):
         new_low = []
         new_high = []
         new_obs_index = {}
-        for obs_name, index in sorted(self.observation_index.items(), key=lambda item: item[1]):
+        for obs_name, index in sorted(obs_index.items(), key=lambda item: item[1]):
             if obs_name not in self.observation_name_mask:
                 new_obs_index[obs_name] = index_itr
                 new_low.append(low[index])
@@ -165,6 +159,15 @@ class MonopodTask(task.Task, abc.ABC):
                 self.observaton_mask.append(index)
 
         self.observation_index = new_obs_index
+
+        # Initialize Reward Class from Kwarg passed in.
+        self.reward = self.reward_class(self.observation_index)
+        # Verify that the taskmode is compatible with the reward.
+        if not self.reward.is_task_supported(self.task_mode):
+            raise RuntimeError(self.task_mode
+                               + ' task mode not supported by '
+                               + str(self.reward) + ' reward class.')
+
         low = np.array(new_low)
         high = np.array(new_high)
 
@@ -177,6 +180,11 @@ class MonopodTask(task.Task, abc.ABC):
 
         low[self.periodic_joints] = -1
         high[self.periodic_joints] = 1
+
+        self.obs_limits = {'high': high.copy(), 'low': low.copy()}
+
+        low[:] = -1
+        high[:] = 1
 
         # Configure the reset space - this is used to check if it exists inside
         # the reset space when deciding whether to reset.
@@ -248,6 +256,13 @@ class MonopodTask(task.Task, abc.ABC):
             (observation[self.periodic_joints] + np.pi), (2 * np.pi)) - np.pi
         # Scale periodic joints between -1 and 1.
         observation[self.periodic_joints] /= np.pi
+        # Normalize observations
+        high = self.obs_limits['high']
+        low = self.obs_limits['low']
+        # print('Pre scale: ', observation)
+        observation = 2*(observation - low)/(high - low)-1
+        # print('Post scale: ', observation)
+        # print('obs index: ', self.observation_index)
         # Return the observation
         return observation
 
