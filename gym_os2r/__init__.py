@@ -20,7 +20,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 10000,
             'real_time_factor': max_float,
-            'task_mode': 'free_hip',
+            'task_mode': 'fixed_hip',
             'reward_class': StandingV3,
             'reset_positions': ['ground']
             })
@@ -32,7 +32,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 10000,
             'real_time_factor': max_float,
-            'task_mode': 'free_hip',
+            'task_mode': 'fixed_hip',
             'reward_class': BalancingV1,
             'reset_positions': ['stand']
             })
@@ -142,19 +142,6 @@ register(
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip',
             'reward_class': HoppingV1,
-            'reset_positions': ['stand']
-            })
-
-register(
-    id='Monopod-hop-v2',
-    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=100_000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
-            'agent_rate': 1000,
-            'physics_rate': 10000,
-            'real_time_factor': max_float,
-            'task_mode': 'fixed_hip_torque',
-            'reward_class': HoppingV2,
             'reset_positions': ['stand']
             })
 
