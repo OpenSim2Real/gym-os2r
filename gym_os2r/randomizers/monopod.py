@@ -98,7 +98,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             robot_def = task.cfg.get_config(xpath)
             robot_def['planarizer_pitch_joint'] = reset_conf['planarizer_pitch_joint']
             leg_angles = leg_joint_angles(robot_def)
-            random_angles = np.random.normal((0,0), 0.2)
+            random_angles = np.abs(np.random.normal((0,0), 0.2))
             # choose randomally hip or knee to randomize first.
             leg_angles[0] =  leg_angles[0] + (leg_angles[0]>0 - leg_angles[0]<0)*max(random_angles)
             leg_angles[1] =  leg_angles[1] - (leg_angles[1]>0 - leg_angles[1]<0)*min(random_angles)
