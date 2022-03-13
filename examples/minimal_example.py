@@ -40,7 +40,7 @@ for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
-    time.sleep(2)
+    time.sleep(1)
 
     # Initialize returned values
     done = False
@@ -54,8 +54,8 @@ for epoch in range(1000):
         observation, reward, done, _ = env.step(action)
         # print('observations: ', observation)
         # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
-        # time.sleep(3)
-        # done = True
+        time.sleep(1)
+        done = True
         # print(observation)
         time.sleep(0.1)
 
