@@ -35,7 +35,8 @@ register(
             'task_mode': 'fixed_hip',
             # 'task_mode': 'free_hip',
             'reward_class': BalancingV3,
-            'reset_positions': ['stand']
+            # 'reset_positions': ['ground', 'lay']
+            'reset_positions': ['stand', 'half_stand', 'float', 'ground', 'lay']
             })
 
 register(
