@@ -9,7 +9,7 @@ from gym_os2r.rewards import BalancingV3
 from gym_ignition.utils import logger
 # Set verbosity
 logger.set_level(gym.logger.ERROR)
-logger.set_level(gym.logger.DEBUG)
+# logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
 env_id = "Monopod-balance-v2"
@@ -40,24 +40,38 @@ for epoch in range(1000):
 
     # Reset the environment
     observation = env.reset()
-    time.sleep(2)
+    # time.sleep(1)
 
     # Initialize returned values
     done = False
     totalReward = 0
+    count = 0
 
+    time.sleep(1)
     while not done:
         # Execute a random action
         # action = env.action_space.sample() * 0.1  # make the value smaller
         action = env.action_space.sample()
         # action = [0.0, 0.2]
         observation, reward, done, _ = env.step(action)
-        # print('observations: ', observation)
-        # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
-        # time.sleep(3)
-        # done = True
-        # print(observation)
-        time.sleep(0.1)
+        done = True
+
+    # while not done:
+    #     count += 1
+    #     # Execute a random action
+    #     # action = env.action_space.sample() * 0.1  # make the value smaller
+    #     action = env.action_space.sample()
+    #     # action = [0.0, 0.2]
+    #     observation, reward, done, _ = env.step(action)
+    #
+    #     if observation[2] < -0.1:
+    #         print('Bad obs: ', observation)
+    #         done = True
+    #     # print('observations: ', observation)
+    #     # print('obseration high: ', env.observation_space.high, 'obseration low: ', env.observation_space.low)
+    #     # print(env.task.observation_index)
+    #     if count == 1000:
+    #         done = True
 
 env.close()
 time.sleep(5)
