@@ -86,7 +86,6 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                              ground_model=random_ground)
 
         reset_orientation = np.random.choice(task.reset_positions)
-        print(reset_orientation)
         xpath = 'resets/' + reset_orientation
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
