@@ -1,7 +1,6 @@
 import abc
 from typing import Union, Deque
 
-import random
 import os
 from lxml import etree
 from operator import add
@@ -9,9 +8,7 @@ from functools import reduce
 import numpy as np
 
 from scenario import gazebo as scenario
-from gym_ignition import utils
-from gym_ignition.utils import misc
-from gym_ignition import randomizers
+from gym_ignition import randomizers, utils
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
 from gym_ignition.randomizers.model.sdf import Method, Distribution, UniformParams
@@ -88,11 +85,11 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         self._populate_world(task=task, monopod_model=random_model,
                              ground_model=random_ground)
 
-        reset_orientation = random.choice(task.reset_positions)
+        reset_orientation = np.random.choice(task.reset_positions)
         xpath = 'resets/' + reset_orientation
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
-        reset_conf['planarizer_pitch_joint'] *= random.uniform(0.8, 1.2)
+        reset_conf['planarizer_pitch_joint'] *= np.random.uniform(0.8, 1.2)
         if not reset_conf['laying_down']:
             xpath = 'task_modes/' + task.task_mode + '/definition'
             robot_def = task.cfg.get_config(xpath)
@@ -103,16 +100,20 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
             leg_angles[0] =  leg_angles[0] + (leg_angles[0]>0 - leg_angles[0]<0)*max(random_angles)
             leg_angles[1] =  leg_angles[1] - (leg_angles[1]>0 - leg_angles[1]<0)*min(random_angles)
         else:
-            leg_angles = np.random.normal((1.57,  0), 0.05)
-        random_dir = random.choice([-1, 1])
+            leg_angles = np.array([1.57, 0]) - (np.random.uniform() < 0.5) * np.array([3.14,  0])
+            random_angles = np.abs(np.random.normal((0,0), 0.2))
+            # choose randomally hip or knee to randomize first.
+            leg_angles[0] =  leg_angles[0] + (leg_angles[0]>0 - leg_angles[0]<0)*max(random_angles)
+            leg_angles[1] =  leg_angles[1] - (leg_angles[1]>0 - leg_angles[1]<0)*min(random_angles)
+        random_dir = 1 - (np.random.uniform() < 0.5) * 2
         leg_angles = [angle * random_dir for angle in leg_angles]
-        yaw_position = random.uniform(-0.2, 0.2)
+        yaw_position = np.random.uniform(-0.2, 0.2)
 
         # Get the model
         model = task.world.get_model(task.model_name)
 
-        pos_reset = [0]*len(task.joint_names)
-        vel_reset = [0]*len(task.joint_names)
+        pos_reset = np.zeros(len(task.joint_names))
+        vel_reset = np.zeros(len(task.joint_names))
         pos_reset[task.joint_names.index(
             'planarizer_pitch_joint')] = reset_conf['planarizer_pitch_joint']
         pos_reset[task.joint_names.index('planarizer_yaw_joint')] = yaw_position
@@ -139,14 +140,14 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         randomizer = self._get_sdf_randomizer_monopod(task=task)
         # print(randomizer.sample(pretty_print=True))
-        sdf = misc.string_to_file(randomizer.sample())
+        sdf = utils.misc.string_to_file(randomizer.sample())
         return sdf
 
     def randomize_ground_description(self, task: SupportedTasks, **kwargs) -> str:
 
         randomizer = self._get_sdf_randomizer_ground(task=task)
         # print(randomizer.sample(pretty_print=True))
-        sdf = misc.string_to_file(randomizer.sample())
+        sdf = utils.misc.string_to_file(randomizer.sample())
         return sdf
 
     # ===============
@@ -364,6 +365,7 @@ class MonopodEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
                  num_physics_rollouts: int = 0,
                  **kwargs
                  ):
+
         # Initialize the mixin
         MonopodRandomizersMixin.__init__(
             self, randomize_physics_after_rollouts=num_physics_rollouts)
