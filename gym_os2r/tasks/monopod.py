@@ -1,7 +1,7 @@
 import abc
 import gym
 import numpy as np
-from typing import Tuple, Deque
+from typing import Tuple, Deque, Dict
 from gym_ignition.base import task
 from gym_ignition.utils.typing import Action, Reward, Observation
 from gym_ignition.utils.typing import ActionSpace, ObservationSpace
@@ -83,6 +83,7 @@ class MonopodTask(task.Task, abc.ABC):
 
         # Space for resetting the task
         self.reset_space = None
+        self.current_reset_orientation = None
 
         # Get names joints
         self.action_names = [*self.spaces_definition['action']]
@@ -146,17 +147,28 @@ class MonopodTask(task.Task, abc.ABC):
 
         # Mask the observation space.
         self.observaton_mask = []
-        index_itr = 0;
+        index_itr = 0
         new_low = []
         new_high = []
         new_obs_index = {}
+        self.velocity_index = []
+        self.position_index = []
+        self.torque_index = []
+
         for obs_name, index in sorted(obs_index.items(), key=lambda item: item[1]):
             if obs_name not in self.observation_name_mask:
                 new_obs_index[obs_name] = index_itr
                 new_low.append(low[index])
                 new_high.append(high[index])
-                index_itr = index_itr + 1
                 self.observaton_mask.append(index)
+                if '_vel' in obs_name:
+                    self.velocity_index.append(index_itr)
+                if '_pos' in obs_name:
+                    self.position_index.append(index_itr)
+                if '_torque' in obs_name:
+                    self.torque_index.append(index_itr)
+
+                index_itr = index_itr + 1
 
         self.observation_index = new_obs_index
 
@@ -259,11 +271,16 @@ class MonopodTask(task.Task, abc.ABC):
         # Normalize observations
         high = self.obs_limits['high']
         low = self.obs_limits['low']
-        # print('Pre scale: ', observation)
-        observation = 2*(observation - low)/(high - low)-1
-        # print('Post scale: ', observation)
-        # print('obs index: ', self.observation_index)
-        # Return the observation
+
+        # print('obser pre scale: ', observation)
+
+        observation[self.position_index] = 2*(observation[self.position_index] - low[self.position_index])/(high[self.position_index] - low[self.position_index])-1
+        observation[self.torque_index] = 2*(observation[self.torque_index] - low[self.torque_index])/(high[self.torque_index] - low[self.torque_index])-1
+        observation[self.velocity_index] = np.tanh(0.05 * observation[self.velocity_index])
+
+        # print('obser post scale: ', observation)
+        # print('obser index: ', self.observation_index)
+
         return observation
 
     def is_done(self) -> bool:
@@ -359,3 +376,11 @@ class MonopodTask(task.Task, abc.ABC):
         reward = self.calculate_reward(obs, action)
         done = not self.reset_space.contains(obs)
         return reward, done
+
+    def get_info(self) -> Dict:
+        """
+        Return the info dictionary.
+        Returns:
+            A ``dict`` with extra information of the task.
+        """
+        return {'reset_orientation': self.current_reset_orientation}

@@ -4,7 +4,7 @@ import functools
 
 from gym_os2r import randomizers
 from gym_os2r.common import make_env_from_id
-from gym_os2r.rewards import BalancingV3
+# from gym_os2r.rewards import BalancingV3
 
 from gym_ignition.utils import logger
 # Set verbosity
@@ -48,13 +48,18 @@ for epoch in range(1000):
     count = 0
 
     time.sleep(1)
+    c = 0
     while not done:
         # Execute a random action
         # action = env.action_space.sample() * 0.1  # make the value smaller
         action = env.action_space.sample()
         # action = [0.0, 0.2]
-        observation, reward, done, _ = env.step(action)
-        done = True
+        observation, reward, done, info = env.step(action)
+        # done = True
+        time.sleep(0.05)
+        c += 1
+
+        done = c==25
 
     # while not done:
     #     count += 1

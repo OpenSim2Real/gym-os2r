@@ -87,6 +87,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         reset_orientation = np.random.choice(task.reset_positions)
         xpath = 'resets/' + reset_orientation
+        task.current_reset_orientation = reset_orientation
         reset_conf = task.cfg.get_config(xpath)
         # Randomization,
         reset_conf['planarizer_pitch_joint'] *= np.random.uniform(0.8, 1.2)
