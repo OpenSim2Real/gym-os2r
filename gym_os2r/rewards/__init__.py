@@ -208,6 +208,27 @@ class BalancingV7(RewardBase):
 
         return balancing * np.prod(small_delta_control) * move
 
+class BalancingV4(RewardBase):
+    """
+    Balancing reward. Start from standing positions and stay standing. Smaller
+    control signals are favoured.
+    """
+
+    def __init__(self, observation_index: dict):
+        super().__init__(observation_index)
+        self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed']
+
+    def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
+        action = actions[0]
+        action_old = actions[1]
+        _BALANCE_HEIGHT = 0.13
+        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+        by = obs[self.observation_index['planarizer_yaw_joint_pos']]
+        balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, np.inf),sigmoid='gaussian',margin=0.05)
+        action_cost = abs(action).sum()/2
+        offset_cost = abs(by)
+        return (1-action_cost)*balancing_reward*(1-offset_cost)
+
 # Standing tasks
 
 class StandingV1(RewardBase):
