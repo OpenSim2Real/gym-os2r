@@ -17,13 +17,13 @@ env_id = "Monopod-balance-v2"
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
-# kwargs = {'reset_positions': ['float']}
+kwargs = {'reset_positions': ['half_stand']}
 # kwargs = {'reset_positions': ['float']}
 
 # kwargs = {'task_mode': 'fixed'}
 # kwargs = {'reward_class': BalancingV3}
 
-kwargs = {}
+# kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 
@@ -55,11 +55,11 @@ for epoch in range(1000):
         action = env.action_space.sample()
         # action = [0.0, 0.2]
         observation, reward, done, info = env.step(action)
-        # done = True
-        time.sleep(0.05)
-        c += 1
-
-        done = c==25
+        done = True
+        # time.sleep(0.05)
+        # c += 1
+        #
+        # done = c==25
 
     # while not done:
     #     count += 1
