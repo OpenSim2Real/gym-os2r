@@ -64,7 +64,7 @@
   <link name="boom_link">
     <inertial>
       <origin xyz="0 -1.0 0" rpy="0 0 0" />
-    <mass value="0.12458" />
+    <mass value="0.692" />
     <inertia
       ixx="138009.606E-6"
       ixy="0"
