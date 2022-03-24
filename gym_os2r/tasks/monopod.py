@@ -112,14 +112,10 @@ class MonopodTask(task.Task, abc.ABC):
             (ndarray): observation space.
 
         """
+        # ======= Actions ===============
         # Create the max torques. Dict are ordered in >3.6
         self.max_torques = np.array(
             list(self.spaces_definition['action'].values()))
-
-        obs_list = []
-        for joint, joint_info in self.spaces_definition['observation'].items():
-            obs_list.append(joint_info['limits'])
-        observation_lims = np.array(obs_list)
 
         # Configure action limits between -1 and 1 which will be scaled by max
         # torque later
@@ -127,82 +123,79 @@ class MonopodTask(task.Task, abc.ABC):
         high_act = np.array([1, 1])
         action_space = gym.spaces.Box(low=low_act, high=high_act, dtype=np.float64)
 
-        # Configure reset limits
-        a = observation_lims
-        low = np.concatenate((a[:, 1], a[:, 3]))
-        high = np.concatenate((a[:, 0], a[:, 2]))
+        # ======= Observations ===============
+        obs_list = []
+        for joint, joint_info in self.spaces_definition['observation'].items():
+            obs_list.append(joint_info['limits'])
 
-        obs_index = {}
-        # Create obs index
-        for i, joint in enumerate(self.joint_names):
-            obs_index[joint + '_pos'] = i
-            obs_index[joint + '_vel'] = i + len(self.joint_names)
+        # Configure reset limits assuming no mask or torque observation
+        obs_lim = np.array(obs_list)
+        low = np.concatenate((obs_lim[:, 1], obs_lim[:, 3]))
+        high = np.concatenate((obs_lim[:, 0], obs_lim[:, 2]))
 
-        # If observing_measured_torque then add that to end of obs space
+        # If observing_measured_torque then add that to end of obs spaces lims
         if self.observing_measured_torque:
             low = np.array([*low, *low_act])
             high = np.array([*high, *high_act])
-            for i, joint in enumerate(self.action_names):
-                obs_index[joint + '_torque'] = i + 2*len(self.joint_names)
 
-        # Mask the observation space.
-        self.observaton_mask = []
-        index_itr = 0
-        new_low = []
-        new_high = []
-        new_obs_index = {}
-        self.velocity_index = []
-        self.position_index = []
-        self.torque_index = []
+        # Create obs index and get low and high spaces after masking out unwanted dims
+        masked_i = 0
+        self.observation_mask = []
+        self.velocities_index = []
+        obs_index = {}
+        observation_names = [*[n+'_pos' for n in self.joint_names], *[n+'_vel' for n in self.joint_names]]
 
-        for obs_name, index in sorted(obs_index.items(), key=lambda item: item[1]):
+        # If observing_measured_torque then add name to observed names
+        action_names = [n+'_torque' for n in self.action_names]
+        observation_names = [*observation_names, *action_names] if self.observing_measured_torque else observation_names
+
+        for obs_i, obs_name in enumerate(observation_names):
             if obs_name not in self.observation_name_mask:
-                new_obs_index[obs_name] = index_itr
-                new_low.append(low[index])
-                new_high.append(high[index])
-                self.observaton_mask.append(index)
+                obs_index[obs_name] = masked_i
+                self.observation_mask.append(obs_i)
                 if '_vel' in obs_name:
-                    self.velocity_index.append(index_itr)
-                if '_pos' in obs_name:
-                    self.position_index.append(index_itr)
-                if '_torque' in obs_name:
-                    self.torque_index.append(index_itr)
+                    self.velocities_index.append(masked_i)
+                masked_i += 1
 
-                index_itr = index_itr + 1
+        low = low[self.observation_mask]
+        high = high[self.observation_mask]
+        self.observation_index = obs_index
 
-        self.observation_index = new_obs_index
-
-        # Initialize Reward Class from Kwarg passed in.
-        self.reward = self.reward_class(self.observation_index)
-        # Verify that the taskmode is compatible with the reward.
-        if not self.reward.is_task_supported(self.task_mode):
-            raise RuntimeError(self.task_mode
-                               + ' task mode not supported by '
-                               + str(self.reward) + ' reward class.')
-
-        low = np.array(new_low)
-        high = np.array(new_high)
-
-        # Set period joints to be periodic
+        # Store which joint are set and defined as periodic.
+        # Force their limit into (-pi, pi)
         self.periodic_joints = []
         for joint, joint_info in self.spaces_definition['observation'].items():
             if joint_info['periodic_pos'] and joint + '_pos' in self.observation_index:
-                self.periodic_joints.append(
-                    self.observation_index[joint + '_pos'])
+                self.periodic_joints.append(self.observation_index[joint + '_pos'])
 
-        low[self.periodic_joints] = -1
-        high[self.periodic_joints] = 1
+        # print('original obs names: ', observation_names)
+        # print('obs_index:', self.observation_index)
+        # print('obs_mask:', self.observation_mask)
+        # print('periodic:', self.periodic_joints)
 
+        low[self.periodic_joints] = -(np.pi+np.finfo(float).eps)
+        high[self.periodic_joints] = (np.pi+np.finfo(float).eps)
+
+        #   Store info to normalize the observtion
         self.obs_limits = {'high': high.copy(), 'low': low.copy()}
-
+        self.mask_inf_obs = np.zeros(len(high), dtype=bool)
+        self.mask_inf_obs[self.velocities_index] = True
         low[:] = -1
         high[:] = 1
 
-        # Configure the reset space - this is used to check if it exists inside
-        # the reset space when deciding whether to reset.
-        self.reset_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
-        # Configure the observation space
+        # define obs space
         obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
+        #================== Reward definition =================
+                # Initialize reward class with setup observation info
+        self.reward = self.reward_class(self.observation_index, normalized=False)
+        # Verify that the taskmode is compatible with the reward.
+        assert self.reward.is_task_supported(self.task_mode), f'\'{self.task_mode}\' task mode not supported by reward class \'{self.reward}\''
+
+
+        #  ================ reset spaces ==================
+        # Configure the reset space - this is used to check if it exists inside
+        # the reset space when deciding whether to reset. Narrow reset space by machine const.
+        self.reset_space = gym.spaces.Box(low=low+np.finfo(float).eps, high=high-np.finfo(float).eps, dtype=np.float64)
 
         return action_space, obs_space
 
@@ -261,23 +254,20 @@ class MonopodTask(task.Task, abc.ABC):
             obs_list = [*obs_list, *self.action_history[1]]
 
         # Create the observation
-        observation = Observation(np.array(obs_list)[self.observaton_mask])
+        observation = Observation(np.array(obs_list)[self.observation_mask])
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(
             (observation[self.periodic_joints] + np.pi), (2 * np.pi)) - np.pi
-        # Scale periodic joints between -1 and 1.
-        observation[self.periodic_joints] /= np.pi
+
         # Normalize observations
         high = self.obs_limits['high']
         low = self.obs_limits['low']
 
-        # print('obser pre scale: ', observation)
-
-        observation[self.position_index] = 2*(observation[self.position_index] - low[self.position_index])/(high[self.position_index] - low[self.position_index])-1
-        observation[self.torque_index] = 2*(observation[self.torque_index] - low[self.torque_index])/(high[self.torque_index] - low[self.torque_index])-1
-        observation[self.velocity_index] = np.tanh(0.05 * observation[self.velocity_index])
-
+        # print('obser pre scale: ', obself.position_indexservation)
+        m = self.mask_inf_obs
+        observation[~m] = 2*(observation[~m] - low[~m])/(high[~m] - low[~m])-1
+        observation[m] = np.tanh(0.05 * observation[m])
         # print('obser post scale: ', observation)
         # print('obser index: ', self.observation_index)
 

@@ -21,7 +21,7 @@ register(
             'physics_rate': 10000,
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip',
-            'reward_class': StandingV3,
+            'reward_class': StandingV1,
             'reset_positions': ['ground']
             })
 register(
@@ -32,7 +32,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 10000,
             'real_time_factor': max_float,
-            'task_mode': 'fixed_hip',
+            'task_mode': 'fixed_hip_simple',
             'reward_class': BalancingV1,
             'reset_positions': ['stand']
             })
@@ -45,9 +45,8 @@ register(
             'physics_rate': 10000,
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip_simple',
-            'reward_class': BalancingV3,
-            # 'reset_positions': ['ground', 'half_stand', 'lay']
-            'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
+            'reward_class': BalancingV2,
+            'reset_positions': ['stand']
             })
 
 register(
@@ -59,78 +58,46 @@ register(
             'physics_rate': 10000,
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip_simple',
-            'reward_class': BalancingV3,
-            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['float']
+            'reward_class': BalancingV2,
+            'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
             })
 
 register(
-    id='Monopod-balance-v4',
-    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=10_000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
-            'agent_rate': 1000,
-            'physics_rate': 10000,
-            'real_time_factor': max_float,
-            'task_mode': 'fixed_hip_torque',
-            'reward_class': BalancingV3,
-            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['float', 'stand', 'half_stand', 'ground']
-            })
-
-register(
-    id='Monopod-balance-v5',
-    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=10_000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
-            'agent_rate': 1000,
-            'physics_rate': 10000,
-            'real_time_factor': max_float,
-            'task_mode': 'fixed_hip_torque',
-            'reward_class': BalancingV5,
-            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['lay', 'ground']
-            })
-
-register(
-    id='Monopod-balance-v6',
-    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=10_000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
-            'agent_rate': 1000,
-            'physics_rate': 10000,
-            'real_time_factor': max_float,
-            'task_mode': 'fixed_hip_torque',
-            'reward_class': BalancingV6,
-            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['ground', 'half_stand', 'stand', 'float']
-            })
-
-register(
-    id='Monopod-balance-v7',
-    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-    max_episode_steps=10_000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
-            'agent_rate': 1000,
-            'physics_rate': 10000,
-            'real_time_factor': max_float,
-            'task_mode': 'fixed_hip_torque',
-            'reward_class': BalancingV7,
-            # 'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
-            'reset_positions': ['ground', 'half_stand', 'stand', 'float']
-            })
-
-register(
-    id='Monopod-walk-v1',
+    id='Monopod-nonorm-balance-v1',
     entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
     max_episode_steps=100_000,
-    kwargs={'task_cls': tasks.monopod.MonopodTask,
+    kwargs={'task_cls': tasks.monopod_no_norm.MonopodTask,
             'agent_rate': 1000,
             'physics_rate': 10000,
             'real_time_factor': max_float,
-            'task_mode': 'free_hip',
-            'reward_class': WalkingV1,
+            'task_mode': 'fixed_hip_simple',
+            'reward_class': BalancingV1,
             'reset_positions': ['stand']
+            })
+register(
+    id='Monopod-nonorm-balance-v2',
+    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=100_000,
+    kwargs={'task_cls': tasks.monopod_no_norm.MonopodTask,
+            'agent_rate': 1000,
+            'physics_rate': 10000,
+            'real_time_factor': max_float,
+            'task_mode': 'fixed_hip_simple',
+            'reward_class': BalancingV2,
+            'reset_positions': ['stand']
+            })
+
+register(
+    id='Monopod-nonorm-balance-v3',
+    entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
+    max_episode_steps=10_000,
+    kwargs={'task_cls': tasks.monopod_no_norm.MonopodTask,
+            'agent_rate': 1000,
+            'physics_rate': 10000,
+            'real_time_factor': max_float,
+            'task_mode': 'fixed_hip_simple',
+            'reward_class': BalancingV2,
+            'reset_positions': ['stand', 'half_stand', 'ground', 'lay', 'float']
             })
 
 register(
@@ -141,7 +108,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 10000,
             'real_time_factor': max_float,
-            'task_mode': 'fixed_hip',
+            'task_mode': 'free_hip',
             'reward_class': HoppingV1,
             'reset_positions': ['stand']
             })
@@ -158,35 +125,3 @@ register(
             'reward_class': StraightV1,
             'reset_positions': ['stand']
             })
-
-
-# register(
-#     id='Monopod-v1',
-#     entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-#     max_episode_steps=100000,
-#     kwargs={'task_cls': tasks.monopod.MonopodTask,
-#             'agent_rate': 1000,
-#             'physics_rate': 1000,
-#             'real_time_factor': max_float,
-#             })
-# register(
-#     id='Monopod-fixed_hip-v1',
-#     entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-#     max_episode_steps=100000,
-#     kwargs={'task_cls': tasks.monopod.MonopodTask,
-#             'agent_rate': 1000,
-#             'physics_rate': 1000,
-#             'real_time_factor': max_float,
-#             'task_mode': 'fixed_hip'
-#             })
-#
-# register(
-#     id='Monopod-fixed_hip_and_boom_yaw-v1',
-#     entry_point='gym_os2r.runtimes.gazebo_runtime:GazeboRuntime',
-#     max_episode_steps=100000,
-#     kwargs={'task_cls': tasks.monopod.MonopodTask,
-#             'agent_rate': 1000,
-#             'physics_rate': 1000,
-#             'real_time_factor': max_float,
-#             'task_mode': 'fixed_hip_and_boom_yaw'
-#             })

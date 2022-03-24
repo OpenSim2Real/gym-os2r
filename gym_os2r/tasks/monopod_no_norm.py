@@ -128,71 +128,71 @@ class MonopodTask(task.Task, abc.ABC):
         for joint, joint_info in self.spaces_definition['observation'].items():
             obs_list.append(joint_info['limits'])
 
-        # Configure reset limits
+        # Configure reset limits assuming no mask or torque observation
         obs_lim = np.array(obs_list)
         low = np.concatenate((obs_lim[:, 1], obs_lim[:, 3]))
         high = np.concatenate((obs_lim[:, 0], obs_lim[:, 2]))
 
-        obs_index = {}
-        # Create obs index
-        for i, joint in enumerate(self.joint_names):
-            obs_index[joint + '_pos'] = i
-            obs_index[joint + '_vel'] = i + len(self.joint_names)
-
-        # If observing_measured_torque then add that to end of obs space
+        # If observing_measured_torque then add that to end of obs spaces lims
         if self.observing_measured_torque:
             low = np.array([*low, *low_act])
             high = np.array([*high, *high_act])
-            for i, joint in enumerate(self.action_names):
-                obs_index[joint + '_torque'] = i + 2*len(self.joint_names)
 
-        # Mask the observation space.
+        # Create obs index and get low and high spaces after masking out unwanted dims
+        masked_i = 0
         self.observaton_mask = []
-        index_itr = 0
-        new_low = []
-        new_high = []
-        new_obs_index = {}
+        self.velocity_index = []
+        self.position_index = []
+        self.torque_index = []
+        obs_index = {}
+        observation_names = [*[n+'_pos' for n in self.joint_names], *[n+'_vel' for n in self.joint_names]]
 
-        for obs_name, index in sorted(obs_index.items(), key=lambda item: item[1]):
+        # If observing_measured_torque then add name to observed names
+        action_names = [n+'_torque' for n in self.action_names]
+        observation_names = [*observation_names, *action_names] if self.observing_measured_torque else observation_names
+        for obs_i, obs_name in enumerate(observation_names):
             if obs_name not in self.observation_name_mask:
-                new_obs_index[obs_name] = index_itr
-                new_low.append(low[index])
-                new_high.append(high[index])
-                self.observaton_mask.append(index)
-                index_itr = index_itr + 1
+                obs_index[obs_name] = masked_i
+                self.observaton_mask.append(obs_i)
+                masked_i += 1
+                if '_vel' in obs_name:
+                    self.velocity_index.append(masked_i)
+                if '_pos' in obs_name:
+                    self.position_index.append(masked_i)
+                if '_torque' in obs_name:
+                    self.torque_index.append(masked_i)
 
-        self.observation_index = new_obs_index
+        low = low[self.observaton_mask]
+        high = high[self.observaton_mask]
+        self.observation_index = obs_index
 
-        # Initialize Reward Class from Kwarg passed in.
-        self.reward = self.reward_class(self.observation_index)
-        # Verify that the taskmode is compatible with the reward.
-        if not self.reward.is_task_supported(self.task_mode):
-            raise RuntimeError(self.task_mode
-                               + ' task mode not supported by '
-                               + str(self.reward) + ' reward class.')
-
-        low = np.array(new_low)
-        high = np.array(new_high)
-
-        # Set period joints to be periodic
+        # Store which joint are set and defined as periodic.
+        # Force their limit into (-pi, pi)
         self.periodic_joints = []
         for joint, joint_info in self.spaces_definition['observation'].items():
             if joint_info['periodic_pos'] and joint + '_pos' in self.observation_index:
-                self.periodic_joints.append(
-                    self.observation_index[joint + '_pos'])
+                self.periodic_joints.append(self.observation_index[joint + '_pos'])
 
         low[self.periodic_joints] = -(np.pi+np.finfo(float).eps)
         high[self.periodic_joints] = (np.pi+np.finfo(float).eps)
 
-        # Configure the reset space - this is used to check if it exists inside
-        # the reset space when deciding whether to reset.
-        self.reset_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
-        # Configure the observation space
+        # define obs space
         obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
+        #================== Reward definition =================
+                # Initialize reward class with setup observation info
+        self.reward = self.reward_class(self.observation_index, normalized=True)
+        # Verify that the taskmode is compatible with the reward.
+        assert self.reward.is_task_supported(self.task_mode), f'\'{self.task_mode}\' task mode not supported by reward class \'{self.reward}\''
+
+
+        #  ================ reset spaces ==================
+        # Configure the reset space - this is used to check if it exists inside
+        # the reset space when deciding whether to reset. Narrow reset space by machine const.
+        self.reset_space = gym.spaces.Box(low=low+np.finfo(float).eps, high=high-np.finfo(float).eps, dtype=np.float64)
 
         return action_space, obs_space
 
-    def set_action(self, action: Action, store_action : bool = True) -> bool:
+    def set_action(self, action: Action, store_action: bool = True) -> bool:
         """
         Set generalized force target for each controlled joint.
 

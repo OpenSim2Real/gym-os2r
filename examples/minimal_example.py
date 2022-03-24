@@ -12,7 +12,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-balance-v2"
+env_id = "Monopod-nonorm-balance-v2"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
