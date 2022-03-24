@@ -1,6 +1,6 @@
 from typing import Union, Deque
-import random
 from gym_os2r import tasks
+import numpy as np
 from gym_os2r.models import monopod
 from gym_ignition.randomizers import gazebo_env_randomizer
 from gym_ignition.randomizers.gazebo_env_randomizer import MakeEnvCallable
