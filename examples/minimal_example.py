@@ -12,7 +12,7 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-nonorm-balance-v2"
+env_id = "Monopod-balance-v2"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
@@ -55,11 +55,11 @@ for epoch in range(1000):
         action = env.action_space.sample()
         # action = [0.0, 0.2]
         observation, reward, done, info = env.step(action)
-        done = True
-        # time.sleep(0.05)
-        # c += 1
-        #
-        # done = c==25
+        # done = True
+        time.sleep(0.05)
+        c += 1
+
+        done = c==25
 
     # while not done:
     #     count += 1

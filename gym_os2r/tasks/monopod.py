@@ -187,7 +187,7 @@ class MonopodTask(task.Task, abc.ABC):
         obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
         #================== Reward definition =================
                 # Initialize reward class with setup observation info
-        self.reward = self.reward_class(self.observation_index, normalized=False)
+        self.reward = self.reward_class(self.observation_index, normalized=True)
         # Verify that the taskmode is compatible with the reward.
         assert self.reward.is_task_supported(self.task_mode), f'\'{self.task_mode}\' task mode not supported by reward class \'{self.reward}\''
 
@@ -269,8 +269,6 @@ class MonopodTask(task.Task, abc.ABC):
         observation[~m] = 2*(observation[~m] - low[~m])/(high[~m] - low[~m])-1
         observation[m] = np.tanh(0.05 * observation[m])
         # print('obser post scale: ', observation)
-        # print('obser index: ', self.observation_index)
-
         return observation
 
     def is_done(self) -> bool:

@@ -141,9 +141,6 @@ class MonopodTask(task.Task, abc.ABC):
         # Create obs index and get low and high spaces after masking out unwanted dims
         masked_i = 0
         self.observaton_mask = []
-        self.velocity_index = []
-        self.position_index = []
-        self.torque_index = []
         obs_index = {}
         observation_names = [*[n+'_pos' for n in self.joint_names], *[n+'_vel' for n in self.joint_names]]
 
@@ -155,12 +152,6 @@ class MonopodTask(task.Task, abc.ABC):
                 obs_index[obs_name] = masked_i
                 self.observaton_mask.append(obs_i)
                 masked_i += 1
-                if '_vel' in obs_name:
-                    self.velocity_index.append(masked_i)
-                if '_pos' in obs_name:
-                    self.position_index.append(masked_i)
-                if '_torque' in obs_name:
-                    self.torque_index.append(masked_i)
 
         low = low[self.observaton_mask]
         high = high[self.observaton_mask]
@@ -180,7 +171,7 @@ class MonopodTask(task.Task, abc.ABC):
         obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
         #================== Reward definition =================
                 # Initialize reward class with setup observation info
-        self.reward = self.reward_class(self.observation_index, normalized=True)
+        self.reward = self.reward_class(self.observation_index, normalized=False)
         # Verify that the taskmode is compatible with the reward.
         assert self.reward.is_task_supported(self.task_mode), f'\'{self.task_mode}\' task mode not supported by reward class \'{self.reward}\''
 
@@ -252,7 +243,6 @@ class MonopodTask(task.Task, abc.ABC):
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(
             (observation[self.periodic_joints] + np.pi), (2 * np.pi)) - np.pi
-
         return observation
 
     def is_done(self) -> bool:
