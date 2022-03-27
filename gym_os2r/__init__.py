@@ -82,7 +82,7 @@ register(
             'agent_rate': 1000,
             'physics_rate': 10000,
             'real_time_factor': max_float,
-            'task_mode': 'fixed_hip',
+            'task_mode': 'fixed_hip_no_vel',
             'reward_class': BalancingV2,
             'reset_positions': ['stand']
             })
