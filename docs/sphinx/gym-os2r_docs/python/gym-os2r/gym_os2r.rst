@@ -14,5 +14,5 @@ gym\_os2r
    gym_os2r.models
    gym_os2r.randomizers
    gym_os2r.rewards
-   gym_os2r.runtime
+   gym_os2r.runtimes
    gym_os2r.tasks
