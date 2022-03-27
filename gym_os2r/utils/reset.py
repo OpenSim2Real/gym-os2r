@@ -32,9 +32,9 @@ def leg_joint_angles(robot_def: dict):
     lleg = lh - robot_def['hip_offset'] - robot_def['clipping_adjust']
     # Triangle inequality
     if lleg > ul + ll:
-        return (0, 0)
+        return [0, 0]
     else:
         upper_leg_angle = np.arccos((ul**2 + lleg**2-ll**2)/(2*ul*lleg))
         lower_leg_angle = np.arcsin(
             ul*np.sin(upper_leg_angle)/ll) + upper_leg_angle
-        return (upper_leg_angle, -lower_leg_angle)
+        return [upper_leg_angle, -lower_leg_angle]
