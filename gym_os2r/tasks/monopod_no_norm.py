@@ -140,25 +140,21 @@ class MonopodTask(task.Task, abc.ABC):
 
         # Create obs index and get low and high spaces after masking out unwanted dims
         masked_i = 0
-        self.observation_mask = []
-        self.velocities_index = []
+        self.observaton_mask = []
         obs_index = {}
         observation_names = [*[n+'_pos' for n in self.joint_names], *[n+'_vel' for n in self.joint_names]]
 
         # If observing_measured_torque then add name to observed names
         action_names = [n+'_torque' for n in self.action_names]
         observation_names = [*observation_names, *action_names] if self.observing_measured_torque else observation_names
-
         for obs_i, obs_name in enumerate(observation_names):
             if obs_name not in self.observation_name_mask:
                 obs_index[obs_name] = masked_i
-                self.observation_mask.append(obs_i)
-                if '_vel' in obs_name:
-                    self.velocities_index.append(masked_i)
+                self.observaton_mask.append(obs_i)
                 masked_i += 1
 
-        low = low[self.observation_mask]
-        high = high[self.observation_mask]
+        low = low[self.observaton_mask]
+        high = high[self.observaton_mask]
         self.observation_index = obs_index
 
         # Store which joint are set and defined as periodic.
@@ -168,26 +164,14 @@ class MonopodTask(task.Task, abc.ABC):
             if joint_info['periodic_pos'] and joint + '_pos' in self.observation_index:
                 self.periodic_joints.append(self.observation_index[joint + '_pos'])
 
-        # print('original obs names: ', observation_names)
-        # print('obs_index:', self.observation_index)
-        # print('obs_mask:', self.observation_mask)
-        # print('periodic:', self.periodic_joints)
-
         low[self.periodic_joints] = -(np.pi+np.finfo(float).eps)
         high[self.periodic_joints] = (np.pi+np.finfo(float).eps)
-
-        #   Store info to normalize the observtion
-        self.obs_limits = {'high': high.copy(), 'low': low.copy()}
-        self.mask_inf_obs = np.zeros(len(high), dtype=bool)
-        self.mask_inf_obs[self.velocities_index] = True
-        low[:] = -1
-        high[:] = 1
 
         # define obs space
         obs_space = gym.spaces.Box(low=low, high=high, dtype=np.float64)
         #================== Reward definition =================
                 # Initialize reward class with setup observation info
-        self.reward = self.reward_class(self.observation_index, normalized=True)
+        self.reward = self.reward_class(self.observation_index, normalized=False)
         # Verify that the taskmode is compatible with the reward.
         assert self.reward.is_task_supported(self.task_mode), f'\'{self.task_mode}\' task mode not supported by reward class \'{self.reward}\''
 
@@ -199,7 +183,7 @@ class MonopodTask(task.Task, abc.ABC):
 
         return action_space, obs_space
 
-    def set_action(self, action: Action, store_action : bool = True) -> bool:
+    def set_action(self, action: Action, store_action: bool = True) -> bool:
         """
         Set generalized force target for each controlled joint.
 
@@ -254,21 +238,11 @@ class MonopodTask(task.Task, abc.ABC):
             obs_list = [*obs_list, *self.action_history[1]]
 
         # Create the observation
-        observation = Observation(np.array(obs_list)[self.observation_mask])
+        observation = Observation(np.array(obs_list)[self.observaton_mask])
         # Set periodic observation --> remainder[(phase + pi)/(2pi)] - pi
         # maps angle --> [-pi, pi)
         observation[self.periodic_joints] = np.mod(
             (observation[self.periodic_joints] + np.pi), (2 * np.pi)) - np.pi
-
-        # Normalize observations
-        high = self.obs_limits['high']
-        low = self.obs_limits['low']
-
-        # print('obser pre scale: ', obself.position_indexservation)
-        m = self.mask_inf_obs
-        observation[~m] = 2*(observation[~m] - low[~m])/(high[~m] - low[~m])-1
-        observation[m] = np.tanh(0.05 * observation[m])
-        # print('obser post scale: ', observation)
         return observation
 
     def is_done(self) -> bool:
