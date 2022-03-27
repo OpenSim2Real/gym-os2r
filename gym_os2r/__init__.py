@@ -4,8 +4,9 @@ from . import models
 from . import randomizers
 from . import common
 from . import utils
+from . import runtimes
 
-__all__ = ['tasks', 'models', 'randomizers', 'common', 'utils']
+__all__ = ['tasks', 'models', 'randomizers', 'common', 'utils', 'runtimes']
 
 from gym.envs.registration import register
 from gym_os2r.rewards import *
