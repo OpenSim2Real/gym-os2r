@@ -334,18 +334,21 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
                     "Failed to remove the ground plane from the world")
 
     @staticmethod
-    def _populate_world(task: SupportedTasks, gazebo , monopod_model: str = None,
+    def _populate_world(task: SupportedTasks, gazebo, monopod_model: str = None,
                         ground_model: str = None) -> None:
         #insert world
         if ground_model is None:
             ground_model = monopod.get_model_file_from_name("ground_plane")
+
+        if not gazebo.run(paused=True):
+            raise RuntimeError("Failed to execute a paused Gazebo run")
 
         task.world.to_gazebo().insert_model(ground_model)
 
         # Execute a paused run to process model removal
         if not gazebo.run(paused=True):
             raise RuntimeError("Failed to execute a paused Gazebo run")
-            
+
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
         if monopod_model is None:
