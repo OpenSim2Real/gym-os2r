@@ -96,7 +96,7 @@ class BalancingV2(RewardBase):
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
         balancing = tolerance(bp, (_BALANCE_HEIGHT, 4*_BALANCE_HEIGHT))
         small_control = tolerance(action,
-                                  margin = 1, value_at_margin = 0.2,
+                                  margin = 1, value_at_margin = 0.4,
                                   sigmoid = 'quadratic')
         return balancing * np.prod(small_control)
 
