@@ -37,7 +37,7 @@ class MonopodTask(task.Task, abc.ABC):
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
                                      'fixed_hip_torque', 'simple',
-                                     'fixed_hip_simple']
+                                     'fixed_hip_simple','fixed_hip_no_vel']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
