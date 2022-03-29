@@ -12,18 +12,18 @@ logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
 # Available tasks
-env_id = "Monopod-balance-v2"
+env_id = "Monopod-balance-v3"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
-kwargs = {'reset_positions': ['stand']}
+# kwargs = {'reset_positions': ['stand']}
 # kwargs = {'reset_positions': ['float']}
 
 # kwargs = {'task_mode': 'fixed'}
 # kwargs = {'reward_class': BalancingV3}
 
-# kwargs = {}
+kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 
@@ -52,14 +52,14 @@ for epoch in range(1000):
     while not done:
         # Execute a random action
         # action = env.action_space.sample() * 0.1  # make the value smaller
-        action = env.action_space.sample()
+        # action = env.action_space.sample()
+        action = [-1, -1]
         # action = [0.0, 0.2]
         observation, reward, done, info = env.step(action)
-        done = True
+        # done = True
         # time.sleep(0.05)
-        # c += 1
-        #
-        # done = c==25
+        c += 1
+        done = c==400
 
     # while not done:
     #     count += 1
