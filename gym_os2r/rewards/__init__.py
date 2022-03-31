@@ -153,7 +153,6 @@ class BalancingV4(RewardBase):
 
     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
         _BALANCE_HEIGHT = 0.15/1.57*self.normalized + 0.15*(1-self.normalized)
-        print(self.current_reset_obs)
         # How about the below...like a normal person
         # _BALANCE_HEIGHT = 0.15/1.57 if self.normalized else 0.15
 
@@ -162,10 +161,12 @@ class BalancingV4(RewardBase):
         # print(bp)
         balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, np.inf), 
                                     sigmoid='gaussian', margin=0.08) # 0 or 1
+        
+        offset_zero = self.current_reset_obs[self.observation_index['planarizer_pitch_joint_poso']]
         torq_deltas = abs(actions[0] - actions[1])
         delta_cost = np.mean(torq_deltas) / 2
         action_cost = abs(actions[0]).sum() / 2 # in [0,1]
-        offset_cost = abs(by) 
+        offset_cost = abs(by - offset_zero) 
         # return (1 - action_cost) * balancing_reward * (1 - delta_cost)
         return (1 - action_cost) * balancing_reward * (1 - offset_cost) * (1 - delta_cost)
 
