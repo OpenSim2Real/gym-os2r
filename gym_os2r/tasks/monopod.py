@@ -268,6 +268,8 @@ class MonopodTask(task.Task, abc.ABC):
         m = self.mask_inf_obs
         observation[~m] = 2*(observation[~m] - low[~m])/(high[~m] - low[~m])-1
         observation[m] = np.tanh(0.05 * observation[m])
+        # observation[m] = np.clip(observation[m], -175, 175) / 175
+
         # print('obser post scale: ', observation)
         return observation
 
@@ -379,3 +381,7 @@ class MonopodTask(task.Task, abc.ABC):
             A ``dict`` with extra information of the task.
         """
         return {'reset_orientation': self.current_reset_orientation}
+
+    def post_reset(self, obs):
+
+        self.reward.store_reset_obs(obs)

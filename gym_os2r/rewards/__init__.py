@@ -17,6 +17,7 @@ class RewardBase():
 
     def __init__(self, observation_index: dict, normalized: bool):
         self.observation_index = observation_index
+        self.current_reset_obs = None
         self.normalized = normalized
         self.supported_task_modes = []
         self._all_task_modes = ['free_hip', 'fixed_hip', 'fixed', 'simple',
@@ -60,6 +61,16 @@ class RewardBase():
             (list): list of supported task modes.
         """
         return self.supported_task_modes
+
+    def store_reset_obs(self, obs: Observation):
+        """
+        Store observation on reset.
+
+        Args:
+            obs (np.array): numpy array with the same size task dimensions as
+                            observation space.
+        """
+        self.current_reset_obs = obs
 
 
 # Balancing tasks
@@ -142,13 +153,13 @@ class BalancingV4(RewardBase):
 
     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
         _BALANCE_HEIGHT = 0.15/1.57*self.normalized + 0.15*(1-self.normalized)
-        
+        print(self.current_reset_obs)
         # How about the below...like a normal person
         # _BALANCE_HEIGHT = 0.15/1.57 if self.normalized else 0.15
 
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
         by = obs[self.observation_index['planarizer_yaw_joint_pos']]
-        
+        # print(bp)
         balancing_reward = tolerance(bp, (_BALANCE_HEIGHT, np.inf), 
                                     sigmoid='gaussian', margin=0.08) # 0 or 1
         torq_deltas = abs(actions[0] - actions[1])
@@ -161,21 +172,21 @@ class BalancingV4(RewardBase):
 
 # Standing tasks
 
-class StandingV1(RewardBase):
-    """
-    Standing reward. Start from ground and stand up.
-    """
+# class StandingV1(RewardBase):
+#     """
+#     Standing reward. Start from ground and stand up.
+#     """
 
-    def __init__(self, observation_index: dict, normalized: bool):
-        super().__init__(observation_index, normalized)
-        self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed']
+#     def __init__(self, observation_index: dict, normalized: bool):
+#         super().__init__(observation_index, normalized)
+#         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed']
 
-    def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
-        action = actions[0]
-        _STAND_HEIGHT = 0.11/1.57*self.normalized + 0.11*(1-self.normalized)
-        bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
-        standing = tolerance(bp, (_STAND_HEIGHT, 4*_BALANCE_HEIGHT))
-        return standing
+#     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
+#         action = actions[0]
+#         _STAND_HEIGHT = 0.11/1.57*self.normalized + 0.11*(1-self.normalized)
+#         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
+#         standing = tolerance(bp, (_STAND_HEIGHT, 4*_BALANCE_HEIGHT))
+#         return standing
 
 class HoppingV1(RewardBase):
     """

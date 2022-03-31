@@ -346,3 +346,6 @@ class MonopodTask(task.Task, abc.ABC):
             A ``dict`` with extra information of the task.
         """
         return {'reset_orientation': self.current_reset_orientation}
+
+    def post_reset(self, obs):
+        self.reward.store_reset_obs(obs)

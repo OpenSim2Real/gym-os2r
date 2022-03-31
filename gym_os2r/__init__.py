@@ -34,8 +34,8 @@ register(
             'real_time_factor': max_float,
             'task_mode': 'fixed_hip',
             'reward_class': BalancingV4,
-            # 'reset_positions': ['ground']
-            'reset_positions': ['stand', 'half_stand', 'float', 'lay']
+            'reset_positions': ['ground']
+            # 'reset_positions': ['stand', 'half_stand', 'float', 'lay']
             })
 # register(
 #     id='Monopod-balance-v2',

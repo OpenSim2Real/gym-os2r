@@ -61,6 +61,10 @@ class GazeboRuntime(gym_ignition.runtimes.gazebo_runtime.GazeboRuntime):
     # =================
     # gym.Env interface
     # =================
+    def reset(self) -> Observation:
+        obs = super().reset()
+        self.task.post_reset(obs)
+        return obs
 
     def step(self, action: Action) -> State:
 
