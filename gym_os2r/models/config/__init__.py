@@ -26,7 +26,14 @@ class BaseConfig():
         in the xpath.
         """
         mapList = xpath.strip('/').split('/')
-        reduce(getitem, mapList[:-1], self.config_dict)[mapList[-1]] = value
+        d = self.config_dict
+        for subkey in mapList[:-1]:
+            try:
+                d = d[subkey]
+            except KeyError:
+                d[subkey] = {}
+                d = d[subkey]
+        d[mapList[-1]] = value
 
     def get_config(self, xpath: str):
         """
