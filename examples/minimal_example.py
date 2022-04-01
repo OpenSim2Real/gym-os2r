@@ -11,6 +11,23 @@ from gym_ignition.utils import logger
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
+
+# from gym_os2r.rewards import RewardBase
+#
+# class ExampleV0(RewardBase):
+#     """
+#     Balancing reward. Start from standing positions and stay standing.
+#     """
+#
+#     def __init__(self, observation_index: dict, normalized: bool):
+#         super().__init__(observation_index, normalized)
+#         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed']
+#
+#     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
+#         return 1
+#
+# kwargs = {'reward_class': ExampleV0}
+
 # Available tasks
 env_id = "Monopod-balance-v3"
 
@@ -22,8 +39,6 @@ env_id = "Monopod-balance-v3"
 
 # kwargs = {'task_mode': 'fixed'}
 # kwargs = {'reward_class': BalancingV3}
-
-kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 
