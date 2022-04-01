@@ -11,19 +11,34 @@ from gym_ignition.utils import logger
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
+
+# from gym_os2r.rewards import RewardBase
+#
+# class ExampleV0(RewardBase):
+#     """
+#     Balancing reward. Start from standing positions and stay standing.
+#     """
+#
+#     def __init__(self, observation_index: dict, normalized: bool):
+#         super().__init__(observation_index, normalized)
+#         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed']
+#
+#     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
+#         return 1
+#
+# kwargs = {'reward_class': ExampleV0}
+
 # Available tasks
-env_id = "Monopod-balance-v2"
+env_id = "Monopod-balance-v3"
 
 # Create a partial function passing the environment id
 # kwargs = {'task_mode': 'free_hip'}
 # kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
-kwargs = {'reset_positions': ['half_stand']}
+# kwargs = {'reset_positions': ['stand']}
 # kwargs = {'reset_positions': ['float']}
 
 # kwargs = {'task_mode': 'fixed'}
 # kwargs = {'reward_class': BalancingV3}
-
-# kwargs = {}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
 
@@ -52,14 +67,14 @@ for epoch in range(1000):
     while not done:
         # Execute a random action
         # action = env.action_space.sample() * 0.1  # make the value smaller
-        action = env.action_space.sample()
+        # action = env.action_space.sample()
+        action = [-1, -1]
         # action = [0.0, 0.2]
         observation, reward, done, info = env.step(action)
         # done = True
-        time.sleep(0.05)
+        # time.sleep(0.05)
         c += 1
-
-        done = c==25
+        done = c==400
 
     # while not done:
     #     count += 1
