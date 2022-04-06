@@ -64,6 +64,37 @@ task_modes:
         planarizer_yaw_joint:
           periodic_pos: True
           limits: [3.14159, -3.14159, .inf, -.inf]
+  
+  fixed_hip_visualizer:
+    model: 'monopod-fixed_hip_visualizer'
+    definition:
+      upper_leg_length: 200
+      lower_leg_length: 190
+      central_pivot_height: 80
+      length_boom: 2100
+      hip_offset: 0
+      clipping_adjust: 25
+    spaces:
+      action:
+        hip_joint: 2.5 # max/min torque should usually be the same
+        knee_joint: 2.5
+      observing_measured_torque: False
+      observation_mask: [] # example would be 'knee_joint_pos' or 'knee_joint_vel' then it would be ignore
+      observation:
+        hip_joint:
+          # Periodic position when true ignores position limits
+          periodic_pos: False
+          # values are in order max/min pos -- max/min vel
+          limits: [6.28319, -6.28319, .inf, -.inf]
+        knee_joint:
+          periodic_pos: True
+          limits: [3.14159, -3.14159, .inf, -.inf]
+        planarizer_pitch_joint:
+          periodic_pos: False
+          limits: [1.57080, -1.57080, .inf, -.inf]
+        planarizer_yaw_joint:
+          periodic_pos: True
+          limits: [3.14159, -3.14159, .inf, -.inf]
 
   fixed_hip_torque:
     model: 'monopod-fixed_hip'

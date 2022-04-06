@@ -37,7 +37,7 @@ class MonopodTask(task.Task, abc.ABC):
     def __init__(self, agent_rate: float, **kwargs):
         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed',
                                      'fixed_hip_torque', 'simple',
-                                     'fixed_hip_simple','fixed_hip_no_vel']
+                                     'fixed_hip_simple','fixed_hip_no_vel','fixed_hip_visualizer']
 
         required_kwargs = ['task_mode', 'reward_class', 'reset_positions']
         for rkwarg in required_kwargs:
@@ -180,6 +180,7 @@ class MonopodTask(task.Task, abc.ABC):
         # Configure the reset space - this is used to check if it exists inside
         # the reset space when deciding whether to reset. Narrow reset space by machine const.
         self.reset_space = gym.spaces.Box(low=low+np.finfo(float).eps, high=high-np.finfo(float).eps, dtype=np.float64)
+        print(obs_index)
 
         return action_space, obs_space
 

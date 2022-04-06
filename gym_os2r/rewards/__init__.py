@@ -88,7 +88,7 @@ class BalancingV2(RewardBase):
 
     def __init__(self, observation_index: dict, normalized: bool):
         super().__init__(observation_index, normalized)
-        self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed','fixed_hip_no_vel']
+        self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed','fixed_hip_no_vel','fixed_hip_visualizer']
 
     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
         action = actions[0]
