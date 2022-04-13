@@ -145,7 +145,7 @@ class StandingV1(RewardBase):
         action = actions[0]
         _STAND_HEIGHT = 0.11/1.57*self.normalized + 0.11*(1-self.normalized)
         bp = obs[self.observation_index['planarizer_pitch_joint_pos']]
-        standing = tolerance(bp, (_STAND_HEIGHT, 4*_BALANCE_HEIGHT))
+        standing = tolerance(bp, (_STAND_HEIGHT, 4*_STAND_HEIGHT))
         return standing
 
 class HoppingV1(RewardBase):
