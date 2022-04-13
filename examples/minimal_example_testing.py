@@ -4,6 +4,7 @@ import functools
 
 from gym_os2r import randomizers
 from gym_os2r.common import make_env_from_id
+from gym_os2r.models.config import SettingsConfig
 # from gym_os2r.rewards import BalancingV3
 
 from gym_ignition.utils import logger
@@ -11,39 +12,26 @@ from gym_ignition.utils import logger
 logger.set_level(gym.logger.ERROR)
 # logger.set_level(gym.logger.DEBUG)
 
+reset_position = 'name_reset'
 
-# from gym_os2r.rewards import RewardBase
-#
-# class ExampleV0(RewardBase):
-#     """
-#     Balancing reward. Start from standing positions and stay standing.
-#     """
-#
-#     def __init__(self, observation_index: dict, normalized: bool):
-#         super().__init__(observation_index, normalized)
-#         self.supported_task_modes = ['free_hip', 'fixed_hip', 'fixed_hip_torque', 'fixed_hip_simple', 'fixed']
-#
-#     def calculate_reward(self, obs: Observation, actions: Deque[Action]) -> Reward:
-#         return 1
-#
-# kwargs = {'reward_class': ExampleV0}
+cfg = SettingsConfig()
+xpath = 'resets/' + reset_position
 
-# Available tasks
-env_id = "Monopod-balance-v3"
+new_pitch = 0.4
+laying_down = True
 
-# Create a partial function passing the environment id
-# kwargs = {'task_mode': 'free_hip'}
-# kwargs = {'reset_positions': ['stand', 'ground', 'lay', 'float']}
-# kwargs = {'reset_positions': ['stand']}
-# kwargs = {'reset_positions': ['float']}
+cfg.set_config(laying_down, xpath + '/laying_down')
+cfg.set_config(new_pitch, xpath + '/planarizer_pitch_joint')
 
-# kwargs = {'task_mode': 'fixed'}
-# kwargs = {'reward_class': BalancingV3}
+
+env_id = "Monopod-stand-v1"
+kwargs = {
+'reset_positions': ['name_reset'],
+'config': cfg
+}
 
 make_env = functools.partial(make_env_from_id, env_id=env_id, **kwargs)
-
-env = randomizers.monopod.MonopodEnvRandomizer(env=make_env)
-# env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
+env = randomizers.monopod_no_rand.MonopodEnvNoRandomizer(env=make_env)
 
 # Enable the rendering
 env.render('human')
