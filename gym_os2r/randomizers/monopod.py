@@ -6,6 +6,7 @@ from lxml import etree
 from operator import add
 from functools import reduce
 import numpy as np
+import time
 
 from scenario import gazebo as scenario
 from gym_ignition import randomizers, utils
@@ -82,7 +83,7 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
         random_ground = self.randomize_ground_description(task=task)
 
         # Insert a new model in the world
-        self._populate_world(task=task, monopod_model=random_model,
+        self._populate_world(task=task, gazebo=gazebo, monopod_model=random_model,
                              ground_model=random_ground)
 
         reset_orientation = np.random.choice(task.reset_positions)
@@ -322,25 +323,29 @@ class MonopodRandomizersMixin(randomizers.abc.TaskRandomizer,
 
         # Remove the model from the simulation
         if task.model_name is not None and task.model_name in task.world.model_names():
-
             if not task.world.to_gazebo().remove_model(task.model_name):
                 raise RuntimeError(
                     "Failed to remove the monopod from the world")
 
-        if "ground_plane" in task.world.model_names():
-
-            if not task.world.to_gazebo().remove_model("ground_plane"):
-                raise RuntimeError(
-                    "Failed to remove the ground plane from the world")
+        # if "ground_plane" in task.world.model_names():
+        #     if not task.world.to_gazebo().remove_model("ground_plane"):
+        #         raise RuntimeError(
+        #             "Failed to remove the ground plane from the world")
 
     @staticmethod
-    def _populate_world(task: SupportedTasks, monopod_model: str = None,
+    def _populate_world(task: SupportedTasks, gazebo, monopod_model: str = None,
                         ground_model: str = None) -> None:
-        #insert world
-        if ground_model is None:
-            ground_model = monopod.get_model_file_from_name("ground_plane")
+        # #insert world
+        # if ground_model is None:
+        #     ground_model = monopod.get_model_file_from_name("ground_plane")
+        #
+        # task.world.to_gazebo().insert_model(ground_model)
 
-        task.world.to_gazebo().insert_model(ground_model)
+        # Execute a paused run to process model removal
+        # if not gazebo.run(paused=True):
+        #     raise RuntimeError("Failed to execute a paused Gazebo run")
+        # time.sleep(0.01)
+
         # Insert a new monopod.
         # It will create a unique name if there are clashing.
         if monopod_model is None:

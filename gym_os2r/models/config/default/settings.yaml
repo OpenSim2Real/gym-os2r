@@ -13,7 +13,6 @@ task_modes:
         hip_joint: 2.5
         knee_joint: 2.5
       observing_measured_torque: False
-      observation_mask: [] # example would be ''
       observation_mask: [] # example would be 'knee_joint_pos' or 'knee_joint_vel' then it would be ignore
       observation:
         hip_joint:
